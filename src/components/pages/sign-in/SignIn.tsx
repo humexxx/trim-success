@@ -1,27 +1,27 @@
-import { useState } from 'react';
-import Avatar from '@mui/material/Avatar';
-import TextField from '@mui/material/TextField';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
-import Link from '@mui/material/Link';
-import Grid from '@mui/material/Grid';
-import Box from '@mui/material/Box';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import Typography from '@mui/material/Typography';
-import { LoadingButton } from '@mui/lab';
-import { useForm, Controller, SubmitHandler } from 'react-hook-form';
-import * as yup from 'yup';
-import { yupResolver } from '@hookform/resolvers/yup';
-import { SignInProps, SignInFormInputs } from './SignIn.types';
-import { Link as RouterLink } from 'react-router-dom';
-import { Container } from '@mui/material';
+import { useState } from "react";
+import Avatar from "@mui/material/Avatar";
+import TextField from "@mui/material/TextField";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Checkbox from "@mui/material/Checkbox";
+import Link from "@mui/material/Link";
+import Grid from "@mui/material/Grid";
+import Box from "@mui/material/Box";
+import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+import Typography from "@mui/material/Typography";
+import { LoadingButton } from "@mui/lab";
+import { useForm, Controller, SubmitHandler } from "react-hook-form";
+import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { SignInProps, SignInFormInputs } from "./SignIn.types";
+import { Link as RouterLink } from "react-router-dom";
+import { Container } from "@mui/material";
 
 const schema = yup.object().shape({
   email: yup
     .string()
-    .email('Invalid email format')
-    .required('Email is required'),
-  password: yup.string().required('Password is required'),
+    .email("Formato de email inválido")
+    .required("Email requerido"),
+  password: yup.string().required("Contraseña requerida"),
   persist: yup.boolean().default(false),
 });
 
@@ -36,8 +36,8 @@ export default function SignIn({ handleOnSubmit }: SignInProps) {
   } = useForm<SignInFormInputs>({
     resolver: yupResolver(schema),
     defaultValues: {
-      email: '',
-      password: '',
+      email: "",
+      password: "",
       persist: false,
     },
   });
@@ -60,12 +60,12 @@ export default function SignIn({ handleOnSubmit }: SignInProps) {
       maxWidth="sm"
       sx={{
         marginTop: 8,
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
       }}
     >
-      <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
+      <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
         <LockOutlinedIcon />
       </Avatar>
       <Typography component="h1" variant="h5">
@@ -86,11 +86,11 @@ export default function SignIn({ handleOnSubmit }: SignInProps) {
               margin="dense"
               required
               fullWidth
-              label="Email Address"
+              label="Email"
               autoComplete="email"
               autoFocus
               error={!!errors.email}
-              helperText={errors.email ? errors.email.message : ' '}
+              helperText={errors.email ? errors.email.message : " "}
             />
           )}
         />
@@ -103,11 +103,11 @@ export default function SignIn({ handleOnSubmit }: SignInProps) {
               margin="dense"
               required
               fullWidth
-              label="Password"
+              label="Contraseña"
               type="password"
               autoComplete="current-password"
               error={!!errors.password}
-              helperText={errors.password ? errors.password.message : ' '}
+              helperText={errors.password ? errors.password.message : " "}
             />
           )}
         />
@@ -117,7 +117,7 @@ export default function SignIn({ handleOnSubmit }: SignInProps) {
           render={({ field }) => (
             <FormControlLabel
               control={<Checkbox {...field} color="primary" />}
-              label="Remember me"
+              label="Mantener sesión iniciada"
             />
           )}
         />
@@ -133,17 +133,17 @@ export default function SignIn({ handleOnSubmit }: SignInProps) {
           sx={{ mt: 3, mb: 2 }}
           loading={isLoading}
         >
-          Sign In
+          Entrar
         </LoadingButton>
         <Grid container>
           <Grid item xs>
             <Link component={RouterLink} to="/forgot-password" variant="body2">
-              Forgot password?
+              Olvidaste tu contraseña?
             </Link>
           </Grid>
           <Grid item>
             <Link component={RouterLink} to="/sign-up" variant="body2">
-              {"Don't have an account? Sign Up"}
+              {"No tienes cuenta? Regístrate"}
             </Link>
           </Grid>
         </Grid>

@@ -1,4 +1,4 @@
-import { NavLink, useLocation } from 'react-router-dom';
+import { NavLink, useLocation } from "react-router-dom";
 import {
   Toolbar,
   Divider,
@@ -8,16 +8,22 @@ import {
   ListItemIcon,
   ListItemText,
   Box,
-} from '@mui/material';
-import DashboardIcon from '@mui/icons-material/Dashboard';
+} from "@mui/material";
+import DashboardIcon from "@mui/icons-material/Dashboard";
+import DownloadIcon from "@mui/icons-material/Download";
 
 const routes = [
   {
-    text: "Dashboard",
-    icon: <DashboardIcon />,
-    path: '/client/dashboard',
+    text: "Importar",
+    icon: <DownloadIcon />,
+    path: "/client/import",
   },
-]
+  {
+    text: "Panel",
+    icon: <DashboardIcon />,
+    path: "/client/dashboard",
+  },
+];
 
 const Drawer = () => {
   const location = useLocation();
