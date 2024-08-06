@@ -1,18 +1,13 @@
-import {
-  AppBar,
-  Toolbar,
-  IconButton,
-  Typography,
-} from '@mui/material';
-import { DRAWER_WIDTH } from './drawer';
-import { useThemeContext } from 'src/context/theme';
-import { auth } from 'src/firebase';
-import { useNavigate } from 'react-router-dom';
-import MenuIcon from '@mui/icons-material/Menu';
-import Brightness4Icon from '@mui/icons-material/Brightness4';
-import Brightness7Icon from '@mui/icons-material/Brightness7';
-import LogoutIcon from '@mui/icons-material/Logout';
-import { useTheme } from '@mui/material/styles';
+import { AppBar, Toolbar, IconButton, Typography } from "@mui/material";
+import { DRAWER_WIDTH } from "./drawer";
+import { useThemeContext } from "src/context/theme";
+import { auth } from "src/firebase";
+import { useNavigate } from "react-router-dom";
+import MenuIcon from "@mui/icons-material/Menu";
+import Brightness4Icon from "@mui/icons-material/Brightness4";
+import Brightness7Icon from "@mui/icons-material/Brightness7";
+import LogoutIcon from "@mui/icons-material/Logout";
+import { useTheme } from "@mui/material/styles";
 
 interface Props {
   handleDrawerToggle: () => void;
@@ -27,7 +22,7 @@ const Header = ({ handleDrawerToggle }: Props) => {
     auth
       .signOut()
       .then(() => {
-        navigate('/login');
+        navigate("/login");
       })
       .catch((error) => {
         console.error(error);
@@ -40,8 +35,8 @@ const Header = ({ handleDrawerToggle }: Props) => {
       sx={{
         width: { sm: `calc(100% - ${DRAWER_WIDTH}px)` },
         ml: { sm: `${DRAWER_WIDTH}px` },
-        display: 'flex',
-        justifyContent: 'space-between',
+        display: "flex",
+        justifyContent: "space-between",
       }}
     >
       <Toolbar>
@@ -50,19 +45,19 @@ const Header = ({ handleDrawerToggle }: Props) => {
           aria-label="open drawer"
           edge="start"
           onClick={handleDrawerToggle}
-          sx={{ mr: 2, display: { sm: 'none' } }}
+          sx={{ mr: 2, display: { sm: "none" } }}
         >
           <MenuIcon />
         </IconButton>
         <Typography variant="h6" component="div" flexGrow="1">
-          Champions
+          Trim Success
         </Typography>
         <IconButton
           sx={{ ml: 2 }}
           onClick={themeContext.toggleColorMode}
           color="inherit"
         >
-          {theme.palette.mode === 'dark' ? (
+          {theme.palette.mode === "dark" ? (
             <Brightness4Icon />
           ) : (
             <Brightness7Icon />

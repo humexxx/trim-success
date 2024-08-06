@@ -1,45 +1,47 @@
-import { createBrowserRouter, Navigate } from 'react-router-dom';
-import ClientLayout from './layouts/ClientLayout';
+import { createBrowserRouter, Navigate } from "react-router-dom";
+import ClientLayout from "./layouts/ClientLayout";
 import {
   LandingPage,
   ErrorPage,
   SignInPage,
   SignUpPage,
   ForgotPasswordPage,
-} from './pages';
-import {
-  DashboardPage,
-} from './pages/client';
+} from "./pages";
+import { DashboardPage, ImportPage } from "./pages/client";
 
 export const router = createBrowserRouter([
   {
-    path: '/',
+    path: "/",
     element: <LandingPage />,
     errorElement: <ErrorPage />,
   },
   {
-    path: '/sign-up',
+    path: "/sign-up",
     element: <SignUpPage />,
   },
   {
-    path: '/sign-in',
+    path: "/sign-in",
     element: <Navigate replace to="/login" />,
   },
   {
-    path: '/login',
+    path: "/login",
     element: <SignInPage />,
   },
   {
-    path: '/forgot-password',
+    path: "/forgot-password",
     element: <ForgotPasswordPage />,
   },
   {
-    path: '/client',
+    path: "/client",
     element: <ClientLayout />,
     children: [
       {
-        path: '/client/dashboard',
+        path: "/client/dashboard",
         element: <DashboardPage />,
+      },
+      {
+        path: "/client/import",
+        element: <ImportPage />,
       },
     ],
   },
