@@ -1,17 +1,30 @@
-import * as React from "react";
 import Box from "@mui/material/Box";
 import Stepper from "@mui/material/Stepper";
 import Step from "@mui/material/Step";
 import StepLabel from "@mui/material/StepLabel";
 import StepContent from "@mui/material/StepContent";
 import Button from "@mui/material/Button";
-import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
-import { Dropzone, FileSummary } from "src/components/pages/client/import";
+import {
+  Dropzone,
+  FileSummary,
+  FileUpload,
+} from "src/components/pages/client/import";
+import { useCube } from "src/context/cube";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function ImportPage() {
-  const [activeStep, setActiveStep] = React.useState(0);
-  const [jsonData, setJsonData] = React.useState<any[][]>([]);
+  const [activeStep, setActiveStep] = useState(0);
+  const navigate = useNavigate();
+  const cube = useCube();
+
+  useEffect(() => {
+    if (!cube.loading && cube.fileResolution) {
+      navigate("/client/dashboard");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cube.loading, navigate]);
 
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -21,8 +34,8 @@ export default function ImportPage() {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
 
-  const handleReset = () => {
-    setActiveStep(0);
+  const handleOnFinish = () => {
+    navigate("/client/dashboard");
   };
 
   return (
@@ -39,16 +52,12 @@ export default function ImportPage() {
             Importar Archivo
           </StepLabel>
           <StepContent>
-            <Dropzone
-              onJsonDataChange={(data: any[][]) => {
-                setJsonData(data);
-              }}
-            />
+            <Dropzone />
             <StepperFooter
               handleBack={handleBack}
               handleNext={handleNext}
               isFirstStep
-              disableNext={jsonData.length === 0}
+              disableNext={!cube.fileResolution?.jsonData?.length}
             />
           </StepContent>
         </Step>
@@ -63,7 +72,7 @@ export default function ImportPage() {
             Verificar Datos
           </StepLabel>
           <StepContent>
-            <FileSummary jsonData={jsonData} />
+            <FileSummary />
             <StepperFooter handleBack={handleBack} handleNext={handleNext} />
           </StepContent>
         </Step>
@@ -71,44 +80,25 @@ export default function ImportPage() {
           <StepLabel
             optional={
               <Typography variant="caption">
-                Marca los reportes por generar
+                Carga de datos al sistema para la generación de reportes
               </Typography>
             }
           >
-            Reportes por Generar
+            Carga de datos
           </StepLabel>
           <StepContent>
-            <Typography>
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Rem quae
-              dolores laboriosam architecto obcaecati voluptate saepe delectus
-              velit accusantium veritatis dolore nihil, consequuntur,
-              praesentium dignissimos! Eaque magnam aperiam magni molestiae!
+            <Typography color="text.primary" variant="h6">
+              Los datos cargados se usarán para crear los distintos reportes.
             </Typography>
-            <StepperFooter
-              handleBack={handleBack}
-              handleNext={handleNext}
-              isLastStep
-            />
+            <FileUpload handleOnFinish={handleOnFinish} />
           </StepContent>
         </Step>
       </Stepper>
-      {activeStep === 3 && (
-        <Paper square elevation={0} sx={{ p: 3 }}>
-          <Typography>Todos los pasos han sido completados</Typography>
-          <Typography>
-            Hacer algo mas aqui, como enviar los datos al servidor
-          </Typography>
-          <Button onClick={handleReset} sx={{ mt: 1 }}>
-            Reiniciar
-          </Button>
-        </Paper>
-      )}
     </Box>
   );
 }
 
 interface StepperFooterProps {
-  isLastStep?: boolean;
   isFirstStep?: boolean;
   handleBack: () => void;
   handleNext: () => void;
@@ -117,7 +107,6 @@ interface StepperFooterProps {
 
 function StepperFooter({
   isFirstStep = false,
-  isLastStep = false,
   handleBack,
   handleNext,
   disableNext,
@@ -130,7 +119,7 @@ function StepperFooter({
           onClick={handleBack}
           sx={{ mt: 1, mr: 1 }}
         >
-          Back
+          Atrás
         </Button>
         <Button
           variant="contained"
@@ -138,7 +127,7 @@ function StepperFooter({
           sx={{ mt: 1, mr: 1 }}
           disabled={disableNext}
         >
-          {isLastStep ? "Terminar" : "Continuar"}
+          Continuar
         </Button>
       </div>
     </Box>

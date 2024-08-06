@@ -24,3 +24,4 @@ dist-ssr
 *.sw?
 
 Templete BI Inventarios.xlsx
+cors.json

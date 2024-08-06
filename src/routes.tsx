@@ -8,6 +8,7 @@ import {
   ForgotPasswordPage,
 } from "./pages";
 import { DashboardPage, ImportPage } from "./pages/client";
+import { CubeLayout } from "./layouts";
 
 export const router = createBrowserRouter([
   {
@@ -36,12 +37,18 @@ export const router = createBrowserRouter([
     element: <ClientLayout />,
     children: [
       {
-        path: "/client/dashboard",
-        element: <DashboardPage />,
-      },
-      {
         path: "/client/import",
         element: <ImportPage />,
+      },
+      {
+        path: "/client",
+        element: <CubeLayout />,
+        children: [
+          {
+            path: "/client/dashboard",
+            element: <DashboardPage />,
+          },
+        ],
       },
     ],
   },
