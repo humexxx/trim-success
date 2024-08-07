@@ -11,50 +11,59 @@ import {
 } from "@mui/material";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import DownloadIcon from "@mui/icons-material/Download";
+import SystemUpdateAltIcon from "@mui/icons-material/SystemUpdateAlt";
 import { useCube } from "src/context/cube";
+import { useAuth } from "src/context/auth";
+import { useMemo } from "react";
 
-const routes = [
-  {
-    text: "Importar",
-    icon: <DownloadIcon />,
-    path: "/client/import",
-    isFirstStep: true,
-  },
-  {
-    text: "Panel",
-    icon: <DashboardIcon />,
-    path: "/client/dashboard",
-  },
-];
+function getRoutes(isAdmin: boolean, hasCube: boolean) {
+  return [
+    {
+      text: "Importar",
+      caption: isAdmin ? "Administrador" : "",
+      icon: isAdmin ? <SystemUpdateAltIcon /> : <DownloadIcon />,
+      path: "/client/import",
+      isCubeLoader: true,
+    },
+    {
+      text: "Panel",
+      icon: <DashboardIcon />,
+      path: "/client/dashboard",
+    },
+  ].filter(({ isCubeLoader }) => isAdmin || !(isCubeLoader && hasCube));
+}
 
 const Drawer = () => {
   const { fileResolution, loading } = useCube();
+  const user = useAuth();
   const location = useLocation();
+
+  const routes = useMemo(
+    () =>
+      getRoutes(Boolean(user.currentUser!.isAdmin), Boolean(fileResolution)),
+    [fileResolution, user.currentUser]
+  );
 
   return (
     <Box>
       <Toolbar />
       <Divider />
       <List>
-        {routes
-          .filter(
-            ({ isFirstStep }) => !(isFirstStep && Boolean(fileResolution))
-          )
-          .map(({ text, icon, path, isFirstStep }) => (
-            <ListItem key={text}>
-              <ListItemButton
-                sx={{ borderRadius: 2 }}
-                selected={location.pathname.includes(path)}
-                component={NavLink}
-                to={path}
-                unstable_viewTransition
-                disabled={(!isFirstStep && !fileResolution) || loading}
-              >
-                <ListItemIcon>{icon}</ListItemIcon>
-                <ListItemText primary={text} />
-              </ListItemButton>
-            </ListItem>
-          ))}
+        {routes.map(({ text, caption, icon, path, isCubeLoader }) => (
+          <ListItem key={text}>
+            <ListItemButton
+              sx={{ borderRadius: 2 }}
+              selected={location.pathname.includes(path)}
+              component={NavLink}
+              to={path}
+              unstable_viewTransition
+              disabled={(!isCubeLoader && !fileResolution) || loading}
+            >
+              <ListItemIcon>{icon}</ListItemIcon>
+              <ListItemText primary={text} secondary={caption} />
+            </ListItemButton>
+          </ListItem>
+        ))}
       </List>
     </Box>
   );

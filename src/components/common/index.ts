@@ -1,2 +1,2 @@
-export { default as PrivateRoute } from "./private-route";
-export { default as AutoLogRoute } from "./auto-log-route";
+export { default as PrivateRoute } from "./PrivateRoute";
+export { default as AutoLogRoute } from "./AutoLogRoute";

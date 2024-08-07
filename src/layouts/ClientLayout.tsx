@@ -95,11 +95,14 @@ function ClientLayout() {
 export default function ClientLayoutWrapper() {
   return (
     <PrivateRoute>
-      <CubeProvider>
-        <ThemeProvider>
+      <ThemeProvider>
+        <CubeProvider
+          successRoute="/client/dashboard"
+          fallbackRoute="/client/import"
+        >
           <ClientLayout />
-        </ThemeProvider>
-      </CubeProvider>
+        </CubeProvider>
+      </ThemeProvider>
     </PrivateRoute>
   );
 }

@@ -1,8 +1,8 @@
-import { User } from 'firebase/auth';
-import { ReactNode } from 'react';
+import { User } from "firebase/auth";
+import { ReactNode } from "react";
 
 export interface AuthContextType {
-  currentUser: User | null;
+  currentUser: (User & { isAdmin?: boolean }) | null;
 }
 
 export interface AuthProviderProps {

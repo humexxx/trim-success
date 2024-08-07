@@ -1,11 +1,10 @@
-// src/components/PrivateRoute.tsx
 import { Navigate, Outlet } from "react-router-dom";
-import { useAuth } from "src/context/auth";
+import { useCube } from "src/context/cube";
 
 function CubeLayout() {
-  const { currentUser } = useAuth();
+  const { fileResolution } = useCube();
 
-  if (!currentUser) {
+  if (!fileResolution) {
     return <Navigate to="/client/import" />;
   }
 

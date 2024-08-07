@@ -17,8 +17,12 @@ export interface CubeContextType {
   loading: boolean;
   setFileResolution: (fileResolution: FileResolution) => void;
   fileResolution?: FileResolution;
+  customUid?: string;
+  setCustomUid: (uid: string) => void;
 }
 
 export interface CubeProviderProps {
+  fallbackRoute: string;
+  successRoute: string;
   children: ReactNode;
 }
