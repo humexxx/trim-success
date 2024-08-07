@@ -1,15 +1,8 @@
 import { Box, Typography, useTheme } from "@mui/material";
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import { DataGrid } from "@mui/x-data-grid";
 import { useEffect, useMemo, useState } from "react";
-
-interface Row {
-  id: number;
-  [key: string]: any;
-}
-
-interface FileSummaryProps {
-  jsonData: any[][];
-}
+import { Row, useCube } from "src/context/cube";
+import { getColsAndRows } from "src/utils";
 
 const hexToRgb = (hex: string) => {
   hex = hex.replace(/^#/, "");
@@ -30,31 +23,17 @@ const hexToRgb = (hex: string) => {
   return `${r}, ${g}, ${b}`;
 };
 
-const FileSummary = ({ jsonData }: FileSummaryProps) => {
+const FileSummary = () => {
   const [rows, setRows] = useState<Row[]>([]);
-  const [rowsCount, setRowsCount] = useState<number>(0);
-  const [columns, setColumns] = useState<GridColDef[]>([]);
   const theme = useTheme();
+  const cube = useCube();
 
   useEffect(() => {
-    const header = jsonData[0] as string[];
-    const cols = header.map((col) => ({
-      field: col,
-      headerName: col,
-      width: 150,
-    }));
-
-    setColumns(cols);
-
-    const rowsData = jsonData.slice(1).map((row, index) =>
-      row.reduce((acc, cell, i) => ({ ...acc, [header[i]]: cell }), {
-        id: index + 1,
-      })
-    );
-
-    setRowsCount(rowsData.length);
-    setRows((rowsData as Row[]).slice(0, 8));
-  }, [jsonData]);
+    const { columns, rows } = getColsAndRows(cube.fileResolution?.jsonData);
+    cube.setFileResolution({ ...cube.fileResolution, columns, rows });
+    setRows((rows as Row[]).slice(0, 8));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const backgroundRgb = useMemo(
     () => hexToRgb(theme.palette.background.default),
@@ -64,10 +43,11 @@ const FileSummary = ({ jsonData }: FileSummaryProps) => {
   return (
     <>
       <Typography color="text.primary" mt={2}>
-        <strong>Cantidad de columnas:</strong> {columns?.length}
+        <strong>Cantidad de columnas:</strong>{" "}
+        {cube.fileResolution?.columns?.length}
       </Typography>
       <Typography color="text.primary" mb={2}>
-        <strong>Cantidad de filas:</strong> {rowsCount}
+        <strong>Cantidad de filas:</strong> {cube.fileResolution?.rows?.length}
       </Typography>
       <Box
         sx={{
@@ -84,7 +64,7 @@ const FileSummary = ({ jsonData }: FileSummaryProps) => {
         <DataGrid
           sx={{ fontSize: "0.75rem" }}
           rows={rows}
-          columns={columns}
+          columns={cube.fileResolution?.columns ?? []}
           hideFooter
           disableColumnSorting
           disableAutosize

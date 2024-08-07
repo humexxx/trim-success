@@ -1,35 +1,20 @@
 import { Box } from "@mui/material";
 import { DropzoneArea } from "mui-file-dropzone";
-import * as XLSX from "xlsx";
+import { getJsonDataFromFile } from "src/utils";
+import { useCube } from "src/context/cube";
 
-interface DropzoneProps {
-  onJsonDataChange: (data: any[][]) => void;
-}
+const Dropzone = () => {
+  const cube = useCube();
 
-const Dropzone = ({ onJsonDataChange }: DropzoneProps) => {
   function handleOnFileChange(files: File[]) {
     if (files.length > 0) {
       const file = files[0];
-      const reader = new FileReader();
-
-      reader.onload = (event) => {
-        if (event.target?.result) {
-          const data = new Uint8Array(event.target.result as ArrayBuffer);
-          const workbook = XLSX.read(data, { type: "array" });
-          const sheetName = workbook.SheetNames[0];
-          const worksheet = workbook.Sheets[sheetName];
-          const jsonData: any[][] = XLSX.utils.sheet_to_json(worksheet, {
-            header: 1,
-            raw: true,
-          });
-
-          if (jsonData.length > 0) {
-            onJsonDataChange(jsonData);
-          }
-        }
-      };
-
-      reader.readAsArrayBuffer(file);
+      getJsonDataFromFile((jsonData: any[][]) => {
+        cube.setFileResolution({
+          jsonData,
+          file,
+        });
+      }, file);
     }
   }
 
@@ -59,6 +44,9 @@ const Dropzone = ({ onJsonDataChange }: DropzoneProps) => {
         useChipsForPreview
         dropzoneText="Arrastra un archivo Excel aquí o haz clic para seleccionar uno"
         previewText="Vista previa"
+        alertSnackbarProps={{
+          anchorOrigin: { vertical: "top", horizontal: "right" },
+        }}
       />
     </Box>
   );

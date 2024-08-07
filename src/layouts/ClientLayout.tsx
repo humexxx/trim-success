@@ -1,15 +1,17 @@
-import * as React from 'react';
-import { PrivateRoute } from 'src/components/common';
-import { Outlet } from 'react-router-dom';
-import APP_DRAWER, { DRAWER_WIDTH } from 'src/components/layouts/drawer';
+import { PrivateRoute } from "src/components/common";
+import { Outlet } from "react-router-dom";
+import APP_DRAWER, { DRAWER_WIDTH } from "src/components/layouts/drawer";
 
-import { ThemeProvider } from 'src/context/theme';
-import { Header } from 'src/components/layouts';
-import { Box, Drawer, Toolbar, Container } from '@mui/material';
+import { ThemeProvider } from "src/context/theme";
+import { Header } from "src/components/layouts";
+import { Box, Drawer, Toolbar, Container, LinearProgress } from "@mui/material";
+import { CubeProvider, useCube } from "src/context/cube";
+import { useState } from "react";
 
 function ClientLayout() {
-  const [mobileOpen, setMobileOpen] = React.useState(false);
-  const [isClosing, setIsClosing] = React.useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [isClosing, setIsClosing] = useState(false);
+  const cube = useCube();
 
   const handleDrawerClose = () => {
     setIsClosing(true);
@@ -27,7 +29,7 @@ function ClientLayout() {
   };
 
   return (
-    <Box sx={{ display: 'flex' }}>
+    <Box sx={{ display: "flex" }}>
       <Header handleDrawerToggle={handleDrawerToggle} />
       <Box
         component="nav"
@@ -43,9 +45,9 @@ function ClientLayout() {
             keepMounted: true,
           }}
           sx={{
-            display: { xs: 'block', sm: 'none' },
-            '& .MuiDrawer-paper': {
-              boxSizing: 'border-box',
+            display: { xs: "block", sm: "none" },
+            "& .MuiDrawer-paper": {
+              boxSizing: "border-box",
               width: DRAWER_WIDTH,
             },
           }}
@@ -55,9 +57,9 @@ function ClientLayout() {
         <Drawer
           variant="permanent"
           sx={{
-            display: { xs: 'none', sm: 'block' },
-            '& .MuiDrawer-paper': {
-              boxSizing: 'border-box',
+            display: { xs: "none", sm: "block" },
+            "& .MuiDrawer-paper": {
+              boxSizing: "border-box",
               width: DRAWER_WIDTH,
             },
           }}
@@ -72,14 +74,19 @@ function ClientLayout() {
           flexGrow: 1,
           p: 3,
           width: { sm: `calc(100% - ${DRAWER_WIDTH}px)` },
-          bgcolor: 'background.paper',
-          minHeight: '100vh',
+          bgcolor: "background.paper",
+          minHeight: "100vh",
         }}
       >
         <Toolbar />
-        <Container maxWidth="xl">
-          <Outlet />
-        </Container>
+
+        {cube.loading ? (
+          <LinearProgress />
+        ) : (
+          <Container maxWidth="xl">
+            <Outlet />
+          </Container>
+        )}
       </Box>
     </Box>
   );
@@ -89,7 +96,12 @@ export default function ClientLayoutWrapper() {
   return (
     <PrivateRoute>
       <ThemeProvider>
-        <ClientLayout />
+        <CubeProvider
+          successRoute="/client/dashboard"
+          fallbackRoute="/client/import"
+        >
+          <ClientLayout />
+        </CubeProvider>
       </ThemeProvider>
     </PrivateRoute>
   );

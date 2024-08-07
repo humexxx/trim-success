@@ -1,17 +1,33 @@
-import * as React from "react";
 import Box from "@mui/material/Box";
 import Stepper from "@mui/material/Stepper";
 import Step from "@mui/material/Step";
 import StepLabel from "@mui/material/StepLabel";
 import StepContent from "@mui/material/StepContent";
 import Button from "@mui/material/Button";
-import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
-import { Dropzone, FileSummary } from "src/components/pages/client/import";
+import {
+  AdminClientSelector,
+  Dropzone,
+  FileSummary,
+  FileUpload,
+} from "src/components/pages/client/import";
+import { useCube } from "src/context/cube";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "src/context/auth";
 
 export default function ImportPage() {
-  const [activeStep, setActiveStep] = React.useState(0);
-  const [jsonData, setJsonData] = React.useState<any[][]>([]);
+  const [activeStep, setActiveStep] = useState(0);
+  const navigate = useNavigate();
+  const cube = useCube();
+  const user = useAuth();
+
+  useEffect(() => {
+    if (!cube.loading && cube.fileResolution && !user.currentUser!.isAdmin) {
+      navigate("/client/dashboard");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cube.loading, navigate]);
 
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -21,94 +37,81 @@ export default function ImportPage() {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
 
-  const handleReset = () => {
-    setActiveStep(0);
+  const handleOnFinish = () => {
+    navigate("/client/dashboard");
   };
 
   return (
     <Box>
-      <Stepper activeStep={activeStep} orientation="vertical">
-        <Step>
-          <StepLabel
-            optional={
-              <Typography variant="caption">
-                Archivo base para todas las operaciones
-              </Typography>
-            }
-          >
-            Importar Archivo
-          </StepLabel>
-          <StepContent>
-            <Dropzone
-              onJsonDataChange={(data: any[][]) => {
-                setJsonData(data);
-              }}
-            />
-            <StepperFooter
-              handleBack={handleBack}
-              handleNext={handleNext}
-              isFirstStep
-              disableNext={jsonData.length === 0}
-            />
-          </StepContent>
-        </Step>
-        <Step>
-          <StepLabel
-            optional={
-              <Typography variant="caption">
-                Verifica las columnas y las filas
-              </Typography>
-            }
-          >
-            Verificar Datos
-          </StepLabel>
-          <StepContent>
-            <FileSummary jsonData={jsonData} />
-            <StepperFooter handleBack={handleBack} handleNext={handleNext} />
-          </StepContent>
-        </Step>
-        <Step>
-          <StepLabel
-            optional={
-              <Typography variant="caption">
-                Marca los reportes por generar
-              </Typography>
-            }
-          >
-            Reportes por Generar
-          </StepLabel>
-          <StepContent>
-            <Typography>
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Rem quae
-              dolores laboriosam architecto obcaecati voluptate saepe delectus
-              velit accusantium veritatis dolore nihil, consequuntur,
-              praesentium dignissimos! Eaque magnam aperiam magni molestiae!
-            </Typography>
-            <StepperFooter
-              handleBack={handleBack}
-              handleNext={handleNext}
-              isLastStep
-            />
-          </StepContent>
-        </Step>
-      </Stepper>
-      {activeStep === 3 && (
-        <Paper square elevation={0} sx={{ p: 3 }}>
-          <Typography>Todos los pasos han sido completados</Typography>
-          <Typography>
-            Hacer algo mas aqui, como enviar los datos al servidor
+      {user.currentUser!.isAdmin ? (
+        <>
+          <Typography variant="h6">Cargar Archivo de Usuario</Typography>
+          <Typography variant="caption">
+            Como eres administrador, puedes cargar un archivo de usuario
           </Typography>
-          <Button onClick={handleReset} sx={{ mt: 1 }}>
-            Reiniciar
-          </Button>
-        </Paper>
+          <AdminClientSelector />
+        </>
+      ) : (
+        <Stepper activeStep={activeStep} orientation="vertical">
+          <Step>
+            <StepLabel
+              optional={
+                <Typography variant="caption">
+                  Archivo base para todas las operaciones
+                </Typography>
+              }
+            >
+              Importar Archivo
+            </StepLabel>
+            <StepContent>
+              <Dropzone />
+              <StepperFooter
+                handleBack={handleBack}
+                handleNext={handleNext}
+                isFirstStep
+                disableNext={!cube.fileResolution?.jsonData?.length}
+              />
+            </StepContent>
+          </Step>
+          <Step>
+            <StepLabel
+              optional={
+                <Typography variant="caption">
+                  Verifica las columnas y las filas
+                </Typography>
+              }
+            >
+              Verificar Datos
+            </StepLabel>
+            <StepContent>
+              <FileSummary />
+              <StepperFooter handleBack={handleBack} handleNext={handleNext} />
+            </StepContent>
+          </Step>
+          <Step>
+            <StepLabel
+              optional={
+                <Typography variant="caption">
+                  Carga de datos al sistema para la generación de reportes
+                </Typography>
+              }
+            >
+              Carga de datos
+            </StepLabel>
+            <StepContent>
+              <Typography color="text.primary" variant="h6">
+                Los datos cargados se usarán para crear los distintos reportes.
+              </Typography>
+              <FileUpload handleOnFinish={handleOnFinish} />
+            </StepContent>
+          </Step>
+        </Stepper>
       )}
     </Box>
   );
 }
 
 interface StepperFooterProps {
-  isLastStep?: boolean;
   isFirstStep?: boolean;
   handleBack: () => void;
   handleNext: () => void;
@@ -117,7 +120,6 @@ interface StepperFooterProps {
 
 function StepperFooter({
   isFirstStep = false,
-  isLastStep = false,
   handleBack,
   handleNext,
   disableNext,
@@ -130,7 +132,7 @@ function StepperFooter({
           onClick={handleBack}
           sx={{ mt: 1, mr: 1 }}
         >
-          Back
+          Atrás
         </Button>
         <Button
           variant="contained"
@@ -138,7 +140,7 @@ function StepperFooter({
           sx={{ mt: 1, mr: 1 }}
           disabled={disableNext}
         >
-          {isLastStep ? "Terminar" : "Continuar"}
+          Continuar
         </Button>
       </div>
     </Box>
