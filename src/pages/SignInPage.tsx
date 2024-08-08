@@ -3,14 +3,16 @@ import {
   setPersistence,
   browserLocalPersistence,
   browserSessionPersistence,
-} from 'firebase/auth';
-import { auth } from '../firebase';
-import { AutoLogRoute } from 'src/components/common';
-import SignIn, { SignInFormInputs } from 'src/components/pages/sign-in';
-import { useNavigate } from 'react-router-dom';
-import { handleAuthError } from 'src/utils/auth';
+} from "firebase/auth";
+import { auth } from "../firebase";
+import { AutoLogRoute } from "src/components/common";
+import SignIn, { SignInFormInputs } from "src/components/pages/sign-in";
+import { useNavigate } from "react-router-dom";
+import { handleAuthError } from "src/utils/auth";
+import { useDocumentMetadata } from "src/hooks";
 
 const SignInPage = () => {
+  useDocumentMetadata("Sign In - Trim Success");
   const navigate = useNavigate();
 
   async function handleOnSubmit(form: SignInFormInputs) {
@@ -21,7 +23,7 @@ const SignInPage = () => {
       );
       await signInWithEmailAndPassword(auth, form.email, form.password).then(
         () => {
-          navigate('/client/dashboard');
+          navigate("/client/dashboard");
         }
       );
     } catch (error) {

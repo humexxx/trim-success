@@ -9,7 +9,7 @@ import { useAuth } from "../auth";
 import { getBlob, listAll, ref } from "firebase/storage";
 import { STORAGE_PATH } from "src/consts";
 import { getColsAndRows, getJsonDataFromFile } from "src/utils";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { storage } from "src/firebase";
 
 export default function CubeProvider({
@@ -24,6 +24,7 @@ export default function CubeProvider({
   const [loading, setLoading] = useState(true);
   const [customUid, setCustomUid] = useState<string>();
   const navigate = useNavigate();
+  const location = useLocation();
 
   async function loadFile(uid?: string) {
     if (!uid) {
@@ -48,7 +49,7 @@ export default function CubeProvider({
             file: { ...fileBlob, name: firstFileRef.name },
             jsonData,
           });
-          navigate(successRoute);
+          if (location.pathname !== "/client/user") navigate(successRoute);
           setLoading(false);
         }, fileBlob);
       } else {

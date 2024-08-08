@@ -6,6 +6,8 @@ export interface User {
   uid: string;
   createdAt: string;
   email: string;
+  name: string;
+  description: string;
 }
 
 export const useUsers = () => {

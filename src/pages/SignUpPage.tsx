@@ -3,15 +3,16 @@ import {
   browserSessionPersistence,
   createUserWithEmailAndPassword,
   setPersistence,
-  AuthErrorCodes,
-} from 'firebase/auth';
-import { auth } from '../firebase';
-import SignUp, { SignUpFormInputs } from 'src/components/pages/sign-up';
-import { useNavigate } from 'react-router-dom';
-import { AutoLogRoute } from 'src/components/common';
-import { handleAuthError } from 'src/utils/auth';
+} from "firebase/auth";
+import { auth } from "../firebase";
+import SignUp, { SignUpFormInputs } from "src/components/pages/sign-up";
+import { useNavigate } from "react-router-dom";
+import { AutoLogRoute } from "src/components/common";
+import { handleAuthError } from "src/utils/auth";
+import { useDocumentMetadata } from "src/hooks";
 
 const SignUpPage = () => {
+  useDocumentMetadata("Sign Up - Trim Success");
   const navigate = useNavigate();
 
   async function handleOnSubmit(form: SignUpFormInputs) {
@@ -25,7 +26,7 @@ const SignUpPage = () => {
         form.email,
         form.password
       ).then(() => {
-        navigate('/client/dashboard');
+        navigate("/client/dashboard");
       });
     } catch (error) {
       handleAuthError(error);

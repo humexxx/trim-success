@@ -12,22 +12,17 @@ import {
   FileUpload,
 } from "src/components/pages/client/import";
 import { useCube } from "src/context/cube";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "src/context/auth";
+import { useDocumentMetadata } from "src/hooks";
 
 export default function ImportPage() {
+  useDocumentMetadata("Importar Datos - Trim Success");
   const [activeStep, setActiveStep] = useState(0);
   const navigate = useNavigate();
   const cube = useCube();
   const user = useAuth();
-
-  useEffect(() => {
-    if (!cube.loading && cube.fileResolution && !user.currentUser!.isAdmin) {
-      navigate("/client/dashboard");
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cube.loading, navigate]);
 
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -99,9 +94,6 @@ export default function ImportPage() {
               Carga de datos
             </StepLabel>
             <StepContent>
-              <Typography color="text.primary" variant="h6">
-                Los datos cargados se usarán para crear los distintos reportes.
-              </Typography>
               <FileUpload handleOnFinish={handleOnFinish} />
             </StepContent>
           </Step>
