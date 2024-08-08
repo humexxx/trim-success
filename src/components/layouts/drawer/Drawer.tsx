@@ -12,6 +12,8 @@ import {
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import DownloadIcon from "@mui/icons-material/Download";
 import SystemUpdateAltIcon from "@mui/icons-material/SystemUpdateAlt";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import ListAltIcon from "@mui/icons-material/ListAlt";
 import { useCube } from "src/context/cube";
 import { useAuth } from "src/context/auth";
 import { useMemo } from "react";
@@ -30,6 +32,11 @@ function getRoutes(isAdmin: boolean, hasCube: boolean) {
       icon: <DashboardIcon />,
       path: "/client/dashboard",
     },
+    {
+      text: "Informes",
+      icon: <ListAltIcon />,
+      path: "/client/reports",
+    },
   ].filter(({ isCubeLoader }) => isAdmin || !(isCubeLoader && hasCube));
 }
 
@@ -45,10 +52,10 @@ const Drawer = () => {
   );
 
   return (
-    <Box>
+    <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
       <Toolbar />
       <Divider />
-      <List>
+      <List sx={{ flexGrow: 1 }}>
         {routes.map(({ text, caption, icon, path, isCubeLoader }) => (
           <ListItem key={text}>
             <ListItemButton
@@ -64,6 +71,24 @@ const Drawer = () => {
             </ListItemButton>
           </ListItem>
         ))}
+      </List>
+      <Divider />
+      <List>
+        <ListItem>
+          <ListItemButton
+            sx={{ borderRadius: 2 }}
+            selected={location.pathname.includes("/client/user")}
+            component={NavLink}
+            to="/client/user"
+            unstable_viewTransition
+            disabled={loading}
+          >
+            <ListItemIcon>
+              <AccountCircleIcon />
+            </ListItemIcon>
+            <ListItemText primary="User" />
+          </ListItemButton>
+        </ListItem>
       </List>
     </Box>
   );

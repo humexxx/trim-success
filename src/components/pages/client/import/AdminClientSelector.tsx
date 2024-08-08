@@ -34,7 +34,7 @@ const AdminClientSelector = () => {
       <Box mt={2}>
         <Autocomplete
           options={users}
-          getOptionLabel={(option) => option.email}
+          getOptionLabel={(option: User) => option.name ?? option.email}
           loading={loading}
           onChange={handleUserChange}
           disableClearable
