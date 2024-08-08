@@ -15,8 +15,10 @@ import { useCube } from "src/context/cube";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "src/context/auth";
+import { useDocumentMetadata } from "src/hooks";
 
 export default function ImportPage() {
+  useDocumentMetadata("Importar Datos - Trim Success");
   const [activeStep, setActiveStep] = useState(0);
   const navigate = useNavigate();
   const cube = useCube();
