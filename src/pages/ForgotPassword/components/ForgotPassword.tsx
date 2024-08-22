@@ -1,8 +1,6 @@
 import { useState } from "react";
 import Avatar from "@mui/material/Avatar";
 import TextField from "@mui/material/TextField";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Checkbox from "@mui/material/Checkbox";
 import Link from "@mui/material/Link";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
@@ -12,20 +10,27 @@ import { LoadingButton } from "@mui/lab";
 import { useForm, Controller, SubmitHandler } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { SignInProps, SignInFormInputs } from "./SignIn.types";
 import { Link as RouterLink } from "react-router-dom";
 import { Container } from "@mui/material";
+
+export interface ForgotPasswordFormInputs {
+  email: string;
+}
+
+export interface ForgotPasswordProps {
+  handleOnSubmit: (form: ForgotPasswordFormInputs) => Promise<void>;
+}
 
 const schema = yup.object().shape({
   email: yup
     .string()
     .email("Formato de email inválido")
     .required("Email requerido"),
-  password: yup.string().required("Contraseña requerida"),
-  persist: yup.boolean().default(false),
 });
 
-export default function SignIn({ handleOnSubmit }: SignInProps) {
+export default function ForgotPassword({
+  handleOnSubmit,
+}: ForgotPasswordProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -33,16 +38,14 @@ export default function SignIn({ handleOnSubmit }: SignInProps) {
     handleSubmit,
     control,
     formState: { errors },
-  } = useForm<SignInFormInputs>({
+  } = useForm<ForgotPasswordFormInputs>({
     resolver: yupResolver(schema),
     defaultValues: {
       email: "",
-      password: "",
-      persist: false,
     },
   });
 
-  const onSubmit: SubmitHandler<SignInFormInputs> = async (data) => {
+  const onSubmit: SubmitHandler<ForgotPasswordFormInputs> = async (data) => {
     setIsLoading(true);
     setError(null);
 
@@ -69,13 +72,13 @@ export default function SignIn({ handleOnSubmit }: SignInProps) {
         <LockOutlinedIcon />
       </Avatar>
       <Typography component="h1" variant="h5">
-        Sign In
+        Forgot Password
       </Typography>
       <Box
         component="form"
         onSubmit={handleSubmit(onSubmit)}
         noValidate
-        sx={{ mt: 2 }}
+        sx={{ mt: 2, width: "100%" }}
       >
         <Controller
           name="email"
@@ -94,35 +97,8 @@ export default function SignIn({ handleOnSubmit }: SignInProps) {
             />
           )}
         />
-        <Controller
-          name="password"
-          control={control}
-          render={({ field }) => (
-            <TextField
-              {...field}
-              margin="dense"
-              required
-              fullWidth
-              label="Contraseña"
-              type="password"
-              autoComplete="current-password"
-              error={!!errors.password}
-              helperText={errors.password ? errors.password.message : " "}
-            />
-          )}
-        />
-        <Controller
-          name="persist"
-          control={control}
-          render={({ field }) => (
-            <FormControlLabel
-              control={<Checkbox {...field} color="primary" />}
-              label="Mantener sesión iniciada"
-            />
-          )}
-        />
         {error && (
-          <Typography color="error" variant="body2" sx={{ mt: 2 }}>
+          <Typography color="error" variant="body2" sx={{ mt: 2, mb: 1 }}>
             {error}
           </Typography>
         )}
@@ -133,17 +109,17 @@ export default function SignIn({ handleOnSubmit }: SignInProps) {
           sx={{ mt: 3, mb: 2 }}
           loading={isLoading}
         >
-          Entrar
+          Enviar email de recuperación
         </LoadingButton>
         <Grid container>
           <Grid item xs>
-            <Link component={RouterLink} to="/forgot-password" variant="body2">
-              Olvidaste tu contraseña?
+            <Link component={RouterLink} to="/sign-in" variant="body2">
+              Regresar al inicio de sesión
             </Link>
           </Grid>
           <Grid item>
             <Link component={RouterLink} to="/sign-up" variant="body2">
-              {"No tienes cuenta? Regístrate"}
+              No tienes una cuenta? Regístrate
             </Link>
           </Grid>
         </Grid>

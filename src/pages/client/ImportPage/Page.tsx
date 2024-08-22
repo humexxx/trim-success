@@ -10,14 +10,14 @@ import {
   Dropzone,
   FileSummary,
   FileUpload,
-} from "src/components/pages/client/import";
+} from "src/pages/client/ImportPage/components";
 import { useCube } from "src/context/cube";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "src/context/auth";
 import { useDocumentMetadata } from "src/hooks";
 
-export default function ImportPage() {
+export default function Page() {
   useDocumentMetadata("Importar Datos - Trim Success");
   const [activeStep, setActiveStep] = useState(0);
   const navigate = useNavigate();

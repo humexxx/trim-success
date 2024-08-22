@@ -1,10 +1,9 @@
 import { sendPasswordResetEmail } from "firebase/auth";
-import { auth } from "../firebase";
 import { AutoLogRoute } from "src/components/common";
-import ForgotPassword, {
-  ForgotPasswordFormInputs,
-} from "src/components/pages/forgot-password";
+import { auth } from "src/firebase";
 import { useDocumentMetadata } from "src/hooks";
+import ForgotPassword from "./components";
+import { ForgotPasswordFormInputs } from "./components/ForgotPassword";
 
 async function handleOnSubmit(form: ForgotPasswordFormInputs) {
   await sendPasswordResetEmail(auth, form.email)
@@ -18,7 +17,7 @@ async function handleOnSubmit(form: ForgotPasswordFormInputs) {
     });
 }
 
-const ForgotPasswordPage = () => {
+const Page = () => {
   useDocumentMetadata("Contraseña Olvidada - Trim Success");
   return (
     <AutoLogRoute>
@@ -27,4 +26,4 @@ const ForgotPasswordPage = () => {
   );
 };
 
-export default ForgotPasswordPage;
+export default Page;

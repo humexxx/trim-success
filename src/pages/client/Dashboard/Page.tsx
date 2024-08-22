@@ -2,7 +2,7 @@ import { Typography } from "@mui/material";
 import { useCube } from "src/context/cube";
 import { useDocumentMetadata } from "src/hooks";
 
-const DashboardPage = () => {
+const Page = () => {
   useDocumentMetadata("Panel - Trim Success");
   const cube = useCube();
   return (
@@ -14,4 +14,4 @@ const DashboardPage = () => {
   );
 };
 
-export default DashboardPage;
+export default Page;

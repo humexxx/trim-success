@@ -7,26 +7,37 @@ import Box from "@mui/material/Box";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import { LoadingButton } from "@mui/lab";
+import { Link as RouterLink } from "react-router-dom";
+import { Checkbox, Container, FormControlLabel } from "@mui/material";
 import { useForm, Controller, SubmitHandler } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
-import {
-  ForgotPasswordProps,
-  ForgotPasswordFormInputs,
-} from "./ForgotPassword.types";
-import { Link as RouterLink } from "react-router-dom";
-import { Container } from "@mui/material";
+
+export interface SignUpFormInputs {
+  email: string;
+  password: string;
+  confirmPassword: string;
+  persist: boolean;
+}
+
+export interface SignUpProps {
+  handleOnSubmit: (form: SignUpFormInputs) => Promise<void>;
+}
 
 const schema = yup.object().shape({
   email: yup
     .string()
     .email("Formato de email inválido")
     .required("Email requerido"),
+  password: yup.string().required("Contraseña requerida"),
+  confirmPassword: yup
+    .string()
+    .oneOf([yup.ref("password")], "Contraseñas no coinciden")
+    .required("Confirmar contraseña requerida"),
+  persist: yup.boolean().default(false),
 });
 
-export default function ForgotPassword({
-  handleOnSubmit,
-}: ForgotPasswordProps) {
+export default function SignUp({ handleOnSubmit }: SignUpProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -34,14 +45,17 @@ export default function ForgotPassword({
     handleSubmit,
     control,
     formState: { errors },
-  } = useForm<ForgotPasswordFormInputs>({
+  } = useForm<SignUpFormInputs>({
     resolver: yupResolver(schema),
     defaultValues: {
       email: "",
+      password: "",
+      confirmPassword: "",
+      persist: false,
     },
   });
 
-  const onSubmit: SubmitHandler<ForgotPasswordFormInputs> = async (data) => {
+  const onSubmit: SubmitHandler<SignUpFormInputs> = async (data) => {
     setIsLoading(true);
     setError(null);
 
@@ -68,13 +82,13 @@ export default function ForgotPassword({
         <LockOutlinedIcon />
       </Avatar>
       <Typography component="h1" variant="h5">
-        Forgot Password
+        Sign Up
       </Typography>
       <Box
         component="form"
         onSubmit={handleSubmit(onSubmit)}
         noValidate
-        sx={{ mt: 2, width: "100%" }}
+        sx={{ mt: 2 }}
       >
         <Controller
           name="email"
@@ -83,7 +97,6 @@ export default function ForgotPassword({
             <TextField
               {...field}
               margin="dense"
-              required
               fullWidth
               label="Email"
               autoComplete="email"
@@ -93,8 +106,52 @@ export default function ForgotPassword({
             />
           )}
         />
+        <Controller
+          name="password"
+          control={control}
+          render={({ field }) => (
+            <TextField
+              {...field}
+              margin="dense"
+              fullWidth
+              label="Contraseña"
+              type="password"
+              autoComplete="new-password"
+              error={!!errors.password}
+              helperText={errors.password ? errors.password.message : " "}
+            />
+          )}
+        />
+        <Controller
+          name="confirmPassword"
+          control={control}
+          render={({ field }) => (
+            <TextField
+              {...field}
+              margin="dense"
+              fullWidth
+              label="Confirmar contraseña"
+              type="password"
+              autoComplete="new-password"
+              error={!!errors.confirmPassword}
+              helperText={
+                errors.confirmPassword ? errors.confirmPassword.message : " "
+              }
+            />
+          )}
+        />
+        <Controller
+          name="persist"
+          control={control}
+          render={({ field }) => (
+            <FormControlLabel
+              control={<Checkbox {...field} color="primary" />}
+              label="Remember me"
+            />
+          )}
+        />
         {error && (
-          <Typography color="error" variant="body2" sx={{ mt: 2, mb: 1 }}>
+          <Typography color="error" variant="body2" sx={{ mt: 2 }}>
             {error}
           </Typography>
         )}
@@ -105,17 +162,12 @@ export default function ForgotPassword({
           sx={{ mt: 3, mb: 2 }}
           loading={isLoading}
         >
-          Enviar email de recuperación
+          Registrar
         </LoadingButton>
         <Grid container>
           <Grid item xs>
             <Link component={RouterLink} to="/sign-in" variant="body2">
-              Regresar al inicio de sesión
-            </Link>
-          </Grid>
-          <Grid item>
-            <Link component={RouterLink} to="/sign-up" variant="body2">
-              No tienes una cuenta? Regístrate
+              Ya tienes una cuenta? Inicia sesión
             </Link>
           </Grid>
         </Grid>

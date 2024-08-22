@@ -4,14 +4,15 @@ import {
   createUserWithEmailAndPassword,
   setPersistence,
 } from "firebase/auth";
-import { auth } from "../firebase";
-import SignUp, { SignUpFormInputs } from "src/components/pages/sign-up";
 import { useNavigate } from "react-router-dom";
 import { AutoLogRoute } from "src/components/common";
 import { handleAuthError } from "src/utils/auth";
 import { useDocumentMetadata } from "src/hooks";
+import { auth } from "src/firebase";
+import SignUp from "./components";
+import { SignUpFormInputs } from "./components/SignUp";
 
-const SignUpPage = () => {
+const Page = () => {
   useDocumentMetadata("Sign Up - Trim Success");
   const navigate = useNavigate();
 
@@ -40,4 +41,4 @@ const SignUpPage = () => {
   );
 };
 
-export default SignUpPage;
+export default Page;
