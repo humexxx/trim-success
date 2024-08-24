@@ -6,6 +6,7 @@ import { MainGrid } from "./components";
 const Page = () => {
   useDocumentMetadata("Panel - Trim Success");
   const cube = useCube();
+
   return (
     <>
       <Typography variant="h5" component="h1" color="text.primary">

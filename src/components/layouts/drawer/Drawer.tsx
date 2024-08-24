@@ -17,6 +17,7 @@ import ListAltIcon from "@mui/icons-material/ListAlt";
 import { useCube } from "src/context/cube";
 import { useAuth } from "src/context/auth";
 import { useMemo } from "react";
+import SmartToyIcon from "@mui/icons-material/SmartToy";
 
 function getRoutes(isAdmin: boolean, hasCube: boolean) {
   return [
@@ -36,6 +37,11 @@ function getRoutes(isAdmin: boolean, hasCube: boolean) {
       text: "Informes",
       icon: <ListAltIcon />,
       path: "/client/reports",
+    },
+    {
+      text: "IA",
+      icon: <SmartToyIcon />,
+      path: "/client/ai",
     },
   ].filter(({ isCubeLoader }) => isAdmin || !(isCubeLoader && hasCube));
 }

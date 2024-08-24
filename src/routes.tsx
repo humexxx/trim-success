@@ -7,7 +7,7 @@ import {
   SignUpPage,
   ForgotPasswordPage,
 } from "./pages";
-import { DashboardPage, ImportPage, UserPage } from "./pages/client";
+import { AIPage, DashboardPage, ImportPage, UserPage } from "./pages/client";
 import { CubeLayout } from "./layouts";
 
 export const router = createBrowserRouter([
@@ -55,6 +55,10 @@ export const router = createBrowserRouter([
           {
             path: "/client/reports",
             element: <>My Reports</>,
+          },
+          {
+            path: "/client/ai",
+            element: <AIPage />,
           },
         ],
       },
