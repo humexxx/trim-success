@@ -7,6 +7,7 @@ import { Header } from "src/components/layouts";
 import { Box, Drawer, Toolbar, Container, LinearProgress } from "@mui/material";
 import { CubeProvider, useCube } from "src/context/cube";
 import { useState } from "react";
+import { GlobalLoader } from "src/components";
 
 function ClientLayout() {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -81,7 +82,7 @@ function ClientLayout() {
         <Toolbar />
 
         {cube.loading ? (
-          <LinearProgress />
+          <GlobalLoader />
         ) : (
           <Container maxWidth="xl">
             <Outlet />
