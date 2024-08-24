@@ -13,6 +13,7 @@ import DashboardIcon from "@mui/icons-material/Dashboard";
 import DownloadIcon from "@mui/icons-material/Download";
 import SystemUpdateAltIcon from "@mui/icons-material/SystemUpdateAlt";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import SettingsIcon from "@mui/icons-material/Settings";
 import ListAltIcon from "@mui/icons-material/ListAlt";
 import { useCube } from "src/context/cube";
 import { useAuth } from "src/context/auth";
@@ -83,16 +84,16 @@ const Drawer = () => {
         <ListItem>
           <ListItemButton
             sx={{ borderRadius: 2 }}
-            selected={location.pathname.includes("/client/user")}
+            selected={location.pathname.includes("/client/settings")}
             component={NavLink}
-            to="/client/user"
+            to="/client/settings"
             unstable_viewTransition
             disabled={loading}
           >
             <ListItemIcon>
-              <AccountCircleIcon />
+              <SettingsIcon />
             </ListItemIcon>
-            <ListItemText primary="User" />
+            <ListItemText primary="Settings" />
           </ListItemButton>
         </ListItem>
       </List>

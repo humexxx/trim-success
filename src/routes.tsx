@@ -7,7 +7,12 @@ import {
   SignUpPage,
   ForgotPasswordPage,
 } from "./pages";
-import { AIPage, DashboardPage, ImportPage, UserPage } from "./pages/client";
+import {
+  AIPage,
+  DashboardPage,
+  ImportPage,
+  SettingsPage,
+} from "./pages/client";
 import { CubeLayout } from "./layouts";
 
 export const router = createBrowserRouter([
@@ -37,8 +42,8 @@ export const router = createBrowserRouter([
     element: <ClientLayout />,
     children: [
       {
-        path: "/client/user",
-        element: <UserPage />,
+        path: "/client/settings",
+        element: <SettingsPage />,
       },
       {
         path: "/client/import",
