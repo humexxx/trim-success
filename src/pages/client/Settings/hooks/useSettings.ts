@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
-import { getFirestore, doc, getDoc } from "firebase/firestore";
+import { doc, getDoc } from "firebase/firestore";
 import { ISettingsCube } from "src/models";
+import { firestore } from "src/firebase";
 
 export function useSettingsCube() {
   const [settings, setSettings] = useState<ISettingsCube | null>(null);
@@ -10,8 +11,7 @@ export function useSettingsCube() {
   useEffect(() => {
     const fetchSettings = async () => {
       try {
-        const db = getFirestore();
-        const settingsDoc = await getDoc(doc(db, "settings", "cube"));
+        const settingsDoc = await getDoc(doc(firestore, "settings", "cube"));
         if (settingsDoc.exists()) {
           setSettings(settingsDoc.data() as ISettingsCube);
         } else {

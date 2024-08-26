@@ -7,11 +7,15 @@ import {
   ListItemText,
   Alert,
 } from "@mui/material";
-import { useSettingsCube } from "../hooks";
+import { IColumn } from "src/models";
 
-const CubeSettings = () => {
-  const { settings, loading, error } = useSettingsCube();
+interface Props {
+  columns?: IColumn[];
+  loading: boolean;
+  error: string | null;
+}
 
+const Columns = ({ columns, loading, error }: Props) => {
   if (loading) {
     return <CircularProgress />;
   }
@@ -23,12 +27,12 @@ const CubeSettings = () => {
   return (
     <Box sx={{ padding: 4 }}>
       <Typography variant="h4" component="h1" gutterBottom>
-        Drivers
+        Columns
       </Typography>
-      <List>
-        {settings?.drivers.map((driver, index) => (
+      <List disablePadding>
+        {columns?.map(({ name }, index) => (
           <ListItem key={index}>
-            <ListItemText primary={driver.name} />
+            <ListItemText primary={name} />
           </ListItem>
         ))}
       </List>
@@ -36,4 +40,4 @@ const CubeSettings = () => {
   );
 };
 
-export default CubeSettings;
+export default Columns;

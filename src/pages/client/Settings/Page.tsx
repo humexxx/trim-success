@@ -3,7 +3,8 @@ import { useDocumentMetadata } from "src/hooks";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import SwipeableViews from "react-swipeable-views-react-18-fix";
 import { useState } from "react";
-import { UserSettings, CubeSettings } from "./components";
+import { UserSettings } from "./components";
+import { CubeSettings } from "./Cube";
 
 export interface DataSet {
   id?: number;
