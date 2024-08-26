@@ -5,6 +5,8 @@ import SwipeableViews from "react-swipeable-views-react-18-fix";
 import { useState } from "react";
 import { UserSettings } from "./components";
 import { CubeSettings } from "./Cube";
+import { useAuth } from "src/context/auth";
+import { AdminSettings } from "./Admin";
 
 export interface DataSet {
   id?: number;
@@ -22,6 +24,7 @@ function getTabProps(id: string) {
 
 const Page = () => {
   useDocumentMetadata(`Settings - Champions`);
+  const user = useAuth();
 
   const [selectedTab, setSelectedTab] = useState("0");
 
@@ -37,6 +40,9 @@ const Page = () => {
           >
             <Tab label="Usuario" value="0" {...getTabProps("0")} />
             <Tab label="Cube" value="1" {...getTabProps("1")} />
+            {Boolean(user.currentUser?.isAdmin) && (
+              <Tab label="Admin" value="2" {...getTabProps("2")} />
+            )}
           </TabList>
         </Box>
         <SwipeableViews
@@ -51,6 +57,9 @@ const Page = () => {
           </TabPanel>
           <TabPanel value={"1"} sx={{ p: 2 }}>
             <CubeSettings />
+          </TabPanel>
+          <TabPanel value={"2"} sx={{ p: 2 }}>
+            <AdminSettings />
           </TabPanel>
         </SwipeableViews>
       </TabContext>

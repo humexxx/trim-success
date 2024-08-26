@@ -4,7 +4,7 @@ export interface IDriver {
 
 export interface IColumn {
   code: string;
-  index: number;
+  index: number | number[];
   name: string;
 }
 
