@@ -11,6 +11,7 @@ import {
   AIPage,
   DashboardPage,
   ImportPage,
+  ScorecardPage,
   SettingsPage,
 } from "./pages/client";
 import { CubeLayout } from "./layouts";
@@ -58,8 +59,8 @@ export const router = createBrowserRouter([
             element: <DashboardPage />,
           },
           {
-            path: "/client/reports",
-            element: <>My Reports</>,
+            path: "/client/scorecard",
+            element: <ScorecardPage />,
           },
           {
             path: "/client/ai",

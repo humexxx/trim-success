@@ -12,13 +12,12 @@ import {
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import DownloadIcon from "@mui/icons-material/Download";
 import SystemUpdateAltIcon from "@mui/icons-material/SystemUpdateAlt";
-import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import SettingsIcon from "@mui/icons-material/Settings";
-import ListAltIcon from "@mui/icons-material/ListAlt";
 import { useCube } from "src/context/cube";
 import { useAuth } from "src/context/auth";
 import { useMemo } from "react";
 import SmartToyIcon from "@mui/icons-material/SmartToy";
+import QueryStatsIcon from "@mui/icons-material/QueryStats";
 
 function getRoutes(isAdmin: boolean, hasCube: boolean) {
   return [
@@ -35,9 +34,9 @@ function getRoutes(isAdmin: boolean, hasCube: boolean) {
       path: "/client/dashboard",
     },
     {
-      text: "Informes",
-      icon: <ListAltIcon />,
-      path: "/client/reports",
+      text: "Scorecard",
+      icon: <QueryStatsIcon />,
+      path: "/client/scorecard",
     },
     {
       text: "IA",
