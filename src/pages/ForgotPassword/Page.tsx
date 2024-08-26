@@ -1,5 +1,5 @@
 import { sendPasswordResetEmail } from "firebase/auth";
-import { AutoLogRoute } from "src/components/common";
+import { AutoLogRoute } from "src/components";
 import { auth } from "src/firebase";
 import { useDocumentMetadata } from "src/hooks";
 import ForgotPassword from "./components";

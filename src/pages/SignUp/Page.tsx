@@ -5,7 +5,7 @@ import {
   setPersistence,
 } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
-import { AutoLogRoute } from "src/components/common";
+import { AutoLogRoute } from "src/components";
 import { handleAuthError } from "src/utils/auth";
 import { useDocumentMetadata } from "src/hooks";
 import { auth } from "src/firebase";

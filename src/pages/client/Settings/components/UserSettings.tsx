@@ -9,7 +9,7 @@ import { useForm, Controller, SubmitHandler } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Container } from "@mui/material";
-import { PhoneField } from "src/components/common";
+import { PhoneField } from "src/components/form";
 import SaveIcon from "@mui/icons-material/Save";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { firestore } from "src/firebase";

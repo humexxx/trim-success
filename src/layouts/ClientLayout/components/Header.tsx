@@ -1,5 +1,4 @@
 import { AppBar, Toolbar, IconButton, Typography } from "@mui/material";
-import { DRAWER_WIDTH } from "./drawer";
 import { useThemeContext } from "src/context/theme";
 import { auth } from "src/firebase";
 import { useNavigate } from "react-router-dom";
@@ -8,6 +7,7 @@ import Brightness4Icon from "@mui/icons-material/Brightness4";
 import Brightness7Icon from "@mui/icons-material/Brightness7";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { useTheme } from "@mui/material/styles";
+import { DRAWER_WIDTH } from "./Drawer";
 
 interface Props {
   handleDrawerToggle: () => void;

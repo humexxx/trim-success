@@ -1,13 +1,14 @@
-import { PrivateRoute } from "src/components/common";
 import { Outlet } from "react-router-dom";
-import APP_DRAWER, { DRAWER_WIDTH } from "src/components/layouts/drawer";
+import APP_DRAWER, {
+  DRAWER_WIDTH,
+} from "src/layouts/ClientLayout/components/Drawer";
 
 import { ThemeProvider } from "src/context/theme";
-import { Header } from "src/components/layouts";
-import { Box, Drawer, Toolbar, Container, LinearProgress } from "@mui/material";
+import { Box, Drawer, Toolbar, Container } from "@mui/material";
 import { CubeProvider, useCube } from "src/context/cube";
 import { useState } from "react";
-import { GlobalLoader } from "src/components";
+import { GlobalLoader, PrivateRoute } from "src/components";
+import { Header } from "./components";
 
 function ClientLayout() {
   const [mobileOpen, setMobileOpen] = useState(false);

@@ -1,5 +1,4 @@
 import { createBrowserRouter, Navigate } from "react-router-dom";
-import ClientLayout from "./layouts/ClientLayout";
 import {
   LandingPage,
   ErrorPage,
@@ -14,7 +13,7 @@ import {
   ScorecardPage,
   SettingsPage,
 } from "./pages/client";
-import { CubeLayout } from "./layouts";
+import { ClientLayout, CubeLayout } from "./layouts";
 
 export const router = createBrowserRouter([
   {
