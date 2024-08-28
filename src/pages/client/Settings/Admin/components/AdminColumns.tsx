@@ -154,6 +154,7 @@ const AdminColumns = ({ columns, updateColumns, loading }: Props) => {
                   label="Código"
                   value={code}
                   sx={{ flex: 1, marginRight: 2 }}
+                  disabled
                 />
                 <TextField
                   label="Índice"
@@ -195,6 +196,7 @@ const AdminColumns = ({ columns, updateColumns, loading }: Props) => {
                 error={!!errors.code}
                 helperText={errors.code?.message}
                 fullWidth
+                disabled
               />
             </Grid>
             <Grid item xs={12}>
