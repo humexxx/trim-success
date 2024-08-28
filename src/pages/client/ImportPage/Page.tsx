@@ -6,7 +6,6 @@ import StepContent from "@mui/material/StepContent";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import {
-  AdminClientSelector,
   Dropzone,
   FileSummary,
   FileUpload,
@@ -14,15 +13,16 @@ import {
 import { useCube } from "src/context/cube";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "src/context/auth";
 import { useDocumentMetadata } from "src/hooks";
+import { LoadingButton } from "@mui/lab";
 
 export default function Page() {
   useDocumentMetadata("Importar Datos - Trim Success");
   const [activeStep, setActiveStep] = useState(0);
+  const [stepError, setStepError] = useState("");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const cube = useCube();
-  const user = useAuth();
 
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -38,67 +38,62 @@ export default function Page() {
 
   return (
     <Box>
-      {user.currentUser!.isAdmin ? (
-        <>
-          <Typography variant="h6">Cargar Archivo de Usuario</Typography>
-          <Typography variant="caption">
-            Como eres administrador, puedes cargar un archivo de usuario
-          </Typography>
-          <AdminClientSelector />
-        </>
-      ) : (
-        <Stepper activeStep={activeStep} orientation="vertical">
-          <Step>
-            <StepLabel
-              optional={
-                <Typography variant="caption">
-                  Archivo base para todas las operaciones
-                </Typography>
-              }
-            >
-              Importar Archivo
-            </StepLabel>
-            <StepContent>
-              <Dropzone />
-              <StepperFooter
-                handleBack={handleBack}
-                handleNext={handleNext}
-                isFirstStep
-                disableNext={!cube.fileResolution?.jsonData?.length}
-              />
-            </StepContent>
-          </Step>
-          <Step>
-            <StepLabel
-              optional={
-                <Typography variant="caption">
-                  Verifica las columnas y las filas
-                </Typography>
-              }
-            >
-              Verificar Datos
-            </StepLabel>
-            <StepContent>
-              <FileSummary />
-              <StepperFooter handleBack={handleBack} handleNext={handleNext} />
-            </StepContent>
-          </Step>
-          <Step>
-            <StepLabel
-              optional={
-                <Typography variant="caption">
-                  Carga de datos al sistema para la generación de reportes
-                </Typography>
-              }
-            >
-              Carga de datos
-            </StepLabel>
-            <StepContent>
-              <FileUpload handleOnFinish={handleOnFinish} />
-            </StepContent>
-          </Step>
-        </Stepper>
-      )}
+      <Stepper activeStep={activeStep} orientation="vertical">
+        <Step>
+          <StepLabel
+            optional={
+              <Typography variant="caption">
+                Archivo base para todas las operaciones
+              </Typography>
+            }
+          >
+            Importar Archivo
+          </StepLabel>
+          <StepContent>
+            <Dropzone setLoading={setLoading} loading={loading} />
+            <StepperFooter
+              handleBack={handleBack}
+              handleNext={handleNext}
+              isFirstStep
+              disableNext={!cube.fileResolution?.jsonData?.length}
+              loading={loading}
+            />
+          </StepContent>
+        </Step>
+        <Step>
+          <StepLabel
+            optional={
+              <Typography variant="caption">
+                Verifica las columnas y las filas
+              </Typography>
+            }
+          >
+            Verificar Datos
+          </StepLabel>
+          <StepContent>
+            <FileSummary error={stepError} setError={setStepError} />
+            <StepperFooter
+              handleBack={handleBack}
+              handleNext={handleNext}
+              disableNext={Boolean(stepError)}
+            />
+          </StepContent>
+        </Step>
+        <Step>
+          <StepLabel
+            optional={
+              <Typography variant="caption">
+                Carga de datos al sistema para la generación de reportes
+              </Typography>
+            }
+          >
+            Carga de datos
+          </StepLabel>
+          <StepContent>
+            <FileUpload handleOnFinish={handleOnFinish} />
+          </StepContent>
+        </Step>
+      </Stepper>
     </Box>
   );
 }
@@ -108,6 +103,7 @@ interface StepperFooterProps {
   handleBack: () => void;
   handleNext: () => void;
   disableNext?: boolean;
+  loading?: boolean;
 }
 
 function StepperFooter({
@@ -115,6 +111,7 @@ function StepperFooter({
   handleBack,
   handleNext,
   disableNext,
+  loading = false,
 }: StepperFooterProps) {
   return (
     <Box sx={{ my: 2 }}>
@@ -126,14 +123,15 @@ function StepperFooter({
         >
           Atrás
         </Button>
-        <Button
+        <LoadingButton
           variant="contained"
           onClick={handleNext}
           sx={{ mt: 1, mr: 1 }}
           disabled={disableNext}
+          loading={loading}
         >
           Continuar
-        </Button>
+        </LoadingButton>
       </div>
     </Box>
   );

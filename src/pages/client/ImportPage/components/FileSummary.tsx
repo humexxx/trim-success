@@ -1,4 +1,10 @@
-import { Box, Typography, useTheme } from "@mui/material";
+import {
+  Alert,
+  Box,
+  CircularProgress,
+  Typography,
+  useTheme,
+} from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { useEffect, useMemo, useState } from "react";
 import { Row, useCube } from "src/context/cube";
@@ -23,15 +29,23 @@ const hexToRgb = (hex: string) => {
   return `${r}, ${g}, ${b}`;
 };
 
-const FileSummary = () => {
+interface Props {
+  error: string;
+  setError: (error: string) => void;
+}
+
+const FileSummary = ({ error, setError }: Props) => {
   const [rows, setRows] = useState<Row[]>([]);
   const theme = useTheme();
-  const cube = useCube();
+  const { fileResolution, setFileResolution, globalSettings, loading } =
+    useCube();
+  const [_loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const { columns, rows } = getColsAndRows(cube.fileResolution?.jsonData);
-    cube.setFileResolution({ ...cube.fileResolution, columns, rows });
+    const { columns, rows } = getColsAndRows(fileResolution?.jsonData);
+    setFileResolution({ ...fileResolution, columns, rows });
     setRows((rows as Row[]).slice(0, 8));
+    setLoading(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -40,14 +54,39 @@ const FileSummary = () => {
     [theme.palette.background.default]
   );
 
+  useEffect(() => {
+    if (rows.length && fileResolution?.columns?.length && globalSettings) {
+      const hasSameColumns =
+        globalSettings.columns.flatMap((x) => x.index).length ===
+        fileResolution.columns.length;
+      if (!hasSameColumns) {
+        setError(
+          "Las columnas del archivo no coinciden con las columnas de la configuración global"
+        );
+      }
+    }
+  }, [loading, globalSettings, fileResolution, rows, setError]);
+
+  if (loading || _loading) {
+    return (
+      <Box m={8}>
+        <CircularProgress />
+      </Box>
+    );
+  }
+
   return (
     <>
-      <Typography color="text.primary" mt={2}>
-        <strong>Cantidad de columnas:</strong>{" "}
-        {cube.fileResolution?.columns?.length}
+      {Boolean(error) && (
+        <Alert severity="error" sx={{ my: 2 }}>
+          <Typography color="text.primary">{error}</Typography>
+        </Alert>
+      )}
+      <Typography variant="h6" color="text.primary" mt={2}>
+        Columnas: {fileResolution?.columns?.length}
       </Typography>
-      <Typography color="text.primary" mb={2}>
-        <strong>Cantidad de filas:</strong> {cube.fileResolution?.rows?.length}
+      <Typography variant="h6" color="text.primary" mb={2}>
+        Filas: {fileResolution?.rows?.length}
       </Typography>
       <Box
         sx={{
@@ -64,7 +103,7 @@ const FileSummary = () => {
         <DataGrid
           sx={{ fontSize: "0.75rem" }}
           rows={rows}
-          columns={cube.fileResolution?.columns ?? []}
+          columns={fileResolution?.columns ?? []}
           hideFooter
           disableColumnSorting
           disableAutosize

@@ -14,6 +14,7 @@ import {
   SettingsPage,
 } from "./pages/client";
 import { ClientLayout, CubeLayout } from "./layouts";
+import { AdminImportPage } from "./pages/client/ImportPage";
 
 export const router = createBrowserRouter([
   {
@@ -48,6 +49,10 @@ export const router = createBrowserRouter([
       {
         path: "/client/import",
         element: <ImportPage />,
+      },
+      {
+        path: "/client/import-admin",
+        element: <AdminImportPage />,
       },
       {
         path: "/client",

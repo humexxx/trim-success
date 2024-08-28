@@ -25,7 +25,7 @@ function getRoutes(isAdmin: boolean, hasCube: boolean) {
       text: "Importar",
       caption: isAdmin ? "Administrador" : "",
       icon: isAdmin ? <SystemUpdateAltIcon /> : <DownloadIcon />,
-      path: "/client/import",
+      path: isAdmin ? "/client/import-admin" : "/client/import",
       isCubeLoader: true,
     },
     {

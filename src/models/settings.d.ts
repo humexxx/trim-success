@@ -9,6 +9,6 @@ export interface IColumn {
 }
 
 export interface ISettingsCube {
-  drivers: Driver[];
-  columns: Column[];
+  drivers: IDriver[];
+  columns: IColumn[];
 }
