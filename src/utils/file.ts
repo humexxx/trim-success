@@ -1,5 +1,41 @@
 import { GridColDef } from "@mui/x-data-grid";
+import { IColumn } from "src/models";
 import * as XLSX from "xlsx";
+
+const codes = [
+  "sku",
+  "category",
+  "subCategory",
+  "description",
+  "provider",
+  "country",
+  "packing",
+  "bpp",
+  "forecast",
+  "cpt",
+  "cip",
+  "table",
+  "lt",
+  "forecastError",
+  "qtySold",
+  "pSold",
+  "price",
+  "cost",
+  "sFactor",
+  "utilityMargin",
+  "totalSales",
+  "costSales",
+  "grossMargin",
+  "ipb",
+  "avgInv",
+  "transitInv",
+  "currentInv",
+  "rotacion",
+  "mesesInv",
+  "pckSent",
+  "nivelServicioActual",
+] as const;
+type Code = (typeof codes)[number];
 
 export function getJsonDataFromFile(
   callback: (jsonData: any[][]) => void,
@@ -51,4 +87,21 @@ export function getColsAndRows(jsonData?: any[][]): {
     rows: rowsData,
     columns: cols,
   };
+}
+
+export function getColumnIndex(
+  code: Code,
+  columns?: IColumn[]
+): number | number[] | undefined {
+  if (!columns) return undefined;
+  const column = columns.find((col) => col.code === code);
+  return column ? column.index : undefined;
+}
+
+export function getRowValue(row: any, index: number | number[]): any {
+  const values = Object.values(row);
+  if (Array.isArray(index)) {
+    return index.map((i) => values[i + 1]);
+  }
+  return values[index + 1];
 }

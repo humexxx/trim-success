@@ -1,5 +1,5 @@
 import { createContext, ReactNode, useEffect, useState } from "react";
-import { FileResolution } from "./CubeContext.types";
+import { CubeContextType, FileResolution } from "./CubeContext.types";
 import { useAuth } from "../auth";
 import { getBlob, listAll, ref } from "firebase/storage";
 import { STORAGE_PATH } from "src/consts";
@@ -7,16 +7,6 @@ import { getColsAndRows, getJsonDataFromFile } from "src/utils";
 import { useLocation, useNavigate } from "react-router-dom";
 import { storage } from "src/firebase";
 import { useGlobalSettingsCube } from "src/pages/client/Settings/hooks";
-import { ISettingsCube } from "src/models";
-
-export interface CubeContextType {
-  loading: boolean;
-  setFileResolution: (fileResolution: FileResolution) => void;
-  fileResolution?: FileResolution;
-  customUid?: string;
-  setCustomUid: (uid: string) => void;
-  globalSettings?: ISettingsCube | null;
-}
 
 export const CubeContext = createContext<CubeContextType | undefined>(
   undefined
