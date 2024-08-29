@@ -9,7 +9,12 @@ import {
   getSumCostSales,
   getSumSales,
 } from "src/utils";
-import { CATTable, ScorecardTable } from "./components";
+import {
+  CATTable,
+  CATTableGen,
+  ScorecardTableInventory,
+  ScorecardTableWarehouse,
+} from "./components";
 
 const Page = () => {
   useDocumentMetadata("Scorecard - Trim Success");
@@ -49,10 +54,16 @@ const Page = () => {
           </Typography>
         </Grid>
         <Grid item xs={12}>
+          <CATTableGen />
+        </Grid>
+        <Grid item xs={12}>
           <CATTable />
         </Grid>
         <Grid item xs={12}>
-          <ScorecardTable />
+          <ScorecardTableWarehouse />
+        </Grid>
+        <Grid item xs={12}>
+          <ScorecardTableInventory />
         </Grid>
       </Grid>
     </>

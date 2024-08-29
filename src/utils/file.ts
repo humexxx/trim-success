@@ -1,6 +1,7 @@
 import { GridColDef } from "@mui/x-data-grid";
 import { COLUMNS, DRIVERS } from "src/consts";
 import { EColumnType, EDriverType } from "src/enums";
+import { ICATGenRow } from "src/pages/client/Scorecard/components/CATTableGen";
 import * as XLSX from "xlsx";
 
 export function getJsonDataFromFile(
@@ -65,7 +66,69 @@ export function getColumnIndexRange(column: EColumnType): number[] | undefined {
   return col?.indexRange;
 }
 
-export function getDriversPercentagesAsync(rows: any[]): Promise<
+export function getAgetCATGenDataAsync(rows: any[]): Promise<ICATGenRow[]> {
+  return new Promise((resolve, reject) => {
+    try {
+      const categoryIndex = getColumnIndex(EColumnType.CATEGORY)!;
+      const sumOfInvAvgQtyIndex = getColumnIndex(EColumnType.AVG_INV_QTY)!;
+      const sumOfInvAvgValueIndex = getColumnIndex(EColumnType.AVG_INV_VALUE)!;
+      const sumOfQtySentIndex = getColumnIndex(EColumnType.PCK_SENT)!;
+      const sumOfCubageInvAvgIndex = getColumnIndex(EColumnType.CIP)!;
+      const sumOfTotalSalesIndex = getColumnIndex(EColumnType.TOTAL_SALES)!;
+      const sumOfGrossMarginIndex = getColumnIndex(EColumnType.GROSS_MARGIN)!;
+
+      const response: { [category: string]: ICATGenRow } = {};
+
+      for (let i = 0; i < rows.length; i++) {
+        const category = getRowValue(rows[i], categoryIndex) as string;
+        if (!response[category]) {
+          response[category] = {
+            id: i,
+            category,
+            skusCount: 0,
+            sumInvAvgQty: 0,
+            sumInvAvgValue: 0,
+            sumQtySent: 0,
+            sumCubageInvAvg: 0,
+            sumTotalSales: 0,
+            sumGrossMargin: 0,
+          };
+        }
+        response[category].skusCount++;
+        response[category].sumInvAvgQty += getRowValue(
+          rows[i],
+          sumOfInvAvgQtyIndex
+        ) as number;
+        response[category].sumInvAvgValue += getRowValue(
+          rows[i],
+          sumOfInvAvgValueIndex
+        ) as number;
+        response[category].sumQtySent += getRowValue(
+          rows[i],
+          sumOfQtySentIndex
+        ) as number;
+        response[category].sumCubageInvAvg += getRowValue(
+          rows[i],
+          sumOfCubageInvAvgIndex
+        ) as number;
+        response[category].sumTotalSales += getRowValue(
+          rows[i],
+          sumOfTotalSalesIndex
+        ) as number;
+        response[category].sumGrossMargin += getRowValue(
+          rows[i],
+          sumOfGrossMarginIndex
+        ) as number;
+      }
+
+      resolve(Object.values(response));
+    } catch (error) {
+      reject(error);
+    }
+  });
+}
+
+export function getCATDataAsync(rows: any[]): Promise<
   {
     id: string;
     driver: EDriverType;
@@ -86,6 +149,7 @@ export function getDriversPercentagesAsync(rows: any[]): Promise<
         const category = getRowValue(rows[i], categoryIndex) as string;
 
         DRIVERS.forEach((driver) => {
+          let index = -1;
           switch (driver.name as EDriverType) {
             case EDriverType.SKUS:
               obj[driver.name] = {
@@ -93,13 +157,68 @@ export function getDriversPercentagesAsync(rows: any[]): Promise<
                 [category]: (obj[driver.name]?.[category] || 0) + 1,
               };
               break;
-            // Puedes agregar más casos si es necesario
+            case EDriverType.SALES:
+              index = getColumnIndex(EColumnType.TOTAL_SALES)!;
+              obj[driver.name] = {
+                ...obj[driver.name],
+                [category]:
+                  (obj[driver.name]?.[category] || 0) +
+                  (getRowValue(rows[i], index) as number),
+              };
+              break;
+            case EDriverType.INVENTORY_VALUE:
+              index = getColumnIndex(EColumnType.AVG_INV_VALUE)!;
+              obj[driver.name] = {
+                ...obj[driver.name],
+                [category]:
+                  (obj[driver.name]?.[category] || 0) +
+                  (getRowValue(rows[i], index) as number),
+              };
+              break;
+            case EDriverType.AVERAGE_INVENTORY:
+              index = getColumnIndex(EColumnType.AVG_INV_QTY)!;
+              obj[driver.name] = {
+                ...obj[driver.name],
+                [category]:
+                  (obj[driver.name]?.[category] || 0) +
+                  (getRowValue(rows[i], index) as number),
+              };
+              break;
+            case EDriverType.SHIPPED_CASES:
+              index = getColumnIndex(EColumnType.PCK_SENT)!;
+              obj[driver.name] = {
+                ...obj[driver.name],
+                [category]:
+                  (obj[driver.name]?.[category] || 0) +
+                  (getRowValue(rows[i], index) as number),
+              };
+              break;
+            case EDriverType.INVENTORY_CUBE:
+              index = getColumnIndex(EColumnType.CIP)!;
+              obj[driver.name] = {
+                ...obj[driver.name],
+                [category]:
+                  (obj[driver.name]?.[category] || 0) +
+                  (getRowValue(rows[i], index) as number),
+              };
+              break;
+            case EDriverType.PLANNERS:
+              obj[driver.name] = {
+                ...obj[driver.name],
+                [category]: 0,
+              };
+              break;
+            case EDriverType.ORDERS:
+              obj[driver.name] = {
+                ...obj[driver.name],
+                [category]: 0,
+              };
+              break;
           }
         });
       }
 
       for (const driver of DRIVERS) {
-        if (!obj[driver.name]) continue;
         const categories = Object.keys(obj[driver.name]);
         const total = categories.reduce(
           (acc, category) => acc + obj[driver.name][category],
@@ -111,9 +230,11 @@ export function getDriversPercentagesAsync(rows: any[]): Promise<
           ...categories.reduce(
             (acc, category) => ({
               ...acc,
-              [category]: parseFloat(
-                ((obj[driver.name][category] / total) * 100).toFixed(2)
-              ),
+              [category]: obj[driver.name][category]
+                ? parseFloat(
+                    ((obj[driver.name][category] / total) * 100).toFixed(2)
+                  )
+                : 0,
             }),
             {}
           ),
