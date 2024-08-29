@@ -6,7 +6,6 @@ import { STORAGE_PATH } from "src/consts";
 import { getColsAndRows, getJsonDataFromFile } from "src/utils";
 import { useLocation, useNavigate } from "react-router-dom";
 import { storage } from "src/firebase";
-import { useGlobalSettingsCube } from "src/pages/client/Settings/hooks";
 
 export const CubeContext = createContext<CubeContextType | undefined>(
   undefined
@@ -31,7 +30,6 @@ export default function CubeProvider({
   const [customUid, setCustomUid] = useState<string>();
   const navigate = useNavigate();
   const location = useLocation();
-  const { globalSettings, loading: settingsLoding } = useGlobalSettingsCube();
 
   async function loadFile(uid?: string) {
     if (!uid) {
@@ -76,11 +74,10 @@ export default function CubeProvider({
 
   const value: CubeContextType = {
     fileResolution,
-    loading: loading || settingsLoding,
+    loading: loading,
     setFileResolution,
     customUid,
     setCustomUid,
-    globalSettings,
   };
 
   return <CubeContext.Provider value={value}>{children}</CubeContext.Provider>;

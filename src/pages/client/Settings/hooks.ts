@@ -4,43 +4,6 @@ import { IColumn, ISettingsCube } from "src/models";
 import { firestore } from "src/firebase";
 import { useAuth } from "src/context/auth";
 
-export function useGlobalSettingsCube() {
-  const [settings, setSettings] = useState<ISettingsCube | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchSettings = async () => {
-      try {
-        const settingsDoc = await getDoc(doc(firestore, "settings", "cube"));
-        if (settingsDoc.exists()) {
-          setSettings(settingsDoc.data() as ISettingsCube);
-        } else {
-          throw new Error("Settings not found");
-        }
-      } catch (err: any) {
-        setError(err.message || "Error fetching settings");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchSettings();
-  }, []);
-
-  const updateGlobalColumns = useCallback(async (columns: IColumn[]) => {
-    try {
-      const docRef = doc(firestore, "settings", "cube");
-      await updateDoc(docRef, { columns });
-      setSettings((prev) => ({ ...prev!, columns }));
-    } catch (err: any) {
-      setError(err.message || "Error updating columns");
-    }
-  }, []);
-
-  return { globalSettings: settings, loading, error, updateGlobalColumns };
-}
-
 export function useUserSettingsCube() {
   const [settings, setSettings] = useState<ISettingsCube | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -68,7 +31,7 @@ export function useUserSettingsCube() {
     fetchSettings();
   }, []);
 
-  const updateGlobalColumns = useCallback(async (columns: IColumn[]) => {
+  const updateUserSettings = useCallback(async (columns: IColumn[]) => {
     try {
       const docRef = doc(firestore, "settings", "cube");
       await updateDoc(docRef, { columns });
@@ -78,5 +41,5 @@ export function useUserSettingsCube() {
     }
   }, []);
 
-  return { globalSettings: settings, loading, error, updateGlobalColumns };
+  return { globalSettings: settings, loading, error, updateUserSettings };
 }

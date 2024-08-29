@@ -78,11 +78,9 @@ const schema = yup.object().shape({
 
 interface Props {
   columns?: IColumn[];
-  updateColumns: (columns: IColumn[]) => Promise<void>;
-  loading: boolean;
 }
 
-const AdminColumns = ({ columns, updateColumns, loading }: Props) => {
+const AdminColumns = ({ columns }: Props) => {
   const input = useRef<HTMLDivElement>(null);
   const {
     register,
@@ -105,7 +103,7 @@ const AdminColumns = ({ columns, updateColumns, loading }: Props) => {
 
   const indexType = watch("indexType", "unique");
 
-  const onSubmit = async (data: {
+  const onSubmit = (data: {
     name: string;
     code: string;
     indexType: string;
@@ -123,13 +121,7 @@ const AdminColumns = ({ columns, updateColumns, loading }: Props) => {
 
     reset();
     const _data = { name: data.name, code: data.code, index: _index! };
-    await updateColumns([...(columns || []), _data]);
     input.current?.focus();
-  };
-
-  const handleDelete = (code: string) => {
-    const updatedColumns = columns?.filter((column) => column.code !== code);
-    updateColumns(updatedColumns || []);
   };
 
   return (
@@ -143,7 +135,7 @@ const AdminColumns = ({ columns, updateColumns, loading }: Props) => {
         </Typography>
         <Box>
           <MuiList>
-            {columns?.map(({ code, index, name }, idx) => (
+            {columns?.map(({ code, index, name, indexRange }, idx) => (
               <ListItem key={code} sx={{ paddingLeft: 0, display: "flex" }}>
                 <TextField
                   label="Nombre"
@@ -158,13 +150,10 @@ const AdminColumns = ({ columns, updateColumns, loading }: Props) => {
                 />
                 <TextField
                   label="Índice"
-                  value={index.toString()}
+                  value={index ? index.toString() : indexRange?.toString()}
                   sx={{ flex: 1, marginRight: 2 }}
                 />
-                <IconButton
-                  aria-label="delete"
-                  onClick={() => handleDelete(code)}
-                >
+                <IconButton aria-label="delete" disabled>
                   <DeleteIcon />
                 </IconButton>
               </ListItem>
@@ -267,7 +256,7 @@ const AdminColumns = ({ columns, updateColumns, loading }: Props) => {
                 variant="contained"
                 sx={{ mb: 3 }}
                 startIcon={<AddIcon />}
-                loading={loading}
+                disabled
               >
                 Agregar
               </LoadingButton>

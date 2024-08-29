@@ -4,11 +4,7 @@ export interface IDriver {
 
 export interface IColumn {
   code: string;
-  index: number | number[];
+  index?: number;
+  indexRange?: number[];
   name: string;
-}
-
-export interface ISettingsCube {
-  drivers: IDriver[];
-  columns: IColumn[];
 }

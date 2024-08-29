@@ -1,29 +1,11 @@
-import {
-  CircularProgress,
-  Typography,
-  Box,
-  List,
-  ListItem,
-  ListItemText,
-  Alert,
-} from "@mui/material";
+import { Typography, Box, List, ListItem, ListItemText } from "@mui/material";
 import { IColumn } from "src/models";
 
 interface Props {
   columns?: IColumn[];
-  loading: boolean;
-  error: string | null;
 }
 
-const Columns = ({ columns, loading, error }: Props) => {
-  if (loading) {
-    return <CircularProgress />;
-  }
-
-  if (error) {
-    return <Alert severity="error">{error}</Alert>;
-  }
-
+const Columns = ({ columns }: Props) => {
   return (
     <Box sx={{ padding: 4 }}>
       <Typography variant="h4" component="h1" gutterBottom>

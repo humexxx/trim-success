@@ -1,5 +1,4 @@
 import { GridColDef } from "@mui/x-data-grid";
-import { ISettingsCube } from "src/models";
 
 export interface Row {
   id: number;
@@ -19,5 +18,4 @@ export interface CubeContextType {
   fileResolution?: FileResolution;
   customUid?: string;
   setCustomUid: (uid: string) => void;
-  globalSettings?: ISettingsCube | null;
 }

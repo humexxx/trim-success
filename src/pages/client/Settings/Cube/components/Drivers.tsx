@@ -1,29 +1,11 @@
-import {
-  CircularProgress,
-  Typography,
-  Box,
-  List,
-  ListItem,
-  ListItemText,
-  Alert,
-} from "@mui/material";
+import { Typography, Box, List, ListItem, ListItemText } from "@mui/material";
 import { IDriver } from "src/models";
 
 interface Props {
   drivers?: IDriver[];
-  loading: boolean;
-  error: string | null;
 }
 
-const Drivers = ({ drivers, loading, error }: Props) => {
-  if (loading) {
-    return <CircularProgress />;
-  }
-
-  if (error) {
-    return <Alert severity="error">{error}</Alert>;
-  }
-
+const Drivers = ({ drivers }: Props) => {
   return (
     <Box sx={{ padding: 4 }}>
       <Typography variant="h4" component="h1" gutterBottom>

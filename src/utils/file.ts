@@ -1,41 +1,7 @@
 import { GridColDef } from "@mui/x-data-grid";
-import { IColumn } from "src/models";
+import { COLUMNS, DRIVERS } from "src/consts";
+import { EColumnType, EDriverType } from "src/enums";
 import * as XLSX from "xlsx";
-
-const codes = [
-  "sku",
-  "category",
-  "subCategory",
-  "description",
-  "provider",
-  "country",
-  "packing",
-  "bpp",
-  "forecast",
-  "cpt",
-  "cip",
-  "table",
-  "lt",
-  "forecastError",
-  "qtySold",
-  "pSold",
-  "price",
-  "cost",
-  "sFactor",
-  "utilityMargin",
-  "totalSales",
-  "costSales",
-  "grossMargin",
-  "ipb",
-  "avgInv",
-  "transitInv",
-  "currentInv",
-  "rotacion",
-  "mesesInv",
-  "pckSent",
-  "nivelServicioActual",
-] as const;
-type Code = (typeof codes)[number];
 
 export function getJsonDataFromFile(
   callback: (jsonData: any[][]) => void,
@@ -89,19 +55,115 @@ export function getColsAndRows(jsonData?: any[][]): {
   };
 }
 
-export function getColumnIndex(
-  code: Code,
-  columns?: IColumn[]
-): number | number[] | undefined {
-  if (!columns) return undefined;
-  const column = columns.find((col) => col.code === code);
-  return column ? column.index : undefined;
+export function getColumnIndex(column: EColumnType): number | undefined {
+  const col = COLUMNS.find((col) => col.code === column);
+  return col?.index;
 }
 
-export function getRowValue(row: any, index: number | number[]): any {
+export function getColumnIndexRange(column: EColumnType): number[] | undefined {
+  const col = COLUMNS.find((col) => col.code === column);
+  return col?.indexRange;
+}
+
+export function getDriversPercentagesAsync(rows: any[]): Promise<
+  {
+    id: string;
+    driver: EDriverType;
+    [category: string]: number | string;
+  }[]
+> {
+  return new Promise((resolve, reject) => {
+    try {
+      const categoryIndex = getColumnIndex(EColumnType.CATEGORY)!;
+      const obj: Record<string, Record<string, number>> = {};
+      const response: {
+        id: string;
+        driver: EDriverType;
+        [category: string]: number | string;
+      }[] = [];
+
+      for (let i = 0; i < rows.length; i++) {
+        const category = getRowValue(rows[i], categoryIndex) as string;
+
+        DRIVERS.forEach((driver) => {
+          switch (driver.name as EDriverType) {
+            case EDriverType.SKUS:
+              obj[driver.name] = {
+                ...obj[driver.name],
+                [category]: (obj[driver.name]?.[category] || 0) + 1,
+              };
+              break;
+            // Puedes agregar más casos si es necesario
+          }
+        });
+      }
+
+      for (const driver of DRIVERS) {
+        if (!obj[driver.name]) continue;
+        const categories = Object.keys(obj[driver.name]);
+        const total = categories.reduce(
+          (acc, category) => acc + obj[driver.name][category],
+          0
+        );
+        response.push({
+          id: driver.name,
+          driver: driver.name as EDriverType,
+          ...categories.reduce(
+            (acc, category) => ({
+              ...acc,
+              [category]: parseFloat(
+                ((obj[driver.name][category] / total) * 100).toFixed(2)
+              ),
+            }),
+            {}
+          ),
+        });
+      }
+
+      resolve(response);
+    } catch (error) {
+      reject(error);
+    }
+  });
+}
+
+export function getRowValue(
+  row: any[],
+  index: number | number[]
+): string | number | string[] | number[] {
   const values = Object.values(row);
   if (Array.isArray(index)) {
     return index.map((i) => values[i + 1]);
   }
   return values[index + 1];
+}
+
+export function getCategories(rows?: any[]): string[] {
+  if (!rows) return [];
+
+  return Array.from(
+    new Set(
+      rows.map((row) => getRowValue(row, getColumnIndex(EColumnType.CATEGORY)!))
+    )
+  ) as string[];
+}
+
+export function getSumSales(rows?: any[]): number {
+  if (!rows) return 0;
+
+  return rows.reduce(
+    (acc, row) =>
+      acc + getRowValue(row, getColumnIndex(EColumnType.TOTAL_SALES)!),
+    0
+  );
+}
+
+export function getSumCostSales(rows?: any[]): number {
+  if (!rows) return 0;
+
+  return rows.reduce(
+    (acc, row) =>
+      acc + getRowValue(row, getColumnIndex(EColumnType.COST_SALES)!),
+    0
+  );
 }
