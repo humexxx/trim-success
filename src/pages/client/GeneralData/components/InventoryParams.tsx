@@ -69,7 +69,9 @@ const InventoryParams = () => {
       spacing={2}
     >
       <Grid item xs={12}>
-        <Typography variant="h6">Parámetros Inventario</Typography>
+        <Typography color="text.primary" variant="h6">
+          Parámetros Inventario
+        </Typography>
       </Grid>
       <Grid item xs={12} mb={2}>
         <Alert severity="info">

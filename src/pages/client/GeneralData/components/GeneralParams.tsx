@@ -89,7 +89,9 @@ const GeneralParams = () => {
       spacing={2}
     >
       <Grid item xs={12}>
-        <Typography variant="h6">Parámetros Generales</Typography>
+        <Typography color="text.primary" variant="h6">
+          Parámetros Generales
+        </Typography>
       </Grid>
       <Grid item xs={12} mb={2}>
         <Alert severity="info">
@@ -97,7 +99,9 @@ const GeneralParams = () => {
         </Alert>
       </Grid>
       <Grid item xs={12}>
-        <Typography variant="body1">Financieros</Typography>
+        <Typography color="text.secondary" variant="body1">
+          Financieros
+        </Typography>
       </Grid>
       <Grid item xs={12}>
         <CurrencyField
@@ -147,7 +151,9 @@ const GeneralParams = () => {
         />
       </Grid>
       <Grid item xs={12}>
-        <Typography variant="body1">Operacionales</Typography>
+        <Typography color="text.secondary" variant="body1">
+          Operacionales
+        </Typography>
       </Grid>
       <Grid item xs={12}>
         <TextField
