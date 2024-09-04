@@ -17,7 +17,9 @@ import { useCube } from "src/context/cube";
 import { useAuth } from "src/context/auth";
 import { useMemo } from "react";
 import SmartToyIcon from "@mui/icons-material/SmartToy";
-import QueryStatsIcon from "@mui/icons-material/QueryStats";
+import DescriptionOutlinedIcon from "@mui/icons-material/DescriptionOutlined";
+import Filter1OutlinedIcon from "@mui/icons-material/Filter1Outlined";
+import Filter2OutlinedIcon from "@mui/icons-material/Filter2Outlined";
 
 function getRoutes(isAdmin: boolean, hasCube: boolean) {
   return [
@@ -34,8 +36,18 @@ function getRoutes(isAdmin: boolean, hasCube: boolean) {
       path: "/client/dashboard",
     },
     {
+      text: "Generales",
+      icon: <DescriptionOutlinedIcon />,
+      path: "/client/general-data",
+    },
+    {
+      text: "CAT",
+      icon: <Filter1OutlinedIcon />,
+      path: "/client/cat",
+    },
+    {
       text: "Scorecard",
-      icon: <QueryStatsIcon />,
+      icon: <Filter2OutlinedIcon />,
       path: "/client/scorecard",
     },
     {

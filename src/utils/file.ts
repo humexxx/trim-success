@@ -269,22 +269,32 @@ export function getCategories(rows?: any[]): string[] {
   ) as string[];
 }
 
-export function getSumSales(rows?: any[]): number {
-  if (!rows) return 0;
-
-  return rows.reduce(
-    (acc, row) =>
-      acc + getRowValue(row, getColumnIndex(EColumnType.TOTAL_SALES)!),
-    0
-  );
+export function getSumSalesAsync(rows?: any[]): Promise<number> {
+  return new Promise((resolve, reject) => {
+    try {
+      const sumOfTotalSalesIndex = getColumnIndex(EColumnType.TOTAL_SALES)!;
+      const sum = rows?.reduce(
+        (acc, row) => (acc + getRowValue(row, sumOfTotalSalesIndex)) as number,
+        0
+      );
+      resolve(parseFloat(sum.toFixed(2)));
+    } catch (error) {
+      reject(error);
+    }
+  });
 }
 
-export function getSumCostSales(rows?: any[]): number {
-  if (!rows) return 0;
-
-  return rows.reduce(
-    (acc, row) =>
-      acc + getRowValue(row, getColumnIndex(EColumnType.COST_SALES)!),
-    0
-  );
+export function getSumCostSalesAsync(rows?: any[]): Promise<number> {
+  return new Promise((resolve, reject) => {
+    try {
+      const sum = rows?.reduce(
+        (acc, row) =>
+          acc + getRowValue(row, getColumnIndex(EColumnType.COST_SALES)!),
+        0
+      );
+      resolve(parseFloat(sum.toFixed(2)));
+    } catch (error) {
+      reject(error);
+    }
+  });
 }

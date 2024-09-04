@@ -12,6 +12,8 @@ import {
   ImportPage,
   ScorecardPage,
   SettingsPage,
+  GeneralDataPage,
+  CATPage,
 } from "./pages/client";
 import { ClientLayout, CubeLayout } from "./layouts";
 import { AdminImportPage } from "./pages/client/ImportPage";
@@ -61,6 +63,14 @@ export const router = createBrowserRouter([
           {
             path: "/client/dashboard",
             element: <DashboardPage />,
+          },
+          {
+            path: "/client/general-data",
+            element: <GeneralDataPage />,
+          },
+          {
+            path: "/client/cat",
+            element: <CATPage />,
           },
           {
             path: "/client/scorecard",

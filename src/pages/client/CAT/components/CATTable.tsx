@@ -54,6 +54,7 @@ const CATTable = () => {
       disableColumnResize
       disableColumnSelector
       disableRowSelectionOnClick
+      density="compact"
     />
   );
 };

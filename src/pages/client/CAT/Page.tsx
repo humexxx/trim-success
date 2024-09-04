@@ -4,7 +4,7 @@ import { PageHeader } from "src/components";
 import { useCube } from "src/context/cube";
 import { useDocumentMetadata } from "src/hooks";
 import { getCategories } from "src/utils";
-import { ScorecardTableInventory, ScorecardTableWarehouse } from "./components";
+import { CATTable, CATTableGen, CATTableGenGraph } from "./components";
 
 const Page = () => {
   useDocumentMetadata("Scorecard - Trim Success");
@@ -28,10 +28,13 @@ const Page = () => {
           </Typography>
         </Grid>
         <Grid item xs={12}>
-          <ScorecardTableWarehouse />
+          <CATTableGen />
         </Grid>
         <Grid item xs={12}>
-          <ScorecardTableInventory />
+          <CATTableGenGraph />
+        </Grid>
+        <Grid item xs={12}>
+          <CATTable />
         </Grid>
       </Grid>
     </>
