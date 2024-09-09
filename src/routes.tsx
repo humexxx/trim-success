@@ -1,5 +1,4 @@
 import { createBrowserRouter, Navigate } from "react-router-dom";
-import ClientLayout from "./layouts/ClientLayout";
 import {
   LandingPage,
   ErrorPage,
@@ -7,8 +6,17 @@ import {
   SignUpPage,
   ForgotPasswordPage,
 } from "./pages";
-import { DashboardPage, ImportPage, UserPage } from "./pages/client";
-import { CubeLayout } from "./layouts";
+import {
+  AIPage,
+  DashboardPage,
+  ImportPage,
+  ScorecardPage,
+  SettingsPage,
+  GeneralDataPage,
+  CATPage,
+} from "./pages/client";
+import { ClientLayout, CubeLayout } from "./layouts";
+import { AdminImportPage } from "./pages/client/ImportPage";
 
 export const router = createBrowserRouter([
   {
@@ -37,12 +45,16 @@ export const router = createBrowserRouter([
     element: <ClientLayout />,
     children: [
       {
-        path: "/client/user",
-        element: <UserPage />,
+        path: "/client/settings",
+        element: <SettingsPage />,
       },
       {
         path: "/client/import",
         element: <ImportPage />,
+      },
+      {
+        path: "/client/import-admin",
+        element: <AdminImportPage />,
       },
       {
         path: "/client",
@@ -53,8 +65,20 @@ export const router = createBrowserRouter([
             element: <DashboardPage />,
           },
           {
-            path: "/client/reports",
-            element: <>My Reports</>,
+            path: "/client/general-data",
+            element: <GeneralDataPage />,
+          },
+          {
+            path: "/client/cat",
+            element: <CATPage />,
+          },
+          {
+            path: "/client/scorecard",
+            element: <ScorecardPage />,
+          },
+          {
+            path: "/client/ai",
+            element: <AIPage />,
           },
         ],
       },

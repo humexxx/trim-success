@@ -1,16 +1,21 @@
-import { useEffect, useState } from "react";
-import CubeContext from "./CubeContext";
-import {
-  CubeContextType,
-  CubeProviderProps,
-  FileResolution,
-} from "./CubeContext.types";
+import { createContext, ReactNode, useEffect, useState } from "react";
+import { CubeContextType, FileResolution } from "./CubeContext.types";
 import { useAuth } from "../auth";
 import { getBlob, listAll, ref } from "firebase/storage";
 import { STORAGE_PATH } from "src/consts";
 import { getColsAndRows, getJsonDataFromFile } from "src/utils";
 import { useLocation, useNavigate } from "react-router-dom";
 import { storage } from "src/firebase";
+
+export const CubeContext = createContext<CubeContextType | undefined>(
+  undefined
+);
+
+interface CubeProviderProps {
+  fallbackRoute: string;
+  successRoute: string;
+  children: ReactNode;
+}
 
 export default function CubeProvider({
   children,
@@ -69,7 +74,7 @@ export default function CubeProvider({
 
   const value: CubeContextType = {
     fileResolution,
-    loading,
+    loading: loading,
     setFileResolution,
     customUid,
     setCustomUid,

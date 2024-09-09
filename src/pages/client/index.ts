@@ -1,3 +1,7 @@
-export { default as DashboardPage } from "./DashboardPage";
-export { default as ImportPage } from "./ImportPage";
-export { default as UserPage } from "./UserPage";
+export { DashboardPage } from "./Dashboard";
+export { ImportPage } from "./ImportPage";
+export { AIPage } from "./AI";
+export { SettingsPage } from "./Settings";
+export { ScorecardPage } from "./Scorecard";
+export { GeneralDataPage } from "./GeneralData";
+export { CATPage } from "./CAT";

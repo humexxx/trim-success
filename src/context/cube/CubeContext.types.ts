@@ -1,5 +1,4 @@
 import { GridColDef } from "@mui/x-data-grid";
-import { ReactNode } from "react";
 
 export interface Row {
   id: number;
@@ -19,10 +18,4 @@ export interface CubeContextType {
   fileResolution?: FileResolution;
   customUid?: string;
   setCustomUid: (uid: string) => void;
-}
-
-export interface CubeProviderProps {
-  fallbackRoute: string;
-  successRoute: string;
-  children: ReactNode;
 }
