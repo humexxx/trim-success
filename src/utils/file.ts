@@ -1,59 +1,60 @@
 import { GridColDef } from "@mui/x-data-grid";
 import { COLUMNS, DRIVERS } from "src/consts";
 import { EColumnType, EDriverType } from "src/enums";
-import { ICATGenRow } from "src/pages/client/Scorecard/components/CATTableGen";
-import * as XLSX from "xlsx";
+import { ICATGenRow } from "src/pages/client/CAT/components/CATTableGen";
 
-export function getJsonDataFromFile(
-  callback: (jsonData: any[][]) => void,
-  file: Blob
-) {
-  const reader = new FileReader();
+export async function getJsonDataFromFileAsync(file: Blob): Promise<any[][]> {
+  return new Promise((resolve, reject) => {
+    const worker = new Worker(
+      new URL("./workers/fileReaderWorker.js", import.meta.url)
+    );
 
-  reader.onload = (event) => {
-    if (event.target?.result) {
-      const data = new Uint8Array(event.target.result as ArrayBuffer);
-      const workbook = XLSX.read(data, { type: "array" });
-      const sheetName = workbook.SheetNames[0];
-      const worksheet = workbook.Sheets[sheetName];
-      const jsonData: any[][] = XLSX.utils.sheet_to_json(worksheet, {
-        header: 1,
-        raw: true,
-      });
+    worker.postMessage(file);
 
-      if (jsonData.length > 0) {
-        callback(jsonData);
+    worker.onmessage = (event) => {
+      const { status, data, message } = event.data;
+      if (status === "success") {
+        resolve(data);
       } else {
-        throw new Error("No data found in the file.");
+        reject(new Error(message));
       }
-    }
-  };
+      worker.terminate();
+    };
 
-  reader.readAsArrayBuffer(file);
+    worker.onerror = (error) => {
+      reject(new Error("Error in worker: " + error.message));
+      worker.terminate();
+    };
+  });
 }
 
-export function getColsAndRows(jsonData?: any[][]): {
+export function getColsAndRowsAsync(jsonData?: any[][]): Promise<{
   rows: any[];
   columns: GridColDef[];
-} {
+}> {
   if (!jsonData) throw new Error("No data found in the file.");
 
-  const header = jsonData[0] as string[];
-  const cols = header.map((col) => ({
-    field: col,
-    headerName: col,
-  }));
+  return new Promise((resolve, reject) => {
+    const worker = new Worker(
+      new URL("./workers/getColsAndRowsWorker.js", import.meta.url)
+    );
 
-  const rowsData = jsonData.slice(1).map((row, index) =>
-    row.reduce((acc, cell, i) => ({ ...acc, [header[i]]: cell }), {
-      id: index + 1,
-    })
-  );
+    worker.onmessage = (event) => {
+      const { rows, columns, progress } = event.data;
 
-  return {
-    rows: rowsData,
-    columns: cols,
-  };
+      if (progress) {
+        console.log(`Progress: ${progress}%`);
+      } else {
+        resolve({ rows, columns });
+      }
+    };
+
+    worker.onerror = (error) => {
+      reject(new Error("Error in worker: " + error.message));
+    };
+
+    worker.postMessage(jsonData);
+  });
 }
 
 export function getColumnIndex(column: EColumnType): number | undefined {
@@ -248,6 +249,42 @@ export function getCATDataAsync(rows: any[]): Promise<
   });
 }
 
+export function getGeneralDataAsync(rows?: any[]): Promise<{
+  categories: string[];
+  sumSales: number;
+  sumCostSales: number;
+}> {
+  return new Promise((resolve, reject) => {
+    const worker = new Worker(
+      new URL("./workers/getGeneralDataWorker.js", import.meta.url)
+    );
+
+    worker.onmessage = (event) => {
+      const { categories, sumSales, sumCostSales, progress, error } =
+        event.data;
+
+      if (error) {
+        reject(new Error(error));
+      } else if (progress) {
+        console.log(`Progress: ${progress}%`);
+      } else {
+        resolve({ categories, sumSales, sumCostSales });
+      }
+    };
+
+    worker.onerror = (error) => {
+      reject(new Error("Error in worker: " + error.message));
+    };
+
+    worker.postMessage({
+      rows,
+      categoryIndex: getColumnIndex(EColumnType.CATEGORY),
+      salesIndex: getColumnIndex(EColumnType.TOTAL_SALES),
+      salesCostIndex: getColumnIndex(EColumnType.COST_SALES),
+    });
+  });
+}
+
 export function getRowValue(
   row: any[],
   index: number | number[]
@@ -257,44 +294,4 @@ export function getRowValue(
     return index.map((i) => values[i + 1]);
   }
   return values[index + 1];
-}
-
-export function getCategories(rows?: any[]): string[] {
-  if (!rows) return [];
-
-  return Array.from(
-    new Set(
-      rows.map((row) => getRowValue(row, getColumnIndex(EColumnType.CATEGORY)!))
-    )
-  ) as string[];
-}
-
-export function getSumSalesAsync(rows?: any[]): Promise<number> {
-  return new Promise((resolve, reject) => {
-    try {
-      const sumOfTotalSalesIndex = getColumnIndex(EColumnType.TOTAL_SALES)!;
-      const sum = rows?.reduce(
-        (acc, row) => (acc + getRowValue(row, sumOfTotalSalesIndex)) as number,
-        0
-      );
-      resolve(parseFloat(sum.toFixed(2)));
-    } catch (error) {
-      reject(error);
-    }
-  });
-}
-
-export function getSumCostSalesAsync(rows?: any[]): Promise<number> {
-  return new Promise((resolve, reject) => {
-    try {
-      const sum = rows?.reduce(
-        (acc, row) =>
-          acc + getRowValue(row, getColumnIndex(EColumnType.COST_SALES)!),
-        0
-      );
-      resolve(parseFloat(sum.toFixed(2)));
-    } catch (error) {
-      reject(error);
-    }
-  });
 }

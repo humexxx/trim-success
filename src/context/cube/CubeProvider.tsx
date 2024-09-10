@@ -3,9 +3,14 @@ import { CubeContextType, FileResolution } from "./CubeContext.types";
 import { useAuth } from "../auth";
 import { getBlob, listAll, ref } from "firebase/storage";
 import { STORAGE_PATH } from "src/consts";
-import { getColsAndRows, getJsonDataFromFile } from "src/utils";
+import {
+  getColsAndRowsAsync,
+  getGeneralDataAsync,
+  getJsonDataFromFileAsync,
+} from "src/utils";
 import { useLocation, useNavigate } from "react-router-dom";
 import { storage } from "src/firebase";
+import { useDataParams } from "src/pages/client/GeneralData/hooks";
 
 export const CubeContext = createContext<CubeContextType | undefined>(
   undefined
@@ -26,10 +31,11 @@ export default function CubeProvider({
     FileResolution | undefined
   >(undefined);
   const user = useAuth();
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [customUid, setCustomUid] = useState<string>();
   const navigate = useNavigate();
   const location = useLocation();
+  const dataParams = useDataParams();
 
   async function loadFile(uid?: string) {
     if (!uid) {
@@ -46,17 +52,16 @@ export default function CubeProvider({
         const firstFileRef = result.items[0];
         const fileBlob = await getBlob(firstFileRef);
 
-        getJsonDataFromFile((jsonData: any[][]) => {
-          const { columns, rows } = getColsAndRows(jsonData);
-          setFileResolution({
-            columns,
-            rows,
-            file: { ...fileBlob, name: firstFileRef.name },
-            jsonData,
-          });
-          if (location.pathname !== "/client/user") navigate(successRoute);
-          setLoading(false);
-        }, fileBlob);
+        const jsonData = await getJsonDataFromFileAsync(fileBlob);
+        const { columns, rows } = await getColsAndRowsAsync(jsonData);
+        setFileResolution({
+          columns,
+          rows,
+          file: { ...fileBlob, name: firstFileRef.name },
+          jsonData,
+        });
+        if (location.pathname !== "/client/user") navigate(successRoute);
+        setLoading(false);
       } else {
         navigate(fallbackRoute, { replace: true });
         setLoading(false);
@@ -67,10 +72,55 @@ export default function CubeProvider({
     }
   }
 
+  // useEffect(() => {
+  //   loadFile(user.currentUser!.isAdmin ? customUid : user.currentUser!.uid);
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [customUid]);
+
   useEffect(() => {
-    loadFile(user.currentUser!.isAdmin ? customUid : user.currentUser!.uid);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [customUid]);
+    async function calculateGeneralParams() {
+      const { sumCostSales, sumSales, categories } = await getGeneralDataAsync(
+        fileResolution?.rows
+      );
+
+      dataParams.updateMemoryDataParams({
+        inventoryParams: {
+          energyCost: 0,
+          insuranceCost: 0,
+          manoObraCost: 0,
+
+          officeSpaceCost: 0,
+          officeSupplyCost: 0,
+          otherCosts: 0,
+        },
+        storingParams: {
+          alquilerCost: 0,
+          energiaCost: 0,
+          manoObraCost: 0,
+          otherCosts: 0,
+          suministroOficinaCost: 0,
+          tercerizacionCost: 0,
+        },
+        generalParams: {
+          financial: {
+            sales: sumSales,
+            salesCost: sumCostSales,
+            companyCapitalCost: 0,
+            inventoryAnnualCost: 0,
+            technologyCapitalCost: 0,
+          },
+          operational: {
+            annualWorkingHours: 0,
+          },
+        },
+        categories,
+      });
+    }
+
+    if (fileResolution && !dataParams.loading && !dataParams.data) {
+      calculateGeneralParams();
+    }
+  }, [dataParams, fileResolution]);
 
   const value: CubeContextType = {
     fileResolution,
@@ -78,6 +128,7 @@ export default function CubeProvider({
     setFileResolution,
     customUid,
     setCustomUid,
+    dataParams,
   };
 
   return <CubeContext.Provider value={value}>{children}</CubeContext.Provider>;

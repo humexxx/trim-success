@@ -1,4 +1,5 @@
 import { GridColDef } from "@mui/x-data-grid";
+import { UseDataParams } from "src/pages/client/GeneralData/hooks/useDataParams";
 
 export interface Row {
   id: number;
@@ -18,4 +19,5 @@ export interface CubeContextType {
   fileResolution?: FileResolution;
   customUid?: string;
   setCustomUid: (uid: string) => void;
+  dataParams: UseDataParams;
 }

@@ -1,19 +1,12 @@
 import { Grid, Typography } from "@mui/material";
-import { useMemo } from "react";
 import { PageHeader } from "src/components";
 import { useCube } from "src/context/cube";
 import { useDocumentMetadata } from "src/hooks";
-import { getCategories } from "src/utils";
 import { CATTable, CATTableGen, CATTableGenGraph } from "./components";
 
 const Page = () => {
   useDocumentMetadata("Scorecard - Trim Success");
-  const { fileResolution } = useCube();
-
-  const categories = useMemo(
-    () => getCategories(fileResolution?.rows),
-    [fileResolution]
-  );
+  const { dataParams } = useCube();
 
   return (
     <>
@@ -24,7 +17,7 @@ const Page = () => {
             General Information
           </Typography>
           <Typography variant="body1" mb={2}>
-            Categories: {categories.join(", ")}
+            Categories: {dataParams.data?.categories.join(", ")}
           </Typography>
         </Grid>
         <Grid item xs={12}>

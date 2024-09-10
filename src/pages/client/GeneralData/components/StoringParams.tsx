@@ -1,140 +1,69 @@
-import { IStoringParams } from "src/models/user";
-import { useStoringParams } from "../hooks";
-import * as yup from "yup";
-import { yupResolver } from "@hookform/resolvers/yup";
-import { useForm } from "react-hook-form";
-import { Alert, Grid, Typography } from "@mui/material";
+import { IParams } from "src/models/user";
+import { FieldErrors, UseFormRegister } from "react-hook-form";
+import { Grid } from "@mui/material";
 import { CurrencyField } from "src/components/form";
-import { useEffect } from "react";
-import { LoadingButton } from "@mui/lab";
 
-const schema = yup.object<IStoringParams>().shape({
-  manoObraCost: yup.number().required(),
-  alquilerCost: yup.number().required(),
-  suministroOficinaCost: yup.number().required(),
-  energiaCost: yup.number().required(),
-  tercerizacionCost: yup.number().required(),
-  otherCosts: yup.number().required(),
-});
+interface Props {
+  register: UseFormRegister<IParams>;
+  errors: FieldErrors<IParams>;
+}
 
-const StoringParams = () => {
-  const {
-    data: storingParams,
-    loading,
-    error,
-    updateStoringParams,
-  } = useStoringParams();
-
-  const {
-    formState: { errors },
-    register,
-    handleSubmit,
-    setValue,
-  } = useForm<IStoringParams>({
-    resolver: yupResolver(schema),
-    defaultValues: {
-      manoObraCost: 0,
-      alquilerCost: 0,
-      suministroOficinaCost: 0,
-      energiaCost: 0,
-      tercerizacionCost: 0,
-      otherCosts: 0,
-    },
-  });
-
-  function onSubmit(data: IStoringParams) {
-    updateStoringParams(data);
-  }
-
-  useEffect(() => {
-    if (storingParams) {
-      setValue("manoObraCost", storingParams.manoObraCost);
-      setValue("alquilerCost", storingParams.alquilerCost);
-      setValue("suministroOficinaCost", storingParams.suministroOficinaCost);
-      setValue("energiaCost", storingParams.energiaCost);
-      setValue("tercerizacionCost", storingParams.tercerizacionCost);
-      setValue("otherCosts", storingParams.otherCosts);
-    }
-  }, [setValue, storingParams]);
-
-  if (error) {
-    return <Alert severity="error">{error}</Alert>;
-  }
+const StoringParams = ({ register, errors }: Props) => {
   return (
-    <Grid
-      container
-      component="form"
-      onSubmit={handleSubmit(onSubmit)}
-      spacing={2}
-    >
-      <Grid item xs={12}>
-        <Typography color="text.primary" variant="h6">
-          Parámetros Almacenaje
-        </Typography>
-      </Grid>
-      <Grid item xs={12} mb={2}>
-        <Alert severity="info">
-          Estos valores son utilizados para calcular el costo de almacenamiento.
-        </Alert>
-      </Grid>
+    <Grid container spacing={2}>
       <Grid item xs={12}>
         <CurrencyField
-          {...register("manoObraCost")}
+          {...register("storingParams.manoObraCost")}
           label="Costo Mano de Obra"
-          error={!!errors.manoObraCost}
-          helperText={errors.manoObraCost?.message}
+          error={!!errors.storingParams?.manoObraCost}
+          helperText={errors.storingParams?.manoObraCost?.message}
           fullWidth
         />
       </Grid>
       <Grid item xs={12}>
         <CurrencyField
-          {...register("alquilerCost")}
+          {...register("storingParams.alquilerCost")}
           label="Costo Alquiler"
-          error={!!errors.alquilerCost}
-          helperText={errors.alquilerCost?.message}
+          error={!!errors.storingParams?.alquilerCost}
+          helperText={errors.storingParams?.alquilerCost?.message}
           fullWidth
         />
       </Grid>
       <Grid item xs={12}>
         <CurrencyField
-          {...register("suministroOficinaCost")}
+          {...register("storingParams.suministroOficinaCost")}
           label="Costo Suministro de Oficina"
-          error={!!errors.suministroOficinaCost}
-          helperText={errors.suministroOficinaCost?.message}
+          error={!!errors.storingParams?.suministroOficinaCost}
+          helperText={errors.storingParams?.suministroOficinaCost?.message}
           fullWidth
         />
       </Grid>
       <Grid item xs={12}>
         <CurrencyField
-          {...register("energiaCost")}
+          {...register("storingParams.energiaCost")}
           label="Costo Energía"
-          error={!!errors.energiaCost}
-          helperText={errors.energiaCost?.message}
+          error={!!errors.storingParams?.energiaCost}
+          helperText={errors.storingParams?.energiaCost?.message}
           fullWidth
         />
       </Grid>
       <Grid item xs={12}>
         <CurrencyField
-          {...register("tercerizacionCost")}
+          {...register("storingParams.tercerizacionCost")}
           label="Costo Tercerización"
-          error={!!errors.tercerizacionCost}
-          helperText={errors.tercerizacionCost?.message}
+          error={!!errors.storingParams?.tercerizacionCost}
+          helperText={errors.storingParams?.tercerizacionCost?.message}
           fullWidth
         />
       </Grid>
       <Grid item xs={12}>
         <CurrencyField
-          {...register("otherCosts")}
+          {...register("storingParams.otherCosts")}
           label="Otros Costos"
-          error={!!errors.otherCosts}
-          helperText={errors.otherCosts?.message}
+          error={!!errors.storingParams?.otherCosts}
+          helperText={errors.storingParams?.otherCosts?.message}
           fullWidth
         />
-      </Grid>
-      <Grid item xs={12} mt={2} textAlign="right">
-        <LoadingButton type="submit" variant="contained" loading={loading}>
-          Guardar
-        </LoadingButton>
       </Grid>
     </Grid>
   );

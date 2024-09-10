@@ -8,7 +8,7 @@ import {
 import { DataGrid } from "@mui/x-data-grid";
 import { useEffect, useMemo, useState } from "react";
 import { Row, useCube } from "src/context/cube";
-import { getColsAndRows } from "src/utils";
+import { getColsAndRowsAsync, getJsonDataFromFileAsync } from "src/utils";
 
 const hexToRgb = (hex: string) => {
   hex = hex.replace(/^#/, "");
@@ -32,20 +32,35 @@ const hexToRgb = (hex: string) => {
 interface Props {
   error: string;
   setError: (error: string) => void;
+  setLoading: (loading: boolean) => void;
+  loading: boolean;
 }
 
-const FileSummary = ({ error, setError }: Props) => {
+const FileSummary = ({ error, setError, loading, setLoading }: Props) => {
   const [rows, setRows] = useState<Row[]>([]);
   const theme = useTheme();
-  const { fileResolution, setFileResolution, globalSettings, loading } =
-    useCube();
-  const [_loading, setLoading] = useState(true);
+  const { fileResolution, setFileResolution } = useCube();
+  const [progressMessage, setProgressMessage] = useState<string | null>(null);
 
   useEffect(() => {
-    const { columns, rows } = getColsAndRows(fileResolution?.jsonData);
-    setFileResolution({ ...fileResolution, columns, rows });
-    setRows((rows as Row[]).slice(0, 8));
-    setLoading(false);
+    async function formatData() {
+      setLoading(true);
+      try {
+        setProgressMessage("Formateando archivo...");
+        const jsonData = await getJsonDataFromFileAsync(fileResolution!.file!);
+        setProgressMessage("Obteniendo columnas y filas...");
+        const { columns, rows } = await getColsAndRowsAsync(jsonData);
+        setFileResolution({ ...fileResolution, columns, rows, jsonData });
+        setRows((rows as Row[]).slice(0, 8));
+        setLoading(false);
+      } catch (e) {
+        setError("Error al formatear el archivo");
+      } finally {
+        setLoading(false);
+        setProgressMessage(null);
+      }
+    }
+    formatData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -54,23 +69,12 @@ const FileSummary = ({ error, setError }: Props) => {
     [theme.palette.background.default]
   );
 
-  useEffect(() => {
-    if (rows.length && fileResolution?.columns?.length && globalSettings) {
-      const hasSameColumns =
-        globalSettings.columns.flatMap((x) => x.index).length ===
-        fileResolution.columns.length;
-      if (!hasSameColumns) {
-        setError(
-          "Las columnas del archivo no coinciden con las columnas de la configuración global"
-        );
-      }
-    }
-  }, [loading, globalSettings, fileResolution, rows, setError]);
-
-  if (loading || _loading) {
+  if (loading) {
     return (
       <Box m={8}>
-        <CircularProgress />
+        <Typography variant="body1" color="text.primary" mb={2}>
+          <CircularProgress size={15} sx={{ mr: 2 }} /> {progressMessage}
+        </Typography>
       </Box>
     );
   }
@@ -82,10 +86,10 @@ const FileSummary = ({ error, setError }: Props) => {
           <Typography color="text.primary">{error}</Typography>
         </Alert>
       )}
-      <Typography variant="h6" color="text.primary" mt={2}>
+      <Typography variant="body1" color="text.primary" mt={2}>
         Columnas: {fileResolution?.columns?.length}
       </Typography>
-      <Typography variant="h6" color="text.primary" mb={2}>
+      <Typography variant="body1" color="text.primary" mb={2}>
         Filas: {fileResolution?.rows?.length}
       </Typography>
       <Box

@@ -5,6 +5,7 @@ export interface IStoringParams {
   energiaCost: number;
   tercerizacionCost: number;
   otherCosts: number;
+  [key: string]: number;
 }
 
 export interface IInventoryParams {
@@ -14,6 +15,7 @@ export interface IInventoryParams {
   officeSupplyCost: number;
   officeSpaceCost: number;
   otherCosts: number;
+  [key: string]: number;
 }
 
 export interface IGeneralParams {
@@ -23,8 +25,17 @@ export interface IGeneralParams {
     inventoryAnnualCost: number;
     companyCapitalCost: number;
     technologyCapitalCost: number;
+    [key: string]: number;
   };
   operational: {
     annualWorkingHours: number;
+    [key: string]: number;
   };
+}
+
+export interface IParams {
+  generalParams: IGeneralParams;
+  storingParams: IStoringParams;
+  inventoryParams: IInventoryParams;
+  categories: string[];
 }
