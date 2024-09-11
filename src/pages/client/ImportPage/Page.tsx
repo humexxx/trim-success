@@ -12,7 +12,7 @@ import {
   GeneralParameters,
 } from "src/pages/client/ImportPage/components";
 import { useCube } from "src/context/cube";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDocumentMetadata } from "src/hooks";
 import { LoadingButton } from "@mui/lab";
@@ -24,6 +24,7 @@ export default function Page() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const cube = useCube();
+  const generalParamsRef = useRef<{ saveData: () => void }>(null);
 
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -101,6 +102,7 @@ export default function Page() {
           <StepContent>
             <StepContentWrapper>
               <GeneralParameters
+                ref={generalParamsRef}
                 error={stepError}
                 setError={setStepError}
                 setLoading={setLoading}
@@ -109,7 +111,10 @@ export default function Page() {
             </StepContentWrapper>
             <StepperFooter
               handleBack={handleBack}
-              handleNext={handleNext}
+              handleNext={() => {
+                generalParamsRef.current?.saveData();
+                handleNext();
+              }}
               disableNext={Boolean(stepError) || loading}
             />
           </StepContent>

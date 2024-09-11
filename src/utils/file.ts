@@ -42,7 +42,7 @@ export function getColsAndRowsAsync(jsonData?: any[][]): Promise<{
     worker.onmessage = (event) => {
       const { rows, columns, progress } = event.data;
 
-      if (progress) {
+      if (progress || progress == 0) {
         console.log(`Progress: ${progress}%`);
       } else {
         resolve({ rows, columns });
@@ -265,9 +265,10 @@ export function getGeneralDataAsync(rows?: any[]): Promise<{
 
       if (error) {
         reject(new Error(error));
-      } else if (progress) {
+      } else if (progress || progress == 0) {
         console.log(`Progress: ${progress}%`);
       } else {
+        console.log(event.data);
         resolve({ categories, sumSales, sumCostSales });
       }
     };

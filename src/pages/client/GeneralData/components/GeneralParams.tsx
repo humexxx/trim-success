@@ -1,14 +1,15 @@
-import { IParams } from "src/models/user";
+import { IDataParams } from "src/models/user";
 import { FieldErrors, UseFormRegister } from "react-hook-form";
 import { Grid, TextField, Typography } from "@mui/material";
 import { CurrencyField, PercentageField } from "src/components/form";
 
 interface Props {
-  register: UseFormRegister<IParams>;
-  errors: FieldErrors<IParams>;
+  register: UseFormRegister<IDataParams>;
+  errors: FieldErrors<IDataParams>;
+  hideSum?: boolean;
 }
 
-const GeneralParams = ({ register, errors }: Props) => {
+const GeneralParams = ({ register, errors, hideSum = false }: Props) => {
   return (
     <Grid container spacing={2}>
       <Grid item xs={12}>
@@ -16,27 +17,31 @@ const GeneralParams = ({ register, errors }: Props) => {
           Financieros
         </Typography>
       </Grid>
-      <Grid item xs={12}>
-        <CurrencyField
-          {...register("generalParams.financial.sales")}
-          label="Ventas"
-          error={!!errors.generalParams?.financial?.sales}
-          helperText={errors.generalParams?.financial?.sales?.message}
-          fullWidth
-          disabled
-          size="small"
-        />
-      </Grid>
-      <Grid item xs={12}>
-        <CurrencyField
-          {...register("generalParams.financial.salesCost")}
-          label="Ventas al Costo"
-          error={!!errors.generalParams?.financial?.salesCost}
-          helperText={errors.generalParams?.financial?.salesCost?.message}
-          fullWidth
-          disabled
-        />
-      </Grid>
+      {!hideSum && (
+        <Grid item xs={12}>
+          <CurrencyField
+            {...register("generalParams.financial.sales")}
+            label="Ventas"
+            error={!!errors.generalParams?.financial?.sales}
+            helperText={errors.generalParams?.financial?.sales?.message}
+            fullWidth
+            disabled
+            size="small"
+          />
+        </Grid>
+      )}
+      {!hideSum && (
+        <Grid item xs={12}>
+          <CurrencyField
+            {...register("generalParams.financial.salesCost")}
+            label="Ventas al Costo"
+            error={!!errors.generalParams?.financial?.salesCost}
+            helperText={errors.generalParams?.financial?.salesCost?.message}
+            fullWidth
+            disabled
+          />
+        </Grid>
+      )}
       <Grid item xs={12}>
         <PercentageField
           {...register("generalParams.financial.inventoryAnnualCost")}
@@ -70,7 +75,7 @@ const GeneralParams = ({ register, errors }: Props) => {
           fullWidth
         />
       </Grid>
-      <Grid item xs={12}>
+      <Grid item xs={12} mt={2}>
         <Typography color="text.secondary" variant="body1">
           Operacionales
         </Typography>

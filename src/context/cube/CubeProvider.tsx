@@ -1,16 +1,12 @@
-import { createContext, ReactNode, useEffect, useState } from "react";
+import { createContext, ReactNode, useState } from "react";
 import { CubeContextType, FileResolution } from "./CubeContext.types";
 import { useAuth } from "../auth";
 import { getBlob, listAll, ref } from "firebase/storage";
 import { STORAGE_PATH } from "src/consts";
-import {
-  getColsAndRowsAsync,
-  getGeneralDataAsync,
-  getJsonDataFromFileAsync,
-} from "src/utils";
+import { getColsAndRowsAsync, getJsonDataFromFileAsync } from "src/utils";
 import { useLocation, useNavigate } from "react-router-dom";
 import { storage } from "src/firebase";
-import { useDataParams } from "src/pages/client/GeneralData/hooks";
+import { IDataParams } from "src/models/user";
 
 export const CubeContext = createContext<CubeContextType | undefined>(
   undefined
@@ -35,7 +31,7 @@ export default function CubeProvider({
   const [customUid, setCustomUid] = useState<string>();
   const navigate = useNavigate();
   const location = useLocation();
-  const dataParams = useDataParams();
+  const [dataParams, setDataParams] = useState<IDataParams | undefined>();
 
   async function loadFile(uid?: string) {
     if (!uid) {
@@ -77,59 +73,19 @@ export default function CubeProvider({
   //   // eslint-disable-next-line react-hooks/exhaustive-deps
   // }, [customUid]);
 
-  useEffect(() => {
-    async function calculateGeneralParams() {
-      const { sumCostSales, sumSales, categories } = await getGeneralDataAsync(
-        fileResolution?.rows
-      );
-
-      dataParams.updateMemoryDataParams({
-        inventoryParams: {
-          energyCost: 0,
-          insuranceCost: 0,
-          manoObraCost: 0,
-
-          officeSpaceCost: 0,
-          officeSupplyCost: 0,
-          otherCosts: 0,
-        },
-        storingParams: {
-          alquilerCost: 0,
-          energiaCost: 0,
-          manoObraCost: 0,
-          otherCosts: 0,
-          suministroOficinaCost: 0,
-          tercerizacionCost: 0,
-        },
-        generalParams: {
-          financial: {
-            sales: sumSales,
-            salesCost: sumCostSales,
-            companyCapitalCost: 0,
-            inventoryAnnualCost: 0,
-            technologyCapitalCost: 0,
-          },
-          operational: {
-            annualWorkingHours: 0,
-          },
-        },
-        categories,
-      });
-    }
-
-    if (fileResolution && !dataParams.loading && !dataParams.data) {
-      calculateGeneralParams();
-    }
-  }, [dataParams, fileResolution]);
-
   const value: CubeContextType = {
     fileResolution,
     loading: loading,
     setFileResolution,
     customUid,
     setCustomUid,
-    dataParams,
+    dataParams: {
+      data: dataParams,
+      setData: setDataParams,
+    },
   };
+
+  console.log(dataParams);
 
   return <CubeContext.Provider value={value}>{children}</CubeContext.Provider>;
 }

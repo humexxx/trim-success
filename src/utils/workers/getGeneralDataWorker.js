@@ -8,9 +8,7 @@ self.onmessage = function (event) {
   }
 
   // Obtener los índices de las columnas necesarias
-  const categoryIndex = event.data.categoryIndex;
-  const totalSalesIndex = event.data.totalSalesIndex;
-  const costSalesIndex = event.data.salesIndex;
+  const { categoryIndex, salesCostIndex, salesIndex } = event.data;
 
   const categoriesSet = new Set();
   let sumSales = 0;
@@ -25,14 +23,13 @@ self.onmessage = function (event) {
     categoriesSet.add(category);
 
     // Sumar ventas totales
-    const totalSales = getRowValue(row, totalSalesIndex);
+    const totalSales = getRowValue(row, salesIndex);
     sumSales += totalSales;
 
     // Sumar costo de ventas
-    const costSales = getRowValue(row, costSalesIndex);
+    const costSales = getRowValue(row, salesCostIndex);
     sumCostSales += costSales;
 
-    // Enviar progreso cada 100,000 filas
     if (i % 10000 === 0) {
       self.postMessage({ progress: (i / rows.length) * 100 });
     }
