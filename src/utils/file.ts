@@ -1,7 +1,7 @@
 import { GridColDef } from "@mui/x-data-grid";
 import { COLUMNS, DRIVERS } from "src/consts";
 import { EColumnType, EDriverType } from "src/enums";
-import { ICATGenRow } from "src/pages/client/CAT/components/CATTableGen";
+import { ICatData } from "src/models/user";
 
 export async function getJsonDataFromFileAsync(file: Blob): Promise<any[][]> {
   return new Promise((resolve, reject) => {
@@ -67,65 +67,64 @@ export function getColumnIndexRange(column: EColumnType): number[] | undefined {
   return col?.indexRange;
 }
 
-export function getAgetCATGenDataAsync(rows: any[]): Promise<ICATGenRow[]> {
+export function getCATGenDataAsync(
+  rows: any[]
+): Promise<ICatData["catCategoriesFirst"]["rows"]> {
   return new Promise((resolve, reject) => {
-    try {
-      const categoryIndex = getColumnIndex(EColumnType.CATEGORY)!;
-      const sumOfInvAvgQtyIndex = getColumnIndex(EColumnType.AVG_INV_QTY)!;
-      const sumOfInvAvgValueIndex = getColumnIndex(EColumnType.AVG_INV_VALUE)!;
-      const sumOfQtySentIndex = getColumnIndex(EColumnType.PCK_SENT)!;
-      const sumOfCubageInvAvgIndex = getColumnIndex(EColumnType.CIP)!;
-      const sumOfTotalSalesIndex = getColumnIndex(EColumnType.TOTAL_SALES)!;
-      const sumOfGrossMarginIndex = getColumnIndex(EColumnType.GROSS_MARGIN)!;
+    const worker = new Worker(
+      new URL("./workers/calculateCatDataCategoryFirst.js", import.meta.url)
+    );
 
-      const response: { [category: string]: ICATGenRow } = {};
+    worker.onmessage = (event) => {
+      const { data, progress, error } = event.data;
+      console.log(data);
 
-      for (let i = 0; i < rows.length; i++) {
-        const category = getRowValue(rows[i], categoryIndex) as string;
-        if (!response[category]) {
-          response[category] = {
-            id: i,
-            category,
-            skusCount: 0,
-            sumInvAvgQty: 0,
-            sumInvAvgValue: 0,
-            sumQtySent: 0,
-            sumCubageInvAvg: 0,
-            sumTotalSales: 0,
-            sumGrossMargin: 0,
-          };
-        }
-        response[category].skusCount++;
-        response[category].sumInvAvgQty += getRowValue(
-          rows[i],
-          sumOfInvAvgQtyIndex
-        ) as number;
-        response[category].sumInvAvgValue += getRowValue(
-          rows[i],
-          sumOfInvAvgValueIndex
-        ) as number;
-        response[category].sumQtySent += getRowValue(
-          rows[i],
-          sumOfQtySentIndex
-        ) as number;
-        response[category].sumCubageInvAvg += getRowValue(
-          rows[i],
-          sumOfCubageInvAvgIndex
-        ) as number;
-        response[category].sumTotalSales += getRowValue(
-          rows[i],
-          sumOfTotalSalesIndex
-        ) as number;
-        response[category].sumGrossMargin += getRowValue(
-          rows[i],
-          sumOfGrossMarginIndex
-        ) as number;
+      if (error) {
+        reject(new Error(error));
+      } else if (progress || progress == 0) {
+        console.log(`Progress: ${progress}%`);
+      } else {
+        resolve(data as ICatData["catCategoriesFirst"]["rows"]);
       }
+    };
 
-      resolve(Object.values(response));
-    } catch (error) {
-      reject(error);
-    }
+    worker.onerror = (error) => {
+      reject(new Error("Error in worker: " + error.message));
+    };
+
+    worker.postMessage({
+      rows,
+      category: {
+        index: getColumnIndex(EColumnType.CATEGORY)!,
+      },
+      sku: {
+        label: EDriverType.SKUS,
+      },
+      sumOfInvAvgQty: {
+        index: getColumnIndex(EColumnType.AVERAGE_INVENTORY)!,
+        label: EDriverType.AVERAGE_INVENTORY,
+      },
+      sumOfInvAvgValue: {
+        index: getColumnIndex(EColumnType.INVENTORY_VALUE)!,
+        label: EDriverType.INVENTORY_VALUE,
+      },
+      sumOfQtySent: {
+        index: getColumnIndex(EColumnType.SHIPPED_CASES)!,
+        label: EDriverType.SHIPPED_CASES,
+      },
+      sumOfCubageInvAvg: {
+        index: getColumnIndex(EColumnType.INVENTORY_CUBE)!,
+        label: EDriverType.INVENTORY_CUBE,
+      },
+      sumOfTotalSales: {
+        index: getColumnIndex(EColumnType.SALES)!,
+        label: EDriverType.SALES,
+      },
+      sumOfGrossMargin: {
+        index: getColumnIndex(EColumnType.GROSS_MARGIN)!,
+        label: "sumOfGrossMargin",
+      },
+    });
   });
 }
 
@@ -159,7 +158,7 @@ export function getCATDataAsync(rows: any[]): Promise<
               };
               break;
             case EDriverType.SALES:
-              index = getColumnIndex(EColumnType.TOTAL_SALES)!;
+              index = getColumnIndex(EColumnType.SALES)!;
               obj[driver.name] = {
                 ...obj[driver.name],
                 [category]:
@@ -168,7 +167,7 @@ export function getCATDataAsync(rows: any[]): Promise<
               };
               break;
             case EDriverType.INVENTORY_VALUE:
-              index = getColumnIndex(EColumnType.AVG_INV_VALUE)!;
+              index = getColumnIndex(EColumnType.INVENTORY_VALUE)!;
               obj[driver.name] = {
                 ...obj[driver.name],
                 [category]:
@@ -177,7 +176,7 @@ export function getCATDataAsync(rows: any[]): Promise<
               };
               break;
             case EDriverType.AVERAGE_INVENTORY:
-              index = getColumnIndex(EColumnType.AVG_INV_QTY)!;
+              index = getColumnIndex(EColumnType.AVERAGE_INVENTORY)!;
               obj[driver.name] = {
                 ...obj[driver.name],
                 [category]:
@@ -186,7 +185,7 @@ export function getCATDataAsync(rows: any[]): Promise<
               };
               break;
             case EDriverType.SHIPPED_CASES:
-              index = getColumnIndex(EColumnType.PCK_SENT)!;
+              index = getColumnIndex(EColumnType.SHIPPED_CASES)!;
               obj[driver.name] = {
                 ...obj[driver.name],
                 [category]:
@@ -195,7 +194,7 @@ export function getCATDataAsync(rows: any[]): Promise<
               };
               break;
             case EDriverType.INVENTORY_CUBE:
-              index = getColumnIndex(EColumnType.CIP)!;
+              index = getColumnIndex(EColumnType.INVENTORY_CUBE)!;
               obj[driver.name] = {
                 ...obj[driver.name],
                 [category]:
@@ -280,7 +279,7 @@ export function getGeneralDataAsync(rows?: any[]): Promise<{
     worker.postMessage({
       rows,
       categoryIndex: getColumnIndex(EColumnType.CATEGORY),
-      salesIndex: getColumnIndex(EColumnType.TOTAL_SALES),
+      salesIndex: getColumnIndex(EColumnType.SALES),
       salesCostIndex: getColumnIndex(EColumnType.COST_SALES),
     });
   });

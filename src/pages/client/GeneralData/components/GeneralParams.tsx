@@ -90,6 +90,7 @@ const GeneralParams = ({ register, errors, hideSum = false }: Props) => {
           }
           fullWidth
           type="number"
+          InputLabelProps={{ shrink: true }}
         />
       </Grid>
     </Grid>

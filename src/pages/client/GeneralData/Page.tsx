@@ -1,73 +1,105 @@
 import { Alert, Container, Grid, Typography } from "@mui/material";
-import { PageHeader } from "src/components";
+import { GlobalLoader, PageHeader } from "src/components";
 import { GeneralParams, InventoryParams, StoringParams } from "./components";
-import { IParams } from "src/models/user";
+import { IDataParams } from "src/models/user";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm } from "react-hook-form";
 import { paramsSchema } from "./schema";
 import { useEffect } from "react";
 import { LoadingButton } from "@mui/lab";
 import { useCube } from "src/context/cube";
+import { useDataParams } from "./hooks";
 
 const Page = () => {
   const {
-    dataParams: { data: params, loading, error, updateDataParams },
+    dataParams: { setData: setDataParams, data: _dataParams },
   } = useCube();
+  const {
+    data: dataParams,
+    error,
+    loading,
+    updateDataParams,
+  } = useDataParams({
+    autoload: !_dataParams,
+    initialData: _dataParams ?? null,
+  });
+
   const {
     formState: { errors },
     register,
     handleSubmit,
     setValue,
-  } = useForm<IParams>({
+  } = useForm<IDataParams>({
     resolver: yupResolver(paramsSchema),
     defaultValues: {
       generalParams: {
         financial: {
           sales: 0,
           salesCost: 0,
-          inventoryAnnualCost: 0,
-          companyCapitalCost: 0,
-          technologyCapitalCost: 0,
+          inventoryAnnualCost: 12,
+          companyCapitalCost: 12,
+          technologyCapitalCost: 12,
         },
         operational: {
           annualWorkingHours: 0,
         },
       },
       storingParams: {
-        manoObraCost: 0,
-        alquilerCost: 0,
-        suministroOficinaCost: 0,
-        energiaCost: 0,
-        tercerizacionCost: 0,
-        otherCosts: 0,
+        costs: {
+          manoObraCost: 0,
+          alquilerCost: 0,
+          suministroOficinaCost: 0,
+          energiaCost: 0,
+          tercerizacionCost: 0,
+          otherCosts: 0,
+        },
+        investments: {
+          terrenoEdificio: 0,
+          manejoMateriales: 0,
+          almacenajeMateriales: 0,
+          administracionAlmacen: 0,
+          otrasInversiones: 0,
+        },
       },
       inventoryParams: {
-        manoObraCost: 0,
-        insuranceCost: 0,
-        energyCost: 0,
-        officeSupplyCost: 0,
-        officeSpaceCost: 0,
-        otherCosts: 0,
+        costs: {
+          manoObraCost: 0,
+          insuranceCost: 0,
+          energyCost: 0,
+          officeSupplyCost: 0,
+          officeSpaceCost: 0,
+          otherCosts: 0,
+        },
+        investments: {
+          hardwareInvestment: 0,
+          inventoryInvestment: 0,
+          managementSystemInvestment: 0,
+        },
       },
       categories: [],
     },
   });
 
   useEffect(() => {
-    if (params) {
-      setValue("generalParams", params.generalParams);
-      setValue("storingParams", params.storingParams);
-      setValue("inventoryParams", params.inventoryParams);
-      setValue("categories", params.categories);
+    if (dataParams) {
+      setValue("generalParams", dataParams.generalParams);
+      setValue("storingParams", dataParams.storingParams);
+      setValue("inventoryParams", dataParams.inventoryParams);
+      setValue("categories", dataParams.categories);
     }
-  }, [params, setValue]);
+  }, [dataParams, setValue]);
 
-  async function _handleSubmit(data: IParams) {
-    updateDataParams(data);
+  async function _handleSubmit(data: IDataParams) {
+    await updateDataParams(data);
+    setDataParams(data);
   }
 
   if (error) {
     return <Alert severity="error">{error}</Alert>;
+  }
+
+  if (loading && !dataParams) {
+    return <GlobalLoader />;
   }
 
   return (
@@ -79,50 +111,37 @@ const Page = () => {
         onSubmit={handleSubmit(_handleSubmit)}
       >
         <Grid container spacing={4}>
-          <Grid item xs={12} md={6}>
-            <Grid item xs={12}>
-              <Typography color="text.primary" variant="h6">
-                Parámetros Generales
-              </Typography>
-            </Grid>
+          <Grid item xs={12} sm={6} md={4}>
             <Grid item xs={12} mb={2}>
-              <Alert severity="info">
-                Estos son los parámetros generales de la empresa.
-              </Alert>
+              <Typography color="text.primary" variant="body1">
+                Parametros Generales
+              </Typography>
             </Grid>
             <GeneralParams errors={errors} register={register} />
           </Grid>
-          <Grid item xs={0} md={6} />
-          <Grid item xs={12} md={6}>
-            <Grid item xs={12}>
-              <Typography color="text.primary" variant="h6">
-                Parámetros Almacenaje
-              </Typography>
-            </Grid>
+          <Grid item xs={12} sm={6} md={4}>
             <Grid item xs={12} mb={2}>
-              <Alert severity="info">
-                Estos valores son utilizados para calcular el costo de
-                almacenamiento.
-              </Alert>
+              <Typography color="text.primary" variant="body1">
+                Parametros de Almacenaje
+              </Typography>
             </Grid>
             <StoringParams errors={errors} register={register} />
           </Grid>
-          <Grid item xs={12} md={6}>
-            <Grid item xs={12}>
-              <Typography color="text.primary" variant="h6">
-                Parámetros Inventario
-              </Typography>
-            </Grid>
+          <Grid item xs={12} sm={6} md={4}>
             <Grid item xs={12} mb={2}>
-              <Alert severity="info">
-                Estos valores son utilizados para calcular el costo de
-                inventario.
-              </Alert>
+              <Typography color="text.primary" variant="body1">
+                Parametros de Inventario
+              </Typography>
             </Grid>
             <InventoryParams errors={errors} register={register} />
           </Grid>
           <Grid item xs={12} mt={2} textAlign="right">
-            <LoadingButton type="submit" loading={loading} variant="contained">
+            <LoadingButton
+              loading={loading}
+              type="submit"
+              variant="contained"
+              color="primary"
+            >
               Guardar
             </LoadingButton>
           </Grid>

@@ -1,5 +1,5 @@
 import { GridColDef } from "@mui/x-data-grid";
-import { IDataParams } from "src/models/user";
+import { ICatData, IDataParams } from "src/models/user";
 
 export interface Row {
   id: number;
@@ -14,13 +14,27 @@ export interface FileResolution {
 }
 
 export interface CubeContextType {
-  loading: boolean;
+  hasInitialData: boolean;
+  setHasInitialData: (hasInitialData: boolean) => void;
   setFileResolution: (fileResolution: FileResolution) => void;
   fileResolution?: FileResolution;
   customUid?: string;
   setCustomUid: (uid: string) => void;
+  loadCube: (extraStepsToLoad?: ExtraStepToLoad[]) => void;
+  isCubeLoading: boolean;
+
   dataParams: {
     data?: IDataParams;
     setData: (data: IDataParams) => void;
   };
+  catData: {
+    data?: ICatData;
+    setData: (data: ICatData) => void;
+  };
+}
+
+export interface ExtraStepToLoad {
+  loader: (data?: any) => Promise<void>;
+  label: string;
+  status: "not loaded" | "loaded" | "loading";
 }

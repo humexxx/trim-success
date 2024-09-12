@@ -1,20 +1,10 @@
 import { Box, Toolbar, Typography } from "@mui/material";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
-import { useEffect, useMemo, useState } from "react";
-import { useCube } from "src/context/cube";
-import { formatCurrency, getAgetCATGenDataAsync } from "src/utils";
-
-export interface ICATGenRow {
-  id: number;
-  category: string;
-  skusCount: number;
-  sumInvAvgQty: number;
-  sumInvAvgValue: number;
-  sumQtySent: number;
-  sumCubageInvAvg: number;
-  sumTotalSales: number;
-  sumGrossMargin: number;
-}
+import { useEffect, useState } from "react";
+import { DRIVERS } from "src/consts";
+import { EDriverType } from "src/enums";
+import { ICatData } from "src/models/user";
+import { formatCurrency } from "src/utils";
 
 const columns: GridColDef[] = [
   {
@@ -22,46 +12,17 @@ const columns: GridColDef[] = [
     headerName: "Rotulos de fila",
     flex: 1,
   },
+  ...DRIVERS.filter((x) => !x.catHiddenByDefault).map(
+    (driver) =>
+      ({
+        field: driver.name,
+        headerName: driver.catDescription,
+        type: "number",
+        minWidth: 175,
+      }) as GridColDef
+  ),
   {
-    field: "skusCount",
-    headerName: "Count of Codigo Producto",
-    type: "number",
-    minWidth: 175,
-  },
-  {
-    field: "sumInvAvgQty",
-    headerName: "Sum of Inventario Prom. Bultos",
-    type: "number",
-    minWidth: 175,
-  },
-  {
-    field: "sumInvAvgValue",
-    headerName: "Sum of Inventario Prom. $",
-    valueFormatter: formatCurrency,
-    type: "number",
-    minWidth: 175,
-  },
-  {
-    field: "sumQtySent",
-    headerName: "Sum of Bultos Despachados",
-    type: "number",
-    minWidth: 175,
-  },
-  {
-    field: "sumCubageInvAvg",
-    headerName: "Sum of Cubicaje Inv Prom.",
-    type: "number",
-    minWidth: 175,
-  },
-  {
-    field: "sumTotalSales",
-    headerName: "Sum of Ventas Totales",
-    valueFormatter: formatCurrency,
-    type: "number",
-    minWidth: 175,
-  },
-  {
-    field: "sumGrossMargin",
+    field: "sumOfGrossMargin",
     headerName: "Sum of Gross Margin",
     valueFormatter: formatCurrency,
     type: "number",
@@ -69,50 +30,50 @@ const columns: GridColDef[] = [
   },
 ];
 
-const CATTableGen = () => {
-  const { fileResolution } = useCube();
-  const [isLoading, setIsLoading] = useState(false);
-  const [rows, setRows] = useState<ICATGenRow[]>([]);
-  const [sumRow, setSumRow] = useState<ICATGenRow | null>(null);
+interface Props {
+  data?: ICatData["catCategoriesFirst"];
+}
+
+const CATTableGen = ({ data }: Props) => {
+  const [rows, setRows] = useState<ICatData["catCategoriesFirst"]["rows"]>([]);
+  const [sumRow, setSumRow] = useState<
+    ICatData["catCategoriesFirst"]["rows"][number] | null
+  >(null);
 
   useEffect(() => {
-    if (fileResolution) {
-      setIsLoading(true);
-      getAgetCATGenDataAsync(fileResolution.rows!).then((data) => {
-        setSumRow({
-          id: -1,
-          category: "Total",
-          skusCount: data.reduce((acc, row) => acc + row.skusCount, 0),
-          sumInvAvgQty: data.reduce((acc, row) => acc + row.sumInvAvgQty, 0),
-          sumInvAvgValue: data.reduce(
-            (acc, row) => acc + row.sumInvAvgValue,
-            0
-          ),
-          sumQtySent: data.reduce((acc, row) => acc + row.sumQtySent, 0),
-          sumCubageInvAvg: data.reduce(
-            (acc, row) => acc + row.sumCubageInvAvg,
-            0
-          ),
-          sumTotalSales: data.reduce((acc, row) => acc + row.sumTotalSales, 0),
-          sumGrossMargin: data.reduce(
-            (acc, row) => acc + row.sumGrossMargin,
-            0
-          ),
-        });
-        setRows(data);
-        setIsLoading(false);
-      });
+    if (data?.rows) {
+      setSumRow({
+        category: "Total",
+        ...DRIVERS.filter((x) => !x.catHiddenByDefault).reduce(
+          (acc, driver) => {
+            acc[driver.name] = data.rows.reduce(
+              (acc, row) => acc + (row[driver.name as EDriverType] as number),
+              0
+            );
+            return acc;
+          },
+          {} as Omit<
+            ICatData["catCategoriesFirst"]["rows"][number],
+            "category" | "sumGrossMargin"
+          >
+        ),
+        sumOfGrossMargin: data.rows.reduce(
+          (acc, row) => acc + row.sumOfGrossMargin,
+          0
+        ),
+      } as ICatData["catCategoriesFirst"]["rows"][number]);
+      setRows(data.rows);
     }
-  }, [fileResolution]);
+  }, [data]);
 
   return (
     <>
       <Box>
         <DataGrid
+          getRowId={(row) => row.category}
           aria-label="CAT General Table"
           columns={columns}
           rows={rows}
-          loading={isLoading}
           hideFooter
           disableAutosize
           disableColumnMenu

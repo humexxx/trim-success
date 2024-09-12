@@ -5,15 +5,14 @@ import APP_DRAWER, {
 
 import { ThemeProvider } from "src/context/theme";
 import { Box, Drawer, Toolbar, Container } from "@mui/material";
-import { CubeProvider, useCube } from "src/context/cube";
+import { CubeProvider } from "src/context/cube";
 import { useState } from "react";
-import { GlobalLoader, PrivateRoute } from "src/components";
+import { PrivateRoute } from "src/components";
 import { Header } from "./components";
 
 function ClientLayout() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
-  const cube = useCube();
 
   const handleDrawerClose = () => {
     setIsClosing(true);
@@ -82,13 +81,9 @@ function ClientLayout() {
       >
         <Toolbar />
 
-        {cube.loading ? (
-          <GlobalLoader />
-        ) : (
-          <Container maxWidth="xl">
-            <Outlet />
-          </Container>
-        )}
+        <Container maxWidth="xl">
+          <Outlet />
+        </Container>
       </Box>
     </Box>
   );
@@ -98,10 +93,7 @@ export default function ClientLayoutWrapper() {
   return (
     <PrivateRoute>
       <ThemeProvider>
-        <CubeProvider
-          successRoute="/client/dashboard"
-          fallbackRoute="/client/import"
-        >
+        <CubeProvider>
           <ClientLayout />
         </CubeProvider>
       </ThemeProvider>

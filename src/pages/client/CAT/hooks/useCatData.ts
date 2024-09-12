@@ -2,40 +2,46 @@ import { doc, getDoc, setDoc } from "firebase/firestore";
 import { useCallback, useEffect, useState } from "react";
 import { useAuth } from "src/context/auth";
 import { firestore } from "src/firebase";
-import { IDataParams } from "src/models/user";
+import { ICatData } from "src/models/user";
 
-export interface UseDataParams {
-  data: IDataParams | null;
+export interface UseCatData {
+  data: ICatData | null;
   loading: boolean;
   error: string | null;
-  updateDataParams: (data: IDataParams) => Promise<void>;
+  updateCatData: (data: ICatData) => Promise<void>;
 }
 
 function getDocumentPath(uid: string) {
-  return `settings/${uid}/data/params`;
+  return `settings/${uid}/data/catData`;
 }
 
 function useDataParams(
   {
-    autoload,
     initialData,
-  }: { autoload: boolean; initialData: IDataParams | null } = {
-    autoload: true,
+    userId,
+  }: {
+    initialData: ICatData | null;
+    userId?: string;
+  } = {
     initialData: null,
+    userId: undefined,
   }
-): UseDataParams {
+): UseCatData {
   const { currentUser } = useAuth();
-  const [data, setData] = useState<IDataParams | null>(initialData);
-  const [loading, setLoading] = useState<boolean>(autoload);
+  const [data, setData] = useState<ICatData | null>(initialData);
+  const [loading, setLoading] = useState<boolean>(!initialData);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     async function fetchData() {
       try {
-        const snapshot = doc(firestore, getDocumentPath(currentUser!.uid));
+        const snapshot = doc(
+          firestore,
+          getDocumentPath(userId ?? currentUser!.uid)
+        );
         const docSnap = await getDoc(snapshot);
         if (docSnap.exists()) {
-          setData(docSnap.data() as IDataParams);
+          setData(docSnap.data() as ICatData);
         }
       } catch (error: any) {
         setError(error.message ?? error.toString());
@@ -44,13 +50,13 @@ function useDataParams(
       }
     }
 
-    if (currentUser && autoload) {
+    if (!initialData && !data) {
       fetchData();
     }
-  }, [currentUser]);
+  }, [currentUser, data, initialData, userId]);
 
-  const updateDataParams = useCallback(
-    async (data: IDataParams) => {
+  const updateCatData = useCallback(
+    async (data: ICatData) => {
       setLoading(true);
       try {
         const docRef = doc(firestore, getDocumentPath(currentUser!.uid));
@@ -65,7 +71,7 @@ function useDataParams(
     [currentUser]
   );
 
-  return { data, loading, error, updateDataParams };
+  return { data, loading, error, updateCatData };
 }
 
 export default useDataParams;

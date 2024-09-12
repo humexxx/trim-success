@@ -35,6 +35,7 @@ export default function Page() {
   };
 
   const handleOnFinish = () => {
+    cube.setHasInitialData(true);
     navigate("/client/dashboard");
   };
 

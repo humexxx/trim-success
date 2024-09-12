@@ -21,14 +21,14 @@ import DescriptionOutlinedIcon from "@mui/icons-material/DescriptionOutlined";
 import Filter1OutlinedIcon from "@mui/icons-material/Filter1Outlined";
 import Filter2OutlinedIcon from "@mui/icons-material/Filter2Outlined";
 
-function getRoutes(isAdmin: boolean, hasCube: boolean) {
+function getRoutes(isAdmin: boolean, hasInitialData: boolean) {
   return [
     {
       text: "Importar",
       caption: isAdmin ? "Administrador" : "",
       icon: isAdmin ? <SystemUpdateAltIcon /> : <DownloadIcon />,
       path: isAdmin ? "/client/import-admin" : "/client/import",
-      isCubeLoader: true,
+      isLoader: true,
     },
     {
       text: "Panel",
@@ -55,18 +55,17 @@ function getRoutes(isAdmin: boolean, hasCube: boolean) {
       icon: <SmartToyIcon />,
       path: "/client/ai",
     },
-  ].filter(({ isCubeLoader }) => isAdmin || !(isCubeLoader && hasCube));
+  ].filter(({ isLoader }) => isAdmin || hasInitialData !== Boolean(isLoader));
 }
 
 const Drawer = () => {
-  const { fileResolution, loading } = useCube();
+  const { hasInitialData } = useCube();
   const user = useAuth();
   const location = useLocation();
 
   const routes = useMemo(
-    () =>
-      getRoutes(Boolean(user.currentUser!.isAdmin), Boolean(fileResolution)),
-    [fileResolution, user.currentUser]
+    () => getRoutes(Boolean(user.currentUser!.isAdmin), hasInitialData),
+    [hasInitialData, user.currentUser]
   );
 
   return (
@@ -74,7 +73,7 @@ const Drawer = () => {
       <Toolbar />
       <Divider />
       <List sx={{ flexGrow: 1 }}>
-        {routes.map(({ text, caption, icon, path, isCubeLoader }) => (
+        {routes.map(({ text, caption, icon, path }) => (
           <ListItem key={text}>
             <ListItemButton
               sx={{ borderRadius: 2 }}
@@ -82,7 +81,6 @@ const Drawer = () => {
               component={NavLink}
               to={path}
               unstable_viewTransition
-              disabled={(!isCubeLoader && !fileResolution) || loading}
             >
               <ListItemIcon>{icon}</ListItemIcon>
               <ListItemText primary={text} secondary={caption} />
@@ -99,7 +97,6 @@ const Drawer = () => {
             component={NavLink}
             to="/client/settings"
             unstable_viewTransition
-            disabled={loading}
           >
             <ListItemIcon>
               <SettingsIcon />
