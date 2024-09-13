@@ -5,7 +5,7 @@ import {
   FileResolution,
 } from "./CubeContext.types";
 import { useAuth } from "../auth";
-import { ICatData, IDataParams } from "src/models/user";
+import { ICatData, IDataParams, IScorecardData } from "src/models/user";
 import CubeLoader from "./CubeLoader";
 
 export const CubeContext = createContext<CubeContextType | undefined>(
@@ -30,6 +30,9 @@ export default function CubeProvider({ children }: CubeProviderProps) {
 
   const [dataParams, setDataParams] = useState<IDataParams | undefined>();
   const [catData, setCatData] = useState<ICatData | undefined>();
+  const [scorecardData, setScorecardData] = useState<
+    IScorecardData | undefined
+  >();
 
   const _loadCube = useCallback((extraStepsToLoad?: ExtraStepToLoad[]) => {
     if (extraStepsToLoad) setExtraStepsToLoad(extraStepsToLoad);
@@ -55,6 +58,10 @@ export default function CubeProvider({ children }: CubeProviderProps) {
       data: catData,
       setData: setCatData,
     },
+    scorecardData: {
+      data: scorecardData,
+      setData: setScorecardData,
+    },
   };
 
   return (
@@ -66,6 +73,7 @@ export default function CubeProvider({ children }: CubeProviderProps) {
         loadCube={loadCube}
         setLoadCube={setLoadCube}
         userId={user.currentUser!.uid}
+        fileResolution={fileResolution}
       />
       {children}
     </CubeContext.Provider>

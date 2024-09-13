@@ -1,5 +1,5 @@
 import { GridColDef } from "@mui/x-data-grid";
-import { ICatData, IDataParams } from "src/models/user";
+import { ICatData, IDataParams, IScorecardData } from "src/models/user";
 
 export interface Row {
   id: number;
@@ -30,6 +30,10 @@ export interface CubeContextType {
   catData: {
     data?: ICatData;
     setData: (data: ICatData) => void;
+  };
+  scorecardData: {
+    data?: IScorecardData;
+    setData: (data: IScorecardData) => void;
   };
 }
 

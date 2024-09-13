@@ -23,11 +23,12 @@ interface Props {
   setFileResolution: (value: FileResolution | undefined) => void;
   extraStepsToLoad: ExtraStepToLoad[];
   setExtraStepsToLoad: React.Dispatch<React.SetStateAction<ExtraStepToLoad[]>>;
+  fileResolution: FileResolution | undefined;
 }
 
 interface LoadingProgress {
   file: "not loaded" | "loaded" | "loading";
-  jasonData: "not loaded" | "loaded" | "loading";
+  jsonData: "not loaded" | "loaded" | "loading";
   rowsAndColumns: "not loaded" | "loaded" | "loading";
 }
 
@@ -38,11 +39,12 @@ const CubeLoader = ({
   setFileResolution,
   setExtraStepsToLoad,
   extraStepsToLoad,
+  fileResolution,
 }: Props) => {
   const [loadingProgress, setLoadingProgress] = useState<LoadingProgress>({
-    file: "loading",
-    jasonData: "not loaded",
-    rowsAndColumns: "not loaded",
+    file: fileResolution?.file ? "loaded" : "loading",
+    jsonData: fileResolution?.jsonData ? "loaded" : "not loaded",
+    rowsAndColumns: fileResolution?.rows ? "loaded" : "not loaded",
   });
 
   function getStatusIndicator(status: "not loaded" | "loaded" | "loading") {
@@ -60,83 +62,97 @@ const CubeLoader = ({
   }
 
   useEffect(() => {
-    async function loadFile() {
+    async function load() {
       const folderRef = ref(storage, `${STORAGE_PATH}/${userId}/`);
 
       try {
-        const result = await listAll(folderRef);
-        if (result.items.length > 0) {
+        let fileBlob: Blob | undefined = fileResolution?.file;
+        let fileName: string | undefined = fileResolution?.file?.name;
+        if (loadingProgress.file === "loading") {
+          const result = await listAll(folderRef);
+          if (!(result.items.length > 0)) throw new Error("No files found.");
           const firstFileRef = result.items[0];
-          const fileBlob = await getBlob(firstFileRef);
+          fileBlob = await getBlob(firstFileRef);
+          fileName = firstFileRef.name;
+        }
 
+        let jsonData: any[][] | undefined = fileResolution?.jsonData;
+        if (loadingProgress.jsonData === "not loaded") {
           setLoadingProgress({
             file: "loaded",
-            jasonData: "loading",
+            jsonData: "loading",
             rowsAndColumns: "not loaded",
           });
 
-          const jsonData = await getJsonDataFromFileAsync(fileBlob);
+          jsonData = await getJsonDataFromFileAsync(fileBlob!);
+        }
 
+        let columns = fileResolution?.columns;
+        let rows = fileResolution?.rows;
+        if (!columns || !rows) {
           setLoadingProgress({
-            jasonData: "loaded",
+            jsonData: "loaded",
             file: "loaded",
             rowsAndColumns: "loading",
           });
 
-          const { columns, rows } = await getColsAndRowsAsync(jsonData);
+          const { columns: _columns, rows: _rows } =
+            await getColsAndRowsAsync(jsonData);
+          columns = _columns;
+          rows = _rows;
 
           setLoadingProgress({
             rowsAndColumns: "loaded",
-            jasonData: "loaded",
+            jsonData: "loaded",
             file: "loaded",
           });
-
-          setFileResolution({
-            columns,
-            rows,
-            file: { ...fileBlob, name: firstFileRef.name },
-            jsonData,
-          });
-
-          if (extraStepsToLoad.length > 0) {
-            for (let i = 0; i < extraStepsToLoad.length; i++) {
-              setExtraStepsToLoad((prev) =>
-                prev.map((step, index) => {
-                  if (index === i) {
-                    return {
-                      ...step,
-                      status: "loading",
-                    };
-                  }
-                  return step;
-                })
-              );
-              await extraStepsToLoad[i].loader({ rows });
-              setExtraStepsToLoad((prev) =>
-                prev.map((step, index) => {
-                  if (index === i) {
-                    return {
-                      ...step,
-                      status: "loaded",
-                    };
-                  }
-                  return step;
-                })
-              );
-            }
-          }
-
-          setTimeout(() => {
-            setLoadCube(false);
-            setExtraStepsToLoad([]);
-          }, 500);
         }
+
+        setFileResolution({
+          columns,
+          rows,
+          file: { ...fileBlob!, name: fileName! },
+          jsonData,
+        });
+
+        if (extraStepsToLoad.length > 0) {
+          for (let i = 0; i < extraStepsToLoad.length; i++) {
+            setExtraStepsToLoad((prev) =>
+              prev.map((step, index) => {
+                if (index === i) {
+                  return {
+                    ...step,
+                    status: "loading",
+                  };
+                }
+                return step;
+              })
+            );
+            await extraStepsToLoad[i].loader({ rows });
+            setExtraStepsToLoad((prev) =>
+              prev.map((step, index) => {
+                if (index === i) {
+                  return {
+                    ...step,
+                    status: "loaded",
+                  };
+                }
+                return step;
+              })
+            );
+          }
+        }
+
+        setTimeout(() => {
+          setLoadCube(false);
+          setExtraStepsToLoad([]);
+        }, 500);
       } catch (error) {
         console.error("Error fetching files:", error);
       }
     }
 
-    if (loadCube) loadFile();
+    if (loadCube) load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loadCube]);
 
@@ -172,7 +188,7 @@ const CubeLoader = ({
               color="text.primary"
               sx={{ display: "flex", alignItems: "center" }}
             >
-              {getStatusIndicator(loadingProgress.jasonData)} Formatear datos
+              {getStatusIndicator(loadingProgress.jsonData)} Formatear datos
             </Typography>
           </Grid>
           <Grid item xs={12}>

@@ -1,7 +1,7 @@
 import { GridColDef } from "@mui/x-data-grid";
 import { COLUMNS, DRIVERS } from "src/consts";
 import { EColumnType, EDriverType } from "src/enums";
-import { ICatData } from "src/models/user";
+import { ICatData, IDataParams, IScorecardData } from "src/models/user";
 
 export async function getJsonDataFromFileAsync(file: Blob): Promise<any[][]> {
   return new Promise((resolve, reject) => {
@@ -67,7 +67,7 @@ export function getColumnIndexRange(column: EColumnType): number[] | undefined {
   return col?.indexRange;
 }
 
-export function getCATGenDataAsync(
+export function getCatDataCategoryFirstAsync(
   rows: any[]
 ): Promise<ICatData["catCategoriesFirst"]["rows"]> {
   return new Promise((resolve, reject) => {
@@ -77,7 +77,6 @@ export function getCATGenDataAsync(
 
     worker.onmessage = (event) => {
       const { data, progress, error } = event.data;
-      console.log(data);
 
       if (error) {
         reject(new Error(error));
@@ -128,124 +127,167 @@ export function getCATGenDataAsync(
   });
 }
 
-export function getCATDataAsync(rows: any[]): Promise<
-  {
-    id: string;
-    driver: EDriverType;
-    [category: string]: number | string;
-  }[]
-> {
-  return new Promise((resolve, reject) => {
-    try {
-      const categoryIndex = getColumnIndex(EColumnType.CATEGORY)!;
-      const obj: Record<string, Record<string, number>> = {};
-      const response: {
-        id: string;
-        driver: EDriverType;
-        [category: string]: number | string;
-      }[] = [];
+export function getCatDataDriversFirst(
+  rows: ICatData["catCategoriesFirst"]["rows"],
+  totals: ICatData["catCategoriesFirst"]["totals"]
+): ICatData["catDriversFirst"]["rows"] {
+  return DRIVERS.map((driver) => {
+    const _row = {
+      driver: driver.name,
+    } as ICatData["catDriversFirst"]["rows"][number];
 
-      for (let i = 0; i < rows.length; i++) {
-        const category = getRowValue(rows[i], categoryIndex) as string;
+    rows.forEach((row) => {
+      _row[row.category] = Number(totals[driver.name])
+        ? Number(row[driver.name]) / Number(totals[driver.name])
+        : 0;
+    });
 
-        DRIVERS.forEach((driver) => {
-          let index = -1;
-          switch (driver.name as EDriverType) {
-            case EDriverType.SKUS:
-              obj[driver.name] = {
-                ...obj[driver.name],
-                [category]: (obj[driver.name]?.[category] || 0) + 1,
-              };
-              break;
-            case EDriverType.SALES:
-              index = getColumnIndex(EColumnType.SALES)!;
-              obj[driver.name] = {
-                ...obj[driver.name],
-                [category]:
-                  (obj[driver.name]?.[category] || 0) +
-                  (getRowValue(rows[i], index) as number),
-              };
-              break;
-            case EDriverType.INVENTORY_VALUE:
-              index = getColumnIndex(EColumnType.INVENTORY_VALUE)!;
-              obj[driver.name] = {
-                ...obj[driver.name],
-                [category]:
-                  (obj[driver.name]?.[category] || 0) +
-                  (getRowValue(rows[i], index) as number),
-              };
-              break;
-            case EDriverType.AVERAGE_INVENTORY:
-              index = getColumnIndex(EColumnType.AVERAGE_INVENTORY)!;
-              obj[driver.name] = {
-                ...obj[driver.name],
-                [category]:
-                  (obj[driver.name]?.[category] || 0) +
-                  (getRowValue(rows[i], index) as number),
-              };
-              break;
-            case EDriverType.SHIPPED_CASES:
-              index = getColumnIndex(EColumnType.SHIPPED_CASES)!;
-              obj[driver.name] = {
-                ...obj[driver.name],
-                [category]:
-                  (obj[driver.name]?.[category] || 0) +
-                  (getRowValue(rows[i], index) as number),
-              };
-              break;
-            case EDriverType.INVENTORY_CUBE:
-              index = getColumnIndex(EColumnType.INVENTORY_CUBE)!;
-              obj[driver.name] = {
-                ...obj[driver.name],
-                [category]:
-                  (obj[driver.name]?.[category] || 0) +
-                  (getRowValue(rows[i], index) as number),
-              };
-              break;
-            case EDriverType.PLANNERS:
-              obj[driver.name] = {
-                ...obj[driver.name],
-                [category]: 0,
-              };
-              break;
-            case EDriverType.ORDERS:
-              obj[driver.name] = {
-                ...obj[driver.name],
-                [category]: 0,
-              };
-              break;
-          }
-        });
-      }
-
-      for (const driver of DRIVERS) {
-        const categories = Object.keys(obj[driver.name]);
-        const total = categories.reduce(
-          (acc, category) => acc + obj[driver.name][category],
-          0
-        );
-        response.push({
-          id: driver.name,
-          driver: driver.name as EDriverType,
-          ...categories.reduce(
-            (acc, category) => ({
-              ...acc,
-              [category]: obj[driver.name][category]
-                ? parseFloat(
-                    ((obj[driver.name][category] / total) * 100).toFixed(2)
-                  )
-                : 0,
-            }),
-            {}
-          ),
-        });
-      }
-
-      resolve(response);
-    } catch (error) {
-      reject(error);
-    }
+    return _row;
   });
+}
+
+export function calculateScorecardData(
+  paramsData: IDataParams,
+  catData: ICatData
+): IScorecardData {
+  const storingCosts: IScorecardData["storingCosts"]["rows"] = [
+    ...Object.keys(paramsData.storingParams.costs).map((cost) => {
+      const driver = EDriverType.AVERAGE_INVENTORY;
+      const _row = {
+        cost,
+        total: paramsData.storingParams.costs[cost],
+        driver,
+        ...paramsData.categories.reduce((acc, category) => {
+          acc[category] =
+            paramsData.storingParams.costs[cost] *
+            Number(
+              catData.catDriversFirst.rows.find(
+                (row) => row.driver === driver
+              )![category]
+            );
+          return acc;
+        }, {} as any),
+      };
+      return _row;
+    }),
+    ...Object.keys(paramsData.storingParams.investments).map((investment) => {
+      const driver = EDriverType.AVERAGE_INVENTORY;
+      const invest = "technologyCapitalCost";
+      const investmentPercentage = paramsData.generalParams.financial[invest];
+      const _row = {
+        invest,
+        cost: investment,
+        total:
+          paramsData.storingParams.investments[investment] *
+          (investmentPercentage / 100),
+        driver,
+        ...paramsData.categories.reduce((acc, category) => {
+          acc[category] =
+            paramsData.storingParams.investments[investment] *
+            (investmentPercentage / 100) *
+            Number(
+              catData.catDriversFirst.rows.find(
+                (row) => row.driver === driver
+              )![category]
+            );
+          return acc;
+        }, {} as any),
+      };
+      return _row;
+    }),
+  ];
+
+  const inventoryCosts: IScorecardData["inventoryCosts"]["rows"] = [
+    ...Object.keys(paramsData.inventoryParams.costs).map((cost) => {
+      const driver = EDriverType.AVERAGE_INVENTORY;
+      const _row = {
+        cost,
+        total: paramsData.inventoryParams.costs[cost],
+        driver,
+        ...paramsData.categories.reduce((acc, category) => {
+          acc[category] =
+            paramsData.inventoryParams.costs[cost] *
+            Number(
+              catData.catDriversFirst.rows.find(
+                (row) => row.driver === driver
+              )![category]
+            );
+          return acc;
+        }, {} as any),
+      };
+      return _row;
+    }),
+    ...Object.keys(paramsData.inventoryParams.investments).map((investment) => {
+      const driver = EDriverType.AVERAGE_INVENTORY;
+      const invest = "technologyCapitalCost";
+      const investmentPercentage = paramsData.generalParams.financial[invest];
+      const _row = {
+        invest,
+        cost: investment,
+        total:
+          paramsData.inventoryParams.investments[investment] *
+          (investmentPercentage / 100),
+        driver,
+        ...paramsData.categories.reduce((acc, category) => {
+          acc[category] =
+            paramsData.inventoryParams.investments[investment] *
+            (investmentPercentage / 100) *
+            Number(
+              catData.catDriversFirst.rows.find(
+                (row) => row.driver === driver
+              )![category]
+            );
+          return acc;
+        }, {} as any),
+      };
+      return _row;
+    }),
+  ];
+
+  const totalStoringCost = storingCosts.reduce((acc, row) => {
+    return acc + row.total;
+  }, 0);
+  storingCosts.forEach((row) => {
+    row.totalPercentage = row.total / totalStoringCost;
+  });
+
+  const totalInventoryCost = inventoryCosts.reduce((acc, row) => {
+    return acc + row.total;
+  }, 0);
+  inventoryCosts.forEach((row) => {
+    row.totalPercentage = row.total / totalInventoryCost;
+  });
+
+  return {
+    storingCosts: {
+      rows: storingCosts,
+      totals: {
+        total: storingCosts.reduce((acc, row) => acc + row.total, 0),
+        totalPercentage: 1,
+        ...paramsData.categories.reduce((acc, category) => {
+          acc[category] = storingCosts.reduce(
+            (acc, row) => acc + Number(row[category]),
+            0
+          );
+          return acc;
+        }, {} as any),
+      },
+    },
+    inventoryCosts: {
+      rows: inventoryCosts,
+      totals: {
+        total: inventoryCosts.reduce((acc, row) => acc + row.total, 0),
+        totalPercentage: 1,
+        ...paramsData.categories.reduce((acc, category) => {
+          acc[category] = inventoryCosts.reduce(
+            (acc, row) => acc + Number(row[category]),
+            0
+          );
+          return acc;
+        }, {} as any),
+      },
+    },
+  };
 }
 
 export function getGeneralDataAsync(rows?: any[]): Promise<{
@@ -267,7 +309,6 @@ export function getGeneralDataAsync(rows?: any[]): Promise<{
       } else if (progress || progress == 0) {
         console.log(`Progress: ${progress}%`);
       } else {
-        console.log(event.data);
         resolve({ categories, sumSales, sumCostSales });
       }
     };

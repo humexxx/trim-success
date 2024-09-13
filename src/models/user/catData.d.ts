@@ -7,6 +7,11 @@ export interface ICatData {
       sumOfGrossMargin: number;
       [driver: string]: string | number;
     }[];
+    totals: {
+      category: string;
+      sumOfGrossMargin: number;
+      [driver: string]: string | number;
+    };
   };
   catDriversFirst: {
     rows: {

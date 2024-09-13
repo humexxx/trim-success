@@ -52,8 +52,8 @@ export interface IGeneralDataParams {
 }
 
 export interface IDataParams {
-  generalParams: IGeneralParams;
-  storingParams: IStoringParams;
-  inventoryParams: IInventoryParams;
+  generalParams: IGeneralDataParams;
+  storingParams: IStoringDataParams;
+  inventoryParams: IInventoryDataParams;
   categories: string[];
 }

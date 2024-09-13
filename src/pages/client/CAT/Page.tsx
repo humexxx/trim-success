@@ -5,14 +5,20 @@ import { useDocumentMetadata } from "src/hooks";
 import { CATTable, CATTableGen, CATTableGenGraph } from "./components";
 import { useCatData } from "./hooks";
 import { useEffect } from "react";
-import { getCATGenDataAsync } from "src/utils";
+import {
+  getCatDataCategoryFirstAsync,
+  getCatDataDriversFirst,
+} from "src/utils";
 import { ICatData } from "src/models/user";
+import { DRIVERS } from "src/consts";
+import { EDriverType } from "src/enums";
 
 const Page = () => {
   useDocumentMetadata("Scorecard - Trim Success");
   const {
     loadCube,
     fileResolution,
+    dataParams,
     catData: { data: memoryData, setData: setMemoryData },
   } = useCube();
   const { data, loading, error, updateCatData } = useCatData({
@@ -21,20 +27,50 @@ const Page = () => {
 
   useEffect(() => {
     if (!loading) {
-      if (!data && !fileResolution?.jsonData) {
+      if (!data) {
         loadCube([
           {
-            label: "Calcular Data Mining x CAT",
+            label: "Calcular data mining",
             status: "not loaded",
             loader: async ({ rows }: any) => {
               try {
-                const data = await getCATGenDataAsync(rows);
+                const categoryFirstData =
+                  await getCatDataCategoryFirstAsync(rows);
+                const categoryFirstDataTotals = {
+                  category: "Total",
+                  ...DRIVERS.filter((x) => !x.catHiddenByDefault).reduce(
+                    (acc, driver) => {
+                      acc[driver.name] = categoryFirstData.reduce(
+                        (acc, row) =>
+                          acc + (row[driver.name as EDriverType] as number),
+                        0
+                      );
+                      return acc;
+                    },
+                    {} as Omit<
+                      ICatData["catCategoriesFirst"]["totals"],
+                      "category" | "sumGrossMargin"
+                    >
+                  ),
+                  sumOfGrossMargin: categoryFirstData.reduce(
+                    (acc, row) => acc + row.sumOfGrossMargin,
+                    0
+                  ),
+                } as ICatData["catCategoriesFirst"]["totals"];
+
+                const driversFirstData = getCatDataDriversFirst(
+                  categoryFirstData,
+                  categoryFirstDataTotals
+                );
                 const catData: ICatData = {
-                  catCategoriesFirst: { rows: data },
-                  catDriversFirst: { rows: [] },
+                  catCategoriesFirst: {
+                    rows: categoryFirstData,
+                    totals: categoryFirstDataTotals,
+                  },
+                  catDriversFirst: { rows: driversFirstData },
                 };
                 setMemoryData(catData);
-                // updateCatData(catData);
+                updateCatData(catData);
               } catch (error: any) {
                 console.error(error.message ?? error.toString());
                 throw error;
@@ -42,9 +78,12 @@ const Page = () => {
             },
           },
         ]);
+      } else {
+        setMemoryData(data);
       }
     }
   }, [
+    updateCatData,
     data,
     fileResolution,
     fileResolution?.jsonData,
@@ -77,7 +116,10 @@ const Page = () => {
           <CATTableGenGraph data={memoryData?.catCategoriesFirst} />
         </Grid>
         <Grid item xs={12}>
-          <CATTable />
+          <CATTable
+            data={memoryData?.catDriversFirst}
+            categories={dataParams.data!.categories}
+          />
         </Grid>
       </Grid>
     </>
