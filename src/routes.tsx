@@ -1,45 +1,86 @@
-import { createBrowserRouter, Navigate } from 'react-router-dom';
-import ClientLayout from './layouts/ClientLayout';
+import { createBrowserRouter, Navigate } from "react-router-dom";
 import {
   LandingPage,
   ErrorPage,
   SignInPage,
   SignUpPage,
   ForgotPasswordPage,
-} from './pages';
+} from "./pages";
 import {
+  AIPage,
   DashboardPage,
-} from './pages/client';
+  ImportPage,
+  ScorecardPage,
+  SettingsPage,
+  GeneralDataPage,
+  CATPage,
+} from "./pages/client";
+import { BaseLayout, ClientLayout } from "./layouts";
+import { AdminImportPage } from "./pages/client/ImportPage";
 
 export const router = createBrowserRouter([
   {
-    path: '/',
+    path: "/",
     element: <LandingPage />,
     errorElement: <ErrorPage />,
   },
   {
-    path: '/sign-up',
+    path: "/sign-up",
     element: <SignUpPage />,
   },
   {
-    path: '/sign-in',
+    path: "/sign-in",
     element: <Navigate replace to="/login" />,
   },
   {
-    path: '/login',
+    path: "/login",
     element: <SignInPage />,
   },
   {
-    path: '/forgot-password',
+    path: "/forgot-password",
     element: <ForgotPasswordPage />,
   },
   {
-    path: '/client',
+    path: "/client",
     element: <ClientLayout />,
     children: [
       {
-        path: '/client/dashboard',
-        element: <DashboardPage />,
+        path: "/client/settings",
+        element: <SettingsPage />,
+      },
+      {
+        path: "/client",
+        element: <BaseLayout />,
+        children: [
+          {
+            path: "/client/import",
+            element: <ImportPage />,
+          },
+          {
+            path: "/client/import-admin",
+            element: <AdminImportPage />,
+          },
+          {
+            path: "/client/dashboard",
+            element: <DashboardPage />,
+          },
+          {
+            path: "/client/general-data",
+            element: <GeneralDataPage />,
+          },
+          {
+            path: "/client/cat",
+            element: <CATPage />,
+          },
+          {
+            path: "/client/scorecard",
+            element: <ScorecardPage />,
+          },
+          {
+            path: "/client/ai",
+            element: <AIPage />,
+          },
+        ],
       },
     ],
   },

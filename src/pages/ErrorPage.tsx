@@ -1,6 +1,8 @@
-import { ErrorResponse, useRouteError } from 'react-router-dom';
+import { ErrorResponse, useRouteError } from "react-router-dom";
+import { useDocumentMetadata } from "src/hooks";
 
 function ErrorPage() {
+  useDocumentMetadata("Error - Trim Success");
   const error = useRouteError() as ErrorResponse;
   console.error(error);
 
