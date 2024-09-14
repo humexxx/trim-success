@@ -1,18 +1,38 @@
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
-import { useMemo } from "react";
+import { DataGrid, GridColDef, GridRowModel } from "@mui/x-data-grid";
+import { useEffect, useMemo, useState } from "react";
+import { StripedDataGrid } from "src/components";
+import { DRIVERS } from "src/consts";
 import { IScorecardData } from "src/models/user";
 import { formatCurrency, formatPercentage } from "src/utils";
 
 interface Props {
   data?: IScorecardData["inventoryCosts"];
   categories: string[];
+  investmentTypes: string[];
+  updateRow: (row: IScorecardData["inventoryCosts"]["rows"][number]) => void;
 }
 
-const ScorecardTableInventory = ({ data, categories }: Props) => {
+const ScorecardTableInventory = ({
+  data,
+  categories,
+  investmentTypes,
+  updateRow,
+}: Props) => {
+  const [rows, setRows] = useState<
+    GridRowModel<IScorecardData["inventoryCosts"]["rows"][number]>[]
+  >(data?.rows ?? []);
+
   const columns: GridColDef[] = useMemo(
     () => [
       { field: "cost", headerName: "Costos del Inventario", width: 150 },
-      { field: "driver", headerName: "Driver", width: 150 },
+      {
+        field: "driver",
+        headerName: "Driver",
+        width: 150,
+        editable: true,
+        type: "singleSelect",
+        valueOptions: DRIVERS.map((driver) => driver.name),
+      },
       ...categories.sort().map(
         (category) =>
           ({
@@ -38,24 +58,36 @@ const ScorecardTableInventory = ({ data, categories }: Props) => {
         field: "invest",
         headerName: "Investment Type",
         width: 150,
+        editable: true,
+        type: "singleSelect",
+        valueOptions: investmentTypes,
       },
     ],
-    [categories]
+    [categories, investmentTypes]
   );
 
+  const processRowUpdate = (
+    row: GridRowModel<IScorecardData["inventoryCosts"]["rows"][number]>
+  ) => {
+    updateRow(row);
+    return row;
+  };
+
+  useEffect(() => {
+    setRows(data?.rows ?? []);
+  }, [data]);
+
   return (
-    <DataGrid
+    <StripedDataGrid
       getRowId={(row) => row.cost}
       aria-label="Costos del Inventario"
       columns={columns}
-      rows={data?.rows ?? []}
-      hideFooter
-      disableAutosize
+      rows={rows}
       disableColumnMenu
-      disableColumnResize
-      disableColumnSelector
-      disableRowSelectionOnClick
+      hideFooter
       density="compact"
+      editMode="row"
+      processRowUpdate={processRowUpdate}
     />
   );
 };

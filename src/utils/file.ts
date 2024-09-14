@@ -290,6 +290,102 @@ export function calculateScorecardData(
   };
 }
 
+export function updateStoringScorecardDataRow(
+  newRow: IScorecardData["storingCosts"]["rows"][number],
+  rows: IScorecardData["storingCosts"]["rows"],
+  paramsData: IDataParams,
+  catData: ICatData
+): IScorecardData["storingCosts"] {
+  const storingCosts = rows.map((r) => {
+    if (r.cost === newRow.cost) {
+      return {
+        ...newRow,
+        ...paramsData.categories.reduce((acc, category) => {
+          acc[category] =
+            newRow.total *
+            Number(
+              catData.catDriversFirst.rows.find(
+                (row) => row.driver === newRow.driver
+              )![category]
+            );
+          return acc;
+        }, {} as any),
+      };
+    }
+    return r;
+  });
+
+  const totalStoringCost = storingCosts.reduce((acc, row) => {
+    return acc + row.total;
+  }, 0);
+  storingCosts.forEach((row) => {
+    row.totalPercentage = row.total / totalStoringCost;
+  });
+
+  return {
+    rows: storingCosts,
+    totals: {
+      total: storingCosts.reduce((acc, row) => acc + row.total, 0),
+      totalPercentage: 1,
+      ...paramsData.categories.reduce((acc, category) => {
+        acc[category] = storingCosts.reduce(
+          (acc, row) => acc + Number(row[category]),
+          0
+        );
+        return acc;
+      }, {} as any),
+    },
+  };
+}
+
+export function updateInventoryScorecardDataRow(
+  newRow: IScorecardData["inventoryCosts"]["rows"][number],
+  rows: IScorecardData["inventoryCosts"]["rows"],
+  paramsData: IDataParams,
+  catData: ICatData
+): IScorecardData["inventoryCosts"] {
+  const inventoryCosts = rows.map((r) => {
+    if (r.cost === newRow.cost) {
+      return {
+        ...newRow,
+        ...paramsData.categories.reduce((acc, category) => {
+          acc[category] =
+            newRow.total *
+            Number(
+              catData.catDriversFirst.rows.find(
+                (row) => row.driver === newRow.driver
+              )![category]
+            );
+          return acc;
+        }, {} as any),
+      };
+    }
+    return r;
+  });
+
+  const totalStoringCost = inventoryCosts.reduce((acc, row) => {
+    return acc + row.total;
+  }, 0);
+  inventoryCosts.forEach((row) => {
+    row.totalPercentage = row.total / totalStoringCost;
+  });
+
+  return {
+    rows: inventoryCosts,
+    totals: {
+      total: inventoryCosts.reduce((acc, row) => acc + row.total, 0),
+      totalPercentage: 1,
+      ...paramsData.categories.reduce((acc, category) => {
+        acc[category] = inventoryCosts.reduce(
+          (acc, row) => acc + Number(row[category]),
+          0
+        );
+        return acc;
+      }, {} as any),
+    },
+  };
+}
+
 export function getGeneralDataAsync(rows?: any[]): Promise<{
   categories: string[];
   sumSales: number;
