@@ -1,17 +1,15 @@
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { useEffect, useMemo, useState } from "react";
 import { useCube } from "src/context/cube";
-import { getCategories, getCATDataAsync } from "src/utils";
+import { getCATDataAsync } from "src/utils";
 
 const CATTable = () => {
-  const { fileResolution } = useCube();
+  const {
+    fileResolution,
+    dataParams: { data },
+  } = useCube();
   const [isLoading, setIsLoading] = useState(false);
   const [rows, setRows] = useState<any[]>([]);
-
-  const categories = useMemo(
-    () => getCategories(fileResolution?.rows).sort(),
-    [fileResolution]
-  );
 
   const columns: GridColDef[] = useMemo(() => {
     const columns: GridColDef[] = [
@@ -21,7 +19,7 @@ const CATTable = () => {
         valueFormatter: (value) => `% ${value}`,
         width: 175,
       },
-      ...categories.map((category) => ({
+      ...data!.categories.map((category) => ({
         field: category,
         headerName: category,
         flex: 1,
@@ -30,7 +28,7 @@ const CATTable = () => {
       })),
     ];
     return columns;
-  }, [categories]);
+  }, [data]);
 
   useEffect(() => {
     if (fileResolution) {

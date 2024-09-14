@@ -15,7 +15,7 @@ import {
   GeneralDataPage,
   CATPage,
 } from "./pages/client";
-import { ClientLayout, CubeLayout } from "./layouts";
+import { BaseLayout, ClientLayout } from "./layouts";
 import { AdminImportPage } from "./pages/client/ImportPage";
 
 export const router = createBrowserRouter([
@@ -49,17 +49,17 @@ export const router = createBrowserRouter([
         element: <SettingsPage />,
       },
       {
-        path: "/client/import",
-        element: <ImportPage />,
-      },
-      {
-        path: "/client/import-admin",
-        element: <AdminImportPage />,
-      },
-      {
         path: "/client",
-        element: <CubeLayout />,
+        element: <BaseLayout />,
         children: [
+          {
+            path: "/client/import",
+            element: <ImportPage />,
+          },
+          {
+            path: "/client/import-admin",
+            element: <AdminImportPage />,
+          },
           {
             path: "/client/dashboard",
             element: <DashboardPage />,

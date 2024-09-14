@@ -1,70 +1,95 @@
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import { DataGrid, GridColDef, GridRowModel } from "@mui/x-data-grid";
+import { useEffect, useMemo, useState } from "react";
+import { StripedDataGrid } from "src/components";
+import { DRIVERS } from "src/consts";
+import { IScorecardData } from "src/models/user";
+import { formatCurrency, formatPercentage } from "src/utils";
 
-const SCORECARD_TABLE_INVENTORY_ROWS: { name: string; key: string }[] = [
-  {
-    name: "Costo Financiero del Inventario",
-    key: "costo_financiero_inventario",
-  },
-  {
-    name: "Costo Mano de Obra del Inventario",
-    key: "costo_mano_obra_inventario",
-  },
-  { name: "Costo de Equipos del Inventario", key: "costo_equipos_inventario" },
-  { name: "Costo de Seguros", key: "costo_seguros" },
-  {
-    name: "Costo de Espacio de Oficinas - Inventarios",
-    key: "costo_espacio_oficinas_inventarios",
-  },
-  {
-    name: "Costo de Suministro  Oficinas Inventarios",
-    key: "costo_suministro_oficinas_inventarios",
-  },
-  { name: "Costo de Energía Inventarios", key: "costo_energia_inventarios" },
-  {
-    name: "Sistema de Administración de Inventarios",
-    key: "sistema_administracion_inventarios",
-  },
-  { name: "Otros Gastos de Inventarios", key: "otros_gastos_inventarios" },
-];
+interface Props {
+  data?: IScorecardData["inventoryCosts"];
+  categories: string[];
+  investmentTypes: string[];
+  updateRow: (row: IScorecardData["inventoryCosts"]["rows"][number]) => void;
+}
 
-const COLUMS_DEF: GridColDef[] = [
-  {
-    field: "name",
-    headerName: "Costo del Inventario",
-  },
-  {
-    field: "costPercentage",
-    headerName: "% Cost",
-  },
-  {
-    field: "driver",
-    headerName: "Driver",
-  },
-  {
-    field: "costo_total",
-    headerName: "Costo Totales",
-  },
-  {
-    field: "costo_percentage",
-    headerName: "% Cost",
-  },
-];
+const ScorecardTableInventory = ({
+  data,
+  categories,
+  investmentTypes,
+  updateRow,
+}: Props) => {
+  const [rows, setRows] = useState<
+    GridRowModel<IScorecardData["inventoryCosts"]["rows"][number]>[]
+  >(data?.rows ?? []);
 
-const ScorecardTable = () => {
-  const rows: any[] = [];
+  const columns: GridColDef[] = useMemo(
+    () => [
+      { field: "cost", headerName: "Costos del Inventario", width: 150 },
+      {
+        field: "driver",
+        headerName: "Driver",
+        width: 150,
+        editable: true,
+        type: "singleSelect",
+        valueOptions: DRIVERS.map((driver) => driver.name),
+      },
+      ...categories.sort().map(
+        (category) =>
+          ({
+            field: category,
+            headerName: category,
+            width: 150,
+            valueFormatter: formatCurrency,
+          }) as GridColDef
+      ),
+      {
+        field: "total",
+        headerName: "Costos Totales",
+        width: 150,
+        valueFormatter: formatCurrency,
+      },
+      {
+        field: "totalPercentage",
+        headerName: "% Cost",
+        width: 150,
+        valueFormatter: formatPercentage,
+      },
+      {
+        field: "invest",
+        headerName: "Investment Type",
+        width: 150,
+        editable: true,
+        type: "singleSelect",
+        valueOptions: investmentTypes,
+      },
+    ],
+    [categories, investmentTypes]
+  );
+
+  const processRowUpdate = (
+    row: GridRowModel<IScorecardData["inventoryCosts"]["rows"][number]>
+  ) => {
+    updateRow(row);
+    return row;
+  };
+
+  useEffect(() => {
+    setRows(data?.rows ?? []);
+  }, [data]);
+
   return (
-    <DataGrid
-      aria-label="Inventory Costs"
-      columns={COLUMS_DEF}
+    <StripedDataGrid
+      getRowId={(row) => row.cost}
+      aria-label="Costos del Inventario"
+      columns={columns}
       rows={rows}
-      hideFooter
-      disableAutosize
       disableColumnMenu
-      disableColumnResize
-      disableColumnSelector
-      disableRowSelectionOnClick
+      hideFooter
+      density="compact"
+      editMode="row"
+      processRowUpdate={processRowUpdate}
     />
   );
 };
 
-export default ScorecardTable;
+export default ScorecardTableInventory;

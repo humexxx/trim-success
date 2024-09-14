@@ -2,31 +2,40 @@ import { doc, getDoc, setDoc } from "firebase/firestore";
 import { useCallback, useEffect, useState } from "react";
 import { useAuth } from "src/context/auth";
 import { firestore } from "src/firebase";
-import { IInventoryParams } from "src/models/user";
+import { IDataParams } from "src/models/user";
 
-interface UseInventoryParams {
-  data: IInventoryParams | null;
+export interface UseDataParams {
+  data: IDataParams | null;
   loading: boolean;
   error: string | null;
-  updateInventoryParams: (data: IInventoryParams) => Promise<void>;
+  updateDataParams: (data: IDataParams) => Promise<void>;
 }
 
-function useInventoryParams(): UseInventoryParams {
+function getDocumentPath(uid: string) {
+  return `settings/${uid}/data/params`;
+}
+
+function useDataParams(
+  {
+    autoload,
+    initialData,
+  }: { autoload: boolean; initialData: IDataParams | null } = {
+    autoload: true,
+    initialData: null,
+  }
+): UseDataParams {
   const { currentUser } = useAuth();
-  const [data, setData] = useState<IInventoryParams | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [data, setData] = useState<IDataParams | null>(initialData);
+  const [loading, setLoading] = useState<boolean>(autoload);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     async function fetchData() {
       try {
-        const snapshot = doc(
-          firestore,
-          `settings/${currentUser!.uid}/params/inventory`
-        );
+        const snapshot = doc(firestore, getDocumentPath(currentUser!.uid));
         const docSnap = await getDoc(snapshot);
         if (docSnap.exists()) {
-          setData(docSnap.data() as IInventoryParams);
+          setData(docSnap.data() as IDataParams);
         }
       } catch (error: any) {
         setError(error.message ?? error.toString());
@@ -35,20 +44,16 @@ function useInventoryParams(): UseInventoryParams {
       }
     }
 
-    if (currentUser) {
-      setLoading(true);
+    if (currentUser && autoload) {
       fetchData();
     }
   }, [currentUser]);
 
-  const updateInventoryParams = useCallback(
-    async (data: IInventoryParams) => {
+  const updateDataParams = useCallback(
+    async (data: IDataParams) => {
       setLoading(true);
       try {
-        const docRef = doc(
-          firestore,
-          `settings/${currentUser!.uid}/params/inventory`
-        );
+        const docRef = doc(firestore, getDocumentPath(currentUser!.uid));
         await setDoc(docRef, { ...data });
         setData(data);
       } catch (error: any) {
@@ -60,7 +65,7 @@ function useInventoryParams(): UseInventoryParams {
     [currentUser]
   );
 
-  return { data, loading, error, updateInventoryParams };
+  return { data, loading, error, updateDataParams };
 }
 
-export default useInventoryParams;
+export default useDataParams;

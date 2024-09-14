@@ -1,5 +1,7 @@
 export interface IDriver {
   name: string;
+  catDescription: string;
+  catHiddenByDefault?: boolean;
 }
 
 export interface IColumn {

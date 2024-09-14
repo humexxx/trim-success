@@ -1,18 +1,13 @@
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
-import { useEffect, useMemo, useState } from "react";
-import { useCube } from "src/context/cube";
-import { getCategories, getCATDataAsync } from "src/utils";
+import { useMemo } from "react";
+import { ICatData } from "src/models/user";
 
-const CATTable = () => {
-  const { fileResolution } = useCube();
-  const [isLoading, setIsLoading] = useState(false);
-  const [rows, setRows] = useState<any[]>([]);
+interface Props {
+  data?: ICatData["catDriversFirst"];
+  categories: string[];
+}
 
-  const categories = useMemo(
-    () => getCategories(fileResolution?.rows).sort(),
-    [fileResolution]
-  );
-
+const CATTable = ({ data, categories }: Props) => {
   const columns: GridColDef[] = useMemo(() => {
     const columns: GridColDef[] = [
       {
@@ -21,33 +16,24 @@ const CATTable = () => {
         valueFormatter: (value) => `% ${value}`,
         width: 175,
       },
-      ...categories.map((category) => ({
-        field: category,
-        headerName: category,
-        flex: 1,
-        valueFormatter: (value: number) => `${Math.round(value)}%`,
-        type: "number" as any,
-      })),
+      ...categories.sort().map((category) => {
+        return {
+          field: category,
+          type: "number",
+          width: 175,
+          valueFormatter: (value) => `${Math.round(value * 100)}%`,
+        } as GridColDef;
+      }),
     ];
     return columns;
   }, [categories]);
 
-  useEffect(() => {
-    if (fileResolution) {
-      setIsLoading(true);
-      getCATDataAsync(fileResolution.rows!).then((data) => {
-        setRows(data);
-        setIsLoading(false);
-      });
-    }
-  }, [fileResolution]);
-
   return (
     <DataGrid
+      getRowId={(row) => row.driver}
       aria-label="CAT Table"
       columns={columns}
-      rows={rows}
-      loading={isLoading}
+      rows={data?.rows ?? []}
       hideFooter
       disableAutosize
       disableColumnMenu

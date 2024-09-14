@@ -1,84 +1,81 @@
-import { createContext, ReactNode, useEffect, useState } from "react";
-import { CubeContextType, FileResolution } from "./CubeContext.types";
+import { createContext, ReactNode, useCallback, useState } from "react";
+import {
+  CubeContextType,
+  ExtraStepToLoad,
+  FileResolution,
+} from "./CubeContext.types";
 import { useAuth } from "../auth";
-import { getBlob, listAll, ref } from "firebase/storage";
-import { STORAGE_PATH } from "src/consts";
-import { getColsAndRows, getJsonDataFromFile } from "src/utils";
-import { useLocation, useNavigate } from "react-router-dom";
-import { storage } from "src/firebase";
+import { ICatData, IDataParams, IScorecardData } from "src/models/user";
+import CubeLoader from "./CubeLoader";
 
 export const CubeContext = createContext<CubeContextType | undefined>(
   undefined
 );
 
 interface CubeProviderProps {
-  fallbackRoute: string;
-  successRoute: string;
   children: ReactNode;
 }
 
-export default function CubeProvider({
-  children,
-  fallbackRoute,
-  successRoute,
-}: CubeProviderProps) {
+export default function CubeProvider({ children }: CubeProviderProps) {
   const [fileResolution, setFileResolution] = useState<
     FileResolution | undefined
   >(undefined);
   const user = useAuth();
-  const [loading, setLoading] = useState(true);
+  const [hasInitialData, setHasInitialData] = useState(false);
   const [customUid, setCustomUid] = useState<string>();
-  const navigate = useNavigate();
-  const location = useLocation();
+  const [loadCube, setLoadCube] = useState(false);
+  const [extraStepsToLoad, setExtraStepsToLoad] = useState<ExtraStepToLoad[]>(
+    []
+  );
 
-  async function loadFile(uid?: string) {
-    if (!uid) {
-      navigate(fallbackRoute, { replace: true });
-      setLoading(false);
-    }
+  const [dataParams, setDataParams] = useState<IDataParams | undefined>();
+  const [catData, setCatData] = useState<ICatData | undefined>();
+  const [scorecardData, setScorecardData] = useState<
+    IScorecardData | undefined
+  >();
 
-    setLoading(true);
-    const folderRef = ref(storage, `${STORAGE_PATH}/${uid}/`);
-
-    try {
-      const result = await listAll(folderRef);
-      if (result.items.length > 0) {
-        const firstFileRef = result.items[0];
-        const fileBlob = await getBlob(firstFileRef);
-
-        getJsonDataFromFile((jsonData: any[][]) => {
-          const { columns, rows } = getColsAndRows(jsonData);
-          setFileResolution({
-            columns,
-            rows,
-            file: { ...fileBlob, name: firstFileRef.name },
-            jsonData,
-          });
-          if (location.pathname !== "/client/user") navigate(successRoute);
-          setLoading(false);
-        }, fileBlob);
-      } else {
-        navigate(fallbackRoute, { replace: true });
-        setLoading(false);
-      }
-    } catch (error) {
-      console.error("Error fetching files:", error);
-      setLoading(false);
-    }
-  }
-
-  useEffect(() => {
-    loadFile(user.currentUser!.isAdmin ? customUid : user.currentUser!.uid);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [customUid]);
+  const _loadCube = useCallback((extraStepsToLoad?: ExtraStepToLoad[]) => {
+    if (extraStepsToLoad) setExtraStepsToLoad(extraStepsToLoad);
+    setLoadCube(true);
+  }, []);
 
   const value: CubeContextType = {
+    hasInitialData,
+    setHasInitialData,
     fileResolution,
-    loading: loading,
     setFileResolution,
     customUid,
     setCustomUid,
+
+    isCubeLoading: loadCube,
+    loadCube: _loadCube,
+
+    dataParams: {
+      data: dataParams,
+      setData: setDataParams,
+    },
+    catData: {
+      data: catData,
+      setData: setCatData,
+    },
+    scorecardData: {
+      data: scorecardData,
+      setData: setScorecardData,
+    },
   };
 
-  return <CubeContext.Provider value={value}>{children}</CubeContext.Provider>;
+  return (
+    <CubeContext.Provider value={value}>
+      <CubeLoader
+        extraStepsToLoad={extraStepsToLoad}
+        setExtraStepsToLoad={setExtraStepsToLoad}
+        setFileResolution={setFileResolution}
+        loadCube={loadCube}
+        setLoadCube={setLoadCube}
+        userId={user.currentUser!.uid}
+        fileResolution={fileResolution}
+      />
+      {children}
+    </CubeContext.Provider>
+  );
 }

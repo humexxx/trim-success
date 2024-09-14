@@ -1,71 +1,93 @@
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import { GridColDef, GridRowModel } from "@mui/x-data-grid";
+import { useEffect, useMemo, useState } from "react";
+import { StripedDataGrid } from "src/components";
+import { DRIVERS } from "src/consts";
+import { IScorecardData } from "src/models/user";
+import { formatCurrency, formatPercentage } from "src/utils";
 
-const SCORECARD_TABLE_WAREHOUSE_ROWS: { name: string; key: string }[] = [
-  {
-    name: "Inversión en Terreno y Edificio del Almacén",
-    key: "inversion_terreno_edificio_almacen",
-  },
-  {
-    name: "Costo anual de Mano de Obra del Almacén",
-    key: "costo_anual_mano_obra_almacen",
-  },
-  {
-    name: "Inversión en Sistemas de Manejo de Materiales",
-    key: "inversion_sistemas_manejo_materiales",
-  },
-  { name: "Sistemas de Almacenamiento", key: "sistemas_almacenamiento" },
-  {
-    name: "Sistema Administración Almacén WMS",
-    key: "sistema_administracion_almacen_wms",
-  },
-  {
-    name: "Costo Suministro Oficina- Almacén",
-    key: "costo_suministro_oficina_almacen",
-  },
-  { name: "Alquiler de Almacén", key: "alquiler_almacen" },
-  { name: "Costo de Tercerización – 3PL", key: "costo_tercerizacion_3pl" },
-  { name: "Costos de Energía del Almacén", key: "costos_energia_almacen" },
-  { name: "Otros Costos de Almacén", key: "otros_costos_almacen" },
-];
+interface Props {
+  data?: IScorecardData["storingCosts"];
+  categories: string[];
+  investmentTypes: string[];
+  updateRow: (row: IScorecardData["storingCosts"]["rows"][number]) => void;
+}
 
-const COLUMS_DEF: GridColDef[] = [
-  {
-    field: "name",
-    headerName: "Warehousing Costs",
-  },
-  {
-    field: "costPercentage",
-    headerName: "% Cost",
-  },
-  {
-    field: "driver",
-    headerName: "Driver",
-  },
-  {
-    field: "costo_total",
-    headerName: "Costo Totales",
-  },
-  {
-    field: "costo_percentage",
-    headerName: "% Cost",
-  },
-];
+const ScorecardTableWarehouse = ({
+  data,
+  categories,
+  investmentTypes,
+  updateRow,
+}: Props) => {
+  const [rows, setRows] = useState<
+    GridRowModel<IScorecardData["storingCosts"]["rows"][number]>[]
+  >(data?.rows ?? []);
 
-const ScorecardTable = () => {
-  const rows: any[] = [];
+  const columns: GridColDef[] = useMemo(
+    () => [
+      { field: "cost", headerName: "Warehousing  Costs", width: 150 },
+      {
+        field: "driver",
+        headerName: "Driver",
+        width: 150,
+        editable: true,
+        type: "singleSelect",
+        valueOptions: DRIVERS.map((driver) => driver.name),
+      },
+      ...categories.sort().map(
+        (category) =>
+          ({
+            field: category,
+            headerName: category,
+            width: 150,
+            valueFormatter: formatCurrency,
+          }) as GridColDef
+      ),
+      {
+        field: "total",
+        headerName: "Costos Totales",
+        width: 150,
+        valueFormatter: formatCurrency,
+      },
+      {
+        field: "totalPercentage",
+        headerName: "% Cost",
+        width: 150,
+        valueFormatter: formatPercentage,
+      },
+      {
+        field: "invest",
+        headerName: "Investment Type",
+        width: 150,
+        editable: true,
+        type: "singleSelect",
+        valueOptions: investmentTypes,
+      },
+    ],
+    [categories, investmentTypes]
+  );
+
+  const processRowUpdate = (row: GridRowModel) => {
+    updateRow(row as IScorecardData["storingCosts"]["rows"][number]);
+    return row;
+  };
+
+  useEffect(() => {
+    setRows(data?.rows ?? []);
+  }, [data]);
+
   return (
-    <DataGrid
+    <StripedDataGrid
+      getRowId={(row) => row.cost}
       aria-label="Warehousing Costs"
-      columns={COLUMS_DEF}
+      columns={columns}
       rows={rows}
-      hideFooter
-      disableAutosize
       disableColumnMenu
-      disableColumnResize
-      disableColumnSelector
-      disableRowSelectionOnClick
+      hideFooter
+      density="compact"
+      editMode="row"
+      processRowUpdate={processRowUpdate}
     />
   );
 };
 
-export default ScorecardTable;
+export default ScorecardTableWarehouse;

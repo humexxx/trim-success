@@ -9,9 +9,10 @@ import {
   Dropzone,
   FileSummary,
   FileUpload,
+  GeneralParameters,
 } from "src/pages/client/ImportPage/components";
 import { useCube } from "src/context/cube";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDocumentMetadata } from "src/hooks";
 import { LoadingButton } from "@mui/lab";
@@ -23,6 +24,7 @@ export default function Page() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const cube = useCube();
+  const generalParamsRef = useRef<{ saveData: () => void }>(null);
 
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -33,6 +35,7 @@ export default function Page() {
   };
 
   const handleOnFinish = () => {
+    cube.setHasInitialData(true);
     navigate("/client/dashboard");
   };
 
@@ -50,13 +53,14 @@ export default function Page() {
             Importar Archivo
           </StepLabel>
           <StepContent>
-            <Dropzone setLoading={setLoading} loading={loading} />
+            <StepContentWrapper>
+              <Dropzone handleNext={handleNext} />
+            </StepContentWrapper>
             <StepperFooter
               handleBack={handleBack}
               handleNext={handleNext}
               isFirstStep
-              disableNext={!cube.fileResolution?.jsonData?.length}
-              loading={loading}
+              disableNext={!cube.fileResolution?.file || loading}
             />
           </StepContent>
         </Step>
@@ -71,11 +75,48 @@ export default function Page() {
             Verificar Datos
           </StepLabel>
           <StepContent>
-            <FileSummary error={stepError} setError={setStepError} />
+            <StepContentWrapper>
+              <FileSummary
+                error={stepError}
+                setError={setStepError}
+                setLoading={setLoading}
+                loading={loading}
+              />
+            </StepContentWrapper>
             <StepperFooter
               handleBack={handleBack}
               handleNext={handleNext}
-              disableNext={Boolean(stepError)}
+              disableNext={Boolean(stepError) || loading}
+            />
+          </StepContent>
+        </Step>
+        <Step>
+          <StepLabel
+            optional={
+              <Typography variant="caption">
+                Verifica los parametros para la generación de reportes
+              </Typography>
+            }
+          >
+            Verificar Parametros
+          </StepLabel>
+          <StepContent>
+            <StepContentWrapper>
+              <GeneralParameters
+                ref={generalParamsRef}
+                error={stepError}
+                setError={setStepError}
+                setLoading={setLoading}
+                loading={loading}
+              />
+            </StepContentWrapper>
+            <StepperFooter
+              handleBack={handleBack}
+              handleNext={() => {
+                generalParamsRef.current?.saveData();
+                handleNext();
+              }}
+              disableNext={Boolean(stepError) || loading}
             />
           </StepContent>
         </Step>
@@ -90,7 +131,9 @@ export default function Page() {
             Carga de datos
           </StepLabel>
           <StepContent>
-            <FileUpload handleOnFinish={handleOnFinish} />
+            <StepContentWrapper>
+              <FileUpload handleOnFinish={handleOnFinish} />
+            </StepContentWrapper>
           </StepContent>
         </Step>
       </Stepper>
@@ -135,4 +178,8 @@ function StepperFooter({
       </div>
     </Box>
   );
+}
+
+function StepContentWrapper({ children }: { children: React.ReactNode }) {
+  return <Box sx={{ m: 2 }}>{children}</Box>;
 }

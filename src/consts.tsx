@@ -4,14 +4,34 @@ import { IColumn, IDriver } from "./models";
 export const STORAGE_PATH = "cubes/";
 
 export const DRIVERS: IDriver[] = [
-  { name: EDriverType.SKUS },
-  { name: EDriverType.AVERAGE_INVENTORY },
-  { name: EDriverType.INVENTORY_VALUE },
-  { name: EDriverType.SHIPPED_CASES },
-  { name: EDriverType.INVENTORY_CUBE },
-  { name: EDriverType.SALES },
-  { name: EDriverType.PLANNERS },
-  { name: EDriverType.ORDERS },
+  { name: EDriverType.SKUS, catDescription: "Count of Codigo Producto" },
+  {
+    name: EDriverType.AVERAGE_INVENTORY,
+    catDescription: "Sum of Inventario Prom. Bultos",
+  },
+  {
+    name: EDriverType.INVENTORY_VALUE,
+    catDescription: "Sum of Inventario Promedio $",
+  },
+  {
+    name: EDriverType.SHIPPED_CASES,
+    catDescription: "Sum of Bultos Despachados",
+  },
+  {
+    name: EDriverType.INVENTORY_CUBE,
+    catDescription: "Sum of Cubicaje Inv Promedio",
+  },
+  { name: EDriverType.SALES, catDescription: "Sum of Ventas Totales" },
+  {
+    name: EDriverType.PLANNERS,
+    catDescription: "Count of Planners",
+    catHiddenByDefault: true,
+  },
+  {
+    name: EDriverType.ORDERS,
+    catDescription: "Count of Orders",
+    catHiddenByDefault: true,
+  },
 ];
 
 export const COLUMNS: IColumn[] = [
@@ -29,7 +49,11 @@ export const COLUMNS: IColumn[] = [
   { code: EColumnType.BPP, name: "Cajas por Tarima", index: 7 },
   { code: EColumnType.FORECAST, name: "Pronostico", index: 8 },
   { code: EColumnType.CPT, name: "Cubicaje por Tarima", index: 9 },
-  { code: EColumnType.CIP, name: "Cubicaje Inv Promedio", index: 10 },
+  {
+    code: EColumnType.INVENTORY_CUBE,
+    name: "Cubicaje Inv Promedio",
+    index: 10,
+  },
   {
     code: EColumnType.TABLE,
     name: "Mes",
@@ -47,16 +71,24 @@ export const COLUMNS: IColumn[] = [
   { code: EColumnType.COST, name: "Costo Unitario", index: 39 },
   { code: EColumnType.S_FACTOR, name: "Factor de Escazes", index: 40 },
   { code: EColumnType.UTILITY_MARGIN, name: "Margen de Utilidad", index: 41 },
-  { code: EColumnType.TOTAL_SALES, name: "Ventas Totales", index: 42 },
+  { code: EColumnType.SALES, name: "Ventas Totales", index: 42 },
   { code: EColumnType.COST_SALES, name: "Ventas al Costo", index: 43 },
   { code: EColumnType.GROSS_MARGIN, name: "Gross Margin", index: 44 },
-  { code: EColumnType.AVG_INV_QTY, name: "Inventario Prom Bultos", index: 45 },
-  { code: EColumnType.AVG_INV_VALUE, name: "Inventario Promedio $", index: 46 },
+  {
+    code: EColumnType.AVERAGE_INVENTORY,
+    name: "Inventario Prom Bultos",
+    index: 45,
+  },
+  {
+    code: EColumnType.INVENTORY_VALUE,
+    name: "Inventario Promedio $",
+    index: 46,
+  },
   { code: EColumnType.TRANSIT_INV, name: "Inventario en Transito", index: 47 },
   { code: EColumnType.CURRENT_INV, name: "Inventario Actual", index: 48 },
   { code: EColumnType.ROTATION, name: "Rotacion", index: 49 },
   { code: EColumnType.MESES_INV, name: "Meses Inventarios", index: 50 },
-  { code: EColumnType.PCK_SENT, name: "Bultos Despachados", index: 51 },
+  { code: EColumnType.SHIPPED_CASES, name: "Bultos Despachados", index: 51 },
   {
     code: EColumnType.NIVEL_SERVICIO_ACTUAL,
     name: "Nivel de Servicio Actual",
