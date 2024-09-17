@@ -1,71 +1,38 @@
-import { doc, getDoc, setDoc } from "firebase/firestore";
-import { useCallback, useEffect, useState } from "react";
-import { useAuth } from "src/context/auth";
+import { doc, setDoc } from "firebase/firestore";
+import { useCallback, useState } from "react";
 import { firestore } from "src/firebase";
-import { IDataParams } from "src/models/user";
+import { IParamsData } from "src/models";
 
 export interface UseDataParams {
-  data: IDataParams | null;
+  update: (data: IParamsData) => Promise<void>;
   loading: boolean;
   error: string | null;
-  updateDataParams: (data: IDataParams) => Promise<void>;
 }
 
 function getDocumentPath(uid: string) {
   return `settings/${uid}/data/params`;
 }
 
-function useDataParams(
-  {
-    autoload,
-    initialData,
-  }: { autoload: boolean; initialData: IDataParams | null } = {
-    autoload: true,
-    initialData: null,
-  }
-): UseDataParams {
-  const { currentUser } = useAuth();
-  const [data, setData] = useState<IDataParams | null>(initialData);
-  const [loading, setLoading] = useState<boolean>(autoload);
+function useDataParams(uid: string): UseDataParams {
+  const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        const snapshot = doc(firestore, getDocumentPath(currentUser!.uid));
-        const docSnap = await getDoc(snapshot);
-        if (docSnap.exists()) {
-          setData(docSnap.data() as IDataParams);
-        }
-      } catch (error: any) {
-        setError(error.message ?? error.toString());
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    if (currentUser && autoload) {
-      fetchData();
-    }
-  }, [currentUser]);
-
-  const updateDataParams = useCallback(
-    async (data: IDataParams) => {
+  const update = useCallback(
+    async (data: IParamsData) => {
       setLoading(true);
       try {
-        const docRef = doc(firestore, getDocumentPath(currentUser!.uid));
+        const docRef = doc(firestore, getDocumentPath(uid));
         await setDoc(docRef, { ...data });
-        setData(data);
       } catch (error: any) {
         setError(error.message ?? error.toString());
       } finally {
         setLoading(false);
       }
     },
-    [currentUser]
+    [uid]
   );
 
-  return { data, loading, error, updateDataParams };
+  return { update, loading, error };
 }
 
 export default useDataParams;

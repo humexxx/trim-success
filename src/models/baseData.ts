@@ -1,21 +1,19 @@
-import { EDriverType } from "src/enums";
-
-export interface ICatData {
-  catCategoriesFirst: {
+export interface IBaseData {
+  categoriesData: {
     rows: {
       category: string;
-      sumOfGrossMargin: number;
+      grossMargin: number;
       [driver: string]: string | number;
     }[];
     totals: {
       category: string;
-      sumOfGrossMargin: number;
+      grossMargin: number;
       [driver: string]: string | number;
     };
   };
-  catDriversFirst: {
+  driversData: {
     rows: {
-      driver: EDriverType;
+      driver: string;
       [category: string]: string | number;
     }[];
   };

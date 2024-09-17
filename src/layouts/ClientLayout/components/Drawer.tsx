@@ -59,7 +59,7 @@ function getRoutes(isAdmin: boolean, hasInitialData: boolean) {
 }
 
 const Drawer = () => {
-  const { hasInitialData } = useCube();
+  const { hasInitialData, isLoadingCube } = useCube();
   const user = useAuth();
   const location = useLocation();
 
@@ -81,6 +81,7 @@ const Drawer = () => {
               component={NavLink}
               to={path}
               unstable_viewTransition
+              disabled={isLoadingCube}
             >
               <ListItemIcon>{icon}</ListItemIcon>
               <ListItemText primary={text} secondary={caption} />
@@ -97,6 +98,7 @@ const Drawer = () => {
             component={NavLink}
             to="/client/settings"
             unstable_viewTransition
+            disabled={isLoadingCube}
           >
             <ListItemIcon>
               <SettingsIcon />

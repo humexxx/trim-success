@@ -9,45 +9,36 @@ import {
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import FiberManualRecordIcon from "@mui/icons-material/FiberManualRecord";
-import { getBlob, listAll, ref } from "firebase/storage";
-import { getColsAndRowsAsync, getJsonDataFromFileAsync } from "src/utils";
-import { storage } from "src/firebase";
-import { STORAGE_PATH } from "src/consts";
-import { ExtraStepToLoad, FileResolution } from "./CubeContext.types";
+import { functions } from "src/firebase";
 import ViewInArIcon from "@mui/icons-material/ViewInAr";
+import ErrorIcon from "@mui/icons-material/Error";
+import { httpsCallable } from "firebase/functions";
+import { ICubeData } from "src/models";
 
 interface Props {
   loadCube: boolean;
   setLoadCube: (value: boolean) => void;
-  userId: string;
-  setFileResolution: (value: FileResolution | undefined) => void;
-  extraStepsToLoad: ExtraStepToLoad[];
-  setExtraStepsToLoad: React.Dispatch<React.SetStateAction<ExtraStepToLoad[]>>;
-  fileResolution: FileResolution | undefined;
+  uid?: string;
+  setData: (value: ICubeData | undefined) => void;
 }
 
 interface LoadingProgress {
-  file: "not loaded" | "loaded" | "loading";
-  jsonData: "not loaded" | "loaded" | "loading";
-  rowsAndColumns: "not loaded" | "loaded" | "loading";
+  baseData: "not loaded" | "loaded" | "loading" | "error";
+  scorecardData: "not loaded" | "loaded" | "loading" | "error";
+  cubeData: "not loaded" | "loaded" | "loading" | "error";
 }
 
-const CubeLoader = ({
-  setLoadCube,
-  loadCube,
-  userId,
-  setFileResolution,
-  setExtraStepsToLoad,
-  extraStepsToLoad,
-  fileResolution,
-}: Props) => {
+const CubeLoader = ({ setLoadCube, loadCube, setData, uid }: Props) => {
+  const [error, setError] = useState<string | null>(null);
   const [loadingProgress, setLoadingProgress] = useState<LoadingProgress>({
-    file: fileResolution?.file ? "loaded" : "loading",
-    jsonData: fileResolution?.jsonData ? "loaded" : "not loaded",
-    rowsAndColumns: fileResolution?.rows ? "loaded" : "not loaded",
+    baseData: "not loaded",
+    scorecardData: "not loaded",
+    cubeData: "not loaded",
   });
 
-  function getStatusIndicator(status: "not loaded" | "loaded" | "loading") {
+  function getStatusIndicator(
+    status: "not loaded" | "loaded" | "loading" | "error"
+  ) {
     if (status === "not loaded") {
       return (
         <FiberManualRecordIcon
@@ -56,99 +47,95 @@ const CubeLoader = ({
       );
     } else if (status === "loaded") {
       return <Check fontSize="small" sx={{ color: "green", mr: 1.5 }} />;
-    } else {
+    } else if (status === "loading") {
       return <CircularProgress size={15} sx={{ mr: 2, ml: 0.5 }} />;
+    } else {
+      return <ErrorIcon sx={{ color: "error.main", mr: 1.5 }} />;
     }
   }
 
   useEffect(() => {
     async function load() {
-      const folderRef = ref(storage, `${STORAGE_PATH}/${userId}/`);
-
       try {
-        let fileBlob: Blob | undefined = fileResolution?.file;
-        let fileName: string | undefined = fileResolution?.file?.name;
-        if (loadingProgress.file === "loading") {
-          const result = await listAll(folderRef);
-          if (!(result.items.length > 0)) throw new Error("No files found.");
-          const firstFileRef = result.items[0];
-          fileBlob = await getBlob(firstFileRef);
-          fileName = firstFileRef.name;
+        setLoadingProgress({
+          baseData: "loading",
+          scorecardData: "not loaded",
+          cubeData: "not loaded",
+        });
+        const createBaseData = httpsCallable(functions, "createBaseData");
+        const createBaseDataResponse = await createBaseData(
+          uid ? { uid } : null
+        );
+        const createBaseDataResponseData = createBaseDataResponse.data as {
+          error: string;
+          success: boolean;
+        };
+        if (!createBaseDataResponseData.success) {
+          setLoadingProgress({
+            baseData: "error",
+            scorecardData: "not loaded",
+            cubeData: "not loaded",
+          });
+          throw new Error(createBaseDataResponseData.error);
         }
 
-        let jsonData: any[][] | undefined = fileResolution?.jsonData;
-        if (loadingProgress.jsonData === "not loaded") {
-          setLoadingProgress({
-            file: "loaded",
-            jsonData: "loading",
-            rowsAndColumns: "not loaded",
-          });
-
-          jsonData = await getJsonDataFromFileAsync(fileBlob!);
-        }
-
-        let columns = fileResolution?.columns;
-        let rows = fileResolution?.rows;
-        if (!columns || !rows) {
-          setLoadingProgress({
-            jsonData: "loaded",
-            file: "loaded",
-            rowsAndColumns: "loading",
-          });
-
-          const { columns: _columns, rows: _rows } =
-            await getColsAndRowsAsync(jsonData);
-          columns = _columns;
-          rows = _rows;
-
-          setLoadingProgress({
-            rowsAndColumns: "loaded",
-            jsonData: "loaded",
-            file: "loaded",
-          });
-        }
-
-        setFileResolution({
-          columns,
-          rows,
-          file: { ...fileBlob!, name: fileName! },
-          jsonData,
+        setLoadingProgress({
+          baseData: "loaded",
+          scorecardData: "loading",
+          cubeData: "not loaded",
         });
 
-        if (extraStepsToLoad.length > 0) {
-          for (let i = 0; i < extraStepsToLoad.length; i++) {
-            setExtraStepsToLoad((prev) =>
-              prev.map((step, index) => {
-                if (index === i) {
-                  return {
-                    ...step,
-                    status: "loading",
-                  };
-                }
-                return step;
-              })
-            );
-            await extraStepsToLoad[i].loader({ rows });
-            setExtraStepsToLoad((prev) =>
-              prev.map((step, index) => {
-                if (index === i) {
-                  return {
-                    ...step,
-                    status: "loaded",
-                  };
-                }
-                return step;
-              })
-            );
-          }
+        const createScorecardData = httpsCallable(
+          functions,
+          "createScorecardData"
+        );
+        const createScorecardDataResponse = await createScorecardData(
+          uid ? { uid } : null
+        );
+        const createScorecardDataResponseData =
+          createScorecardDataResponse.data as {
+            error: string;
+            success: boolean;
+          };
+        if (!createScorecardDataResponseData.success) {
+          setLoadingProgress({
+            baseData: "loaded",
+            scorecardData: "error",
+            cubeData: "not loaded",
+          });
+          throw new Error(createScorecardDataResponseData.error);
+        }
+        setLoadingProgress({
+          baseData: "loaded",
+          scorecardData: "loaded",
+          cubeData: "loading",
+        });
+
+        const getCubeData = httpsCallable(functions, "getCubeData");
+        const response = await getCubeData(uid ? { uid } : null);
+        const data = response.data as ICubeData | { error: string };
+        if ("error" in data) {
+          setLoadingProgress({
+            baseData: "loaded",
+            scorecardData: "loaded",
+            cubeData: "error",
+          });
+          throw new Error(data.error);
         }
 
+        setLoadingProgress({
+          baseData: "loaded",
+          scorecardData: "loaded",
+          cubeData: "loaded",
+        });
+
         setTimeout(() => {
+          setData(data);
           setLoadCube(false);
-          setExtraStepsToLoad([]);
         }, 500);
-      } catch (error) {
-        console.error("Error fetching files:", error);
+      } catch (error: any) {
+        console.error(error);
+        setError(error.message);
       }
     }
 
@@ -159,7 +146,6 @@ const CubeLoader = ({
   return (
     <Dialog
       open={loadCube}
-      onClose={() => setLoadCube(false)}
       maxWidth="xs"
       sx={{
         "& .MuiPaper-root": {
@@ -172,6 +158,11 @@ const CubeLoader = ({
         Cargando Cubo
       </DialogTitle>
       <DialogContent>
+        {error && (
+          <Typography variant="body2" color="error">
+            {error}
+          </Typography>
+        )}
         <Grid container spacing={2} mt={2}>
           <Grid item xs={12}>
             <Typography
@@ -179,7 +170,8 @@ const CubeLoader = ({
               color="text.primary"
               sx={{ display: "flex", alignItems: "center" }}
             >
-              {getStatusIndicator(loadingProgress.file)} Cargar archivo
+              {getStatusIndicator(loadingProgress.baseData)} Generando reportes
+              escenciales
             </Typography>
           </Grid>
           <Grid item xs={12}>
@@ -188,7 +180,8 @@ const CubeLoader = ({
               color="text.primary"
               sx={{ display: "flex", alignItems: "center" }}
             >
-              {getStatusIndicator(loadingProgress.jsonData)} Formatear datos
+              {getStatusIndicator(loadingProgress.scorecardData)} Generando
+              reportes de scorecard
             </Typography>
           </Grid>
           <Grid item xs={12}>
@@ -197,21 +190,9 @@ const CubeLoader = ({
               color="text.primary"
               sx={{ display: "flex", alignItems: "center" }}
             >
-              {getStatusIndicator(loadingProgress.rowsAndColumns)} Cargar filas
-              y columnas
+              {getStatusIndicator(loadingProgress.cubeData)} Cargando datos
             </Typography>
           </Grid>
-          {extraStepsToLoad.map((extraStep, index) => (
-            <Grid item xs={12} key={index}>
-              <Typography
-                variant="body1"
-                color="text.primary"
-                sx={{ display: "flex", alignItems: "center" }}
-              >
-                {getStatusIndicator(extraStep.status)} {extraStep.label}
-              </Typography>
-            </Grid>
-          ))}
         </Grid>
       </DialogContent>
     </Dialog>

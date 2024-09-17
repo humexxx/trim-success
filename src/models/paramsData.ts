@@ -51,7 +51,7 @@ export interface IGeneralDataParams {
   };
 }
 
-export interface IDataParams {
+export interface IParamsData {
   generalParams: IGeneralDataParams;
   storingParams: IStoringDataParams;
   inventoryParams: IInventoryDataParams;

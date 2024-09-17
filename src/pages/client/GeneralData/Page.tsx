@@ -1,7 +1,6 @@
 import { Alert, Container, Grid, Typography } from "@mui/material";
 import { GlobalLoader, PageHeader } from "src/components";
 import { GeneralParams, InventoryParams, StoringParams } from "./components";
-import { IDataParams } from "src/models/user";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm } from "react-hook-form";
 import { paramsSchema } from "./schema";
@@ -9,27 +8,22 @@ import { useEffect } from "react";
 import { LoadingButton } from "@mui/lab";
 import { useCube } from "src/context/cube";
 import { useDataParams } from "./hooks";
+import { useAuth } from "src/context/auth";
+import { ICubeData, IParamsData } from "src/models";
 
 const Page = () => {
-  const {
-    dataParams: { setData: setDataParams, data: _dataParams },
-  } = useCube();
-  const {
-    data: dataParams,
-    error,
-    loading,
-    updateDataParams,
-  } = useDataParams({
-    autoload: !_dataParams,
-    initialData: _dataParams ?? null,
-  });
+  const { currentUser } = useAuth();
+  const { data, setData } = useCube();
+  const { error, loading, update } = useDataParams(currentUser?.uid ?? "");
+
+  const paramsData = data?.paramsData;
 
   const {
     formState: { errors },
     register,
     handleSubmit,
     setValue,
-  } = useForm<IDataParams>({
+  } = useForm<IParamsData>({
     resolver: yupResolver(paramsSchema),
     defaultValues: {
       generalParams: {
@@ -81,24 +75,24 @@ const Page = () => {
   });
 
   useEffect(() => {
-    if (dataParams) {
-      setValue("generalParams", dataParams.generalParams);
-      setValue("storingParams", dataParams.storingParams);
-      setValue("inventoryParams", dataParams.inventoryParams);
-      setValue("categories", dataParams.categories);
+    if (paramsData) {
+      setValue("generalParams", paramsData.generalParams);
+      setValue("storingParams", paramsData.storingParams);
+      setValue("inventoryParams", paramsData.inventoryParams);
+      setValue("categories", paramsData.categories);
     }
-  }, [dataParams, setValue]);
+  }, [paramsData, setValue]);
 
-  async function _handleSubmit(data: IDataParams) {
-    await updateDataParams(data);
-    setDataParams(data);
+  async function _handleSubmit(data: IParamsData) {
+    await update(data);
+    setData((prev) => ({ ...prev, paramsData: data }) as ICubeData);
   }
 
   if (error) {
     return <Alert severity="error">{error}</Alert>;
   }
 
-  if (loading && !dataParams) {
+  if (loading && !paramsData) {
     return <GlobalLoader />;
   }
 

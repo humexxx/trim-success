@@ -1,5 +1,5 @@
 import { GridColDef } from "@mui/x-data-grid";
-import { ICatData, IDataParams, IScorecardData } from "src/models/user";
+import { ICubeData } from "src/models";
 
 export interface Row {
   id: number;
@@ -18,27 +18,8 @@ export interface CubeContextType {
   setHasInitialData: (hasInitialData: boolean) => void;
   setFileResolution: (fileResolution: FileResolution) => void;
   fileResolution?: FileResolution;
-  customUid?: string;
-  setCustomUid: (uid: string) => void;
-  loadCube: (extraStepsToLoad?: ExtraStepToLoad[]) => void;
-  isCubeLoading: boolean;
+  isLoadingCube: boolean;
 
-  dataParams: {
-    data?: IDataParams;
-    setData: (data: IDataParams) => void;
-  };
-  catData: {
-    data?: ICatData;
-    setData: (data: ICatData) => void;
-  };
-  scorecardData: {
-    data?: IScorecardData;
-    setData: (data: IScorecardData) => void;
-  };
-}
-
-export interface ExtraStepToLoad {
-  loader: (data?: any) => Promise<void>;
-  label: string;
-  status: "not loaded" | "loaded" | "loading";
+  data: ICubeData | undefined;
+  setData: React.Dispatch<React.SetStateAction<ICubeData | undefined>>;
 }

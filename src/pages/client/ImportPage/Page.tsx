@@ -13,7 +13,7 @@ import {
 } from "src/pages/client/ImportPage/components";
 import { useCube } from "src/context/cube";
 import { useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import { useDocumentMetadata } from "src/hooks";
 import { LoadingButton } from "@mui/lab";
 
@@ -25,6 +25,8 @@ export default function Page() {
   const navigate = useNavigate();
   const cube = useCube();
   const generalParamsRef = useRef<{ saveData: () => void }>(null);
+
+  if (cube.hasInitialData) return <Navigate to="/client/dashboard" replace />;
 
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);

@@ -1,13 +1,13 @@
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { useMemo } from "react";
-import { ICatData } from "src/models/user";
+import { IBaseData } from "src/models";
 
 interface Props {
-  data?: ICatData["catDriversFirst"];
+  data?: IBaseData["driversData"];
   categories: string[];
 }
 
-const CATTable = ({ data, categories }: Props) => {
+const DriversTable = ({ data, categories }: Props) => {
   const columns: GridColDef[] = useMemo(() => {
     const columns: GridColDef[] = [
       {
@@ -45,4 +45,4 @@ const CATTable = ({ data, categories }: Props) => {
   );
 };
 
-export default CATTable;
+export default DriversTable;

@@ -2,14 +2,14 @@ import { Box } from "@mui/material";
 import { PieChart } from "@mui/x-charts";
 import { useEffect, useState } from "react";
 import { EDriverType } from "src/enums";
-import { ICatData } from "src/models/user";
+import { IBaseData } from "src/models";
 
 interface Props {
-  data?: ICatData["catCategoriesFirst"];
+  data?: IBaseData["categoriesData"];
 }
 
-const CATTableGen = ({ data }: Props) => {
-  const [rows, setRows] = useState<ICatData["catCategoriesFirst"]["rows"]>([]);
+const CategoriesGraph = ({ data }: Props) => {
+  const [rows, setRows] = useState<IBaseData["categoriesData"]["rows"]>([]);
 
   useEffect(() => {
     if (data?.rows) {
@@ -51,4 +51,4 @@ const CATTableGen = ({ data }: Props) => {
   );
 };
 
-export default CATTableGen;
+export default CategoriesGraph;

@@ -1,3 +1,3 @@
-export { default as CATTable } from "./CATTable";
-export { default as CATTableGen } from "./CATTableGen";
-export { default as CATTableGenGraph } from "./CATTableGenGraph";
+export { default as DriversTable } from "./DriversTable";
+export { default as CategoriesTable } from "./CategoriesTable";
+export { default as CategoriesGraph } from "./CategoriesGraph";

@@ -15,7 +15,7 @@ import {
   GeneralDataPage,
   CATPage,
 } from "./pages/client";
-import { BaseLayout, ClientLayout } from "./layouts";
+import { ClientLayout } from "./layouts";
 import { AdminImportPage } from "./pages/client/ImportPage";
 
 export const router = createBrowserRouter([
@@ -49,38 +49,32 @@ export const router = createBrowserRouter([
         element: <SettingsPage />,
       },
       {
-        path: "/client",
-        element: <BaseLayout />,
-        children: [
-          {
-            path: "/client/import",
-            element: <ImportPage />,
-          },
-          {
-            path: "/client/import-admin",
-            element: <AdminImportPage />,
-          },
-          {
-            path: "/client/dashboard",
-            element: <DashboardPage />,
-          },
-          {
-            path: "/client/general-data",
-            element: <GeneralDataPage />,
-          },
-          {
-            path: "/client/cat",
-            element: <CATPage />,
-          },
-          {
-            path: "/client/scorecard",
-            element: <ScorecardPage />,
-          },
-          {
-            path: "/client/ai",
-            element: <AIPage />,
-          },
-        ],
+        path: "/client/import",
+        element: <ImportPage />,
+      },
+      {
+        path: "/client/import-admin",
+        element: <AdminImportPage />,
+      },
+      {
+        path: "/client/dashboard",
+        element: <DashboardPage />,
+      },
+      {
+        path: "/client/general-data",
+        element: <GeneralDataPage />,
+      },
+      {
+        path: "/client/cat",
+        element: <CATPage />,
+      },
+      {
+        path: "/client/scorecard",
+        element: <ScorecardPage />,
+      },
+      {
+        path: "/client/ai",
+        element: <AIPage />,
       },
     ],
   },
