@@ -3,7 +3,7 @@ import { useCallback, useState } from "react";
 import { firestore } from "src/firebase";
 import { IParamsData } from "src/models";
 
-export interface UseDataParams {
+export interface UseParamsData {
   update: (data: IParamsData) => Promise<void>;
   loading: boolean;
   error: string | null;
@@ -13,7 +13,7 @@ function getDocumentPath(uid: string) {
   return `settings/${uid}/data/params`;
 }
 
-function useDataParams(uid: string): UseDataParams {
+function useParamsData(uid: string): UseParamsData {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -35,4 +35,4 @@ function useDataParams(uid: string): UseDataParams {
   return { update, loading, error };
 }
 
-export default useDataParams;
+export default useParamsData;

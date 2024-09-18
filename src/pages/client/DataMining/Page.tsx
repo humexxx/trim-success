@@ -2,7 +2,7 @@ import { Alert, Grid, Typography } from "@mui/material";
 import { GlobalLoader, PageHeader } from "src/components";
 import { useCube } from "src/context/cube";
 import { useDocumentMetadata } from "src/hooks";
-import { useCatData } from "./hooks";
+import { useBaseData } from "./hooks";
 import { useAuth } from "src/context/auth";
 import { CategoriesGraph, CategoriesTable, DriversTable } from "./components";
 
@@ -10,7 +10,7 @@ const Page = () => {
   useDocumentMetadata("Scorecard - Trim Success");
   const { currentUser } = useAuth();
   const { data } = useCube();
-  const { loading, error, update } = useCatData(currentUser?.uid ?? "");
+  const { loading, error, update } = useBaseData(currentUser!.uid);
 
   const baseData = data?.baseData;
   const paramsData = data?.paramsData;

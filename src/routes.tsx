@@ -13,7 +13,7 @@ import {
   ScorecardPage,
   SettingsPage,
   GeneralDataPage,
-  CATPage,
+  DataMiningPage,
 } from "./pages/client";
 import { ClientLayout } from "./layouts";
 import { AdminImportPage } from "./pages/client/ImportPage";
@@ -65,8 +65,8 @@ export const router = createBrowserRouter([
         element: <GeneralDataPage />,
       },
       {
-        path: "/client/cat",
-        element: <CATPage />,
+        path: "/client/data-mining",
+        element: <DataMiningPage />,
       },
       {
         path: "/client/scorecard",

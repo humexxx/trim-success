@@ -1,85 +1,88 @@
-import { createContext, ReactNode, useEffect, useState } from "react";
-import { CubeContextType, FileResolution } from "./CubeContext.types";
+import {
+  createContext,
+  ReactNode,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+import { CubeContextType } from "./CubeContext.types";
 import { useAuth } from "../auth";
-import CubeLoader from "./CubeLoader";
 import { ICubeData } from "src/models";
 import { functions } from "src/firebase";
 import { httpsCallable } from "firebase/functions";
 import { GlobalLoader } from "src/components";
-import { useNavigate } from "react-router-dom";
 
 export const CubeContext = createContext<CubeContextType | undefined>(
   undefined
 );
 
 interface CubeProviderProps {
+  onCubeLoadError: () => void;
+  onCubeLoadSuccess: () => void;
   children: ReactNode;
 }
 
-export default function CubeProvider({ children }: CubeProviderProps) {
-  const [fileResolution, setFileResolution] = useState<
-    FileResolution | undefined
-  >(undefined);
-  const user = useAuth();
+export default function CubeProvider({
+  children,
+  onCubeLoadError,
+  onCubeLoadSuccess,
+}: CubeProviderProps) {
+  const { isAdmin, customUid } = useAuth();
   const [hasInitialData, setHasInitialData] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [isLoadingCube, setIsLoadingCube] = useState(false);
   const [data, setData] = useState<ICubeData | undefined>(undefined);
-  const navigate = useNavigate();
+  const isInitialLoad = useRef(true);
 
-  useEffect(() => {
-    async function loadData() {
+  const loadCubeData = useCallback(
+    async (triggerSuccess = false) => {
+      setIsLoadingCube(true);
       const getCubeData = httpsCallable(functions, "getCubeData");
+
       try {
-        const response = await getCubeData(); // pass customUid here for admin
-        const data = response.data as
-          | ICubeData
-          | { error: string; noParams?: boolean };
-        if ("noParams" in data) {
-          setLoading(false);
-          navigate("/client/import", { replace: true });
-          return;
+        if (isAdmin && !customUid) {
+          throw new Error("Custom UID is required for admin");
         }
-        setHasInitialData(true);
+
+        const response = await getCubeData(isAdmin ? { uid: customUid } : null);
+        const data = response.data as ICubeData | { error: string };
 
         if ("error" in data) {
           throw new Error(data.error);
         }
         setData(data);
+        setHasInitialData(true);
       } catch (e) {
-        console.error(e);
-        setIsLoadingCube(true);
+        // console.error(e);
+        onCubeLoadError();
+        setHasInitialData(false);
       } finally {
         setLoading(false);
+        setIsLoadingCube(false);
+        if (triggerSuccess) onCubeLoadSuccess();
       }
-    }
+    },
+    [customUid, isAdmin, onCubeLoadError, onCubeLoadSuccess]
+  );
 
-    setLoading(true);
-    loadData();
-  }, []);
+  useEffect(() => {
+    loadCubeData(!isInitialLoad.current);
+    isInitialLoad.current = false;
+  }, [loadCubeData]);
 
   const value: CubeContextType = {
     hasInitialData,
     setHasInitialData,
-    fileResolution,
-    setFileResolution,
     isLoadingCube,
 
     data,
     setData,
+
+    reloadCubeData: loadCubeData,
   };
 
   if (loading) return <GlobalLoader />;
 
-  return (
-    <CubeContext.Provider value={value}>
-      <CubeLoader
-        loadCube={isLoadingCube}
-        setLoadCube={setIsLoadingCube}
-        uid={user.currentUser?.isAdmin ? (user as any).customId : null} // agregar logica de admin
-        setData={setData}
-      />
-      {children}
-    </CubeContext.Provider>
-  );
+  return <CubeContext.Provider value={value}>{children}</CubeContext.Provider>;
 }

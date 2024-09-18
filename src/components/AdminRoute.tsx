@@ -7,9 +7,9 @@ interface AdminRouteProps {
 }
 
 const AdminRoute: React.FC<AdminRouteProps> = ({ children }) => {
-  const { currentUser } = useAuth();
+  const { isAdmin } = useAuth();
 
-  if (!currentUser?.isAdmin) {
+  if (!isAdmin) {
     return <Navigate to="/client/dashboard" />;
   }
 

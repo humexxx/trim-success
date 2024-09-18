@@ -7,8 +7,8 @@ import {
 } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { useEffect, useMemo, useState } from "react";
-import { Row, useCube } from "src/context/cube";
 import { getColsAndRowsAsync, getJsonDataFromFileAsync } from "src/utils";
+import { FileResolution } from "../Page";
 
 const hexToRgb = (hex: string) => {
   hex = hex.replace(/^#/, "");
@@ -34,12 +34,20 @@ interface Props {
   setError: (error: string) => void;
   setLoading: (loading: boolean) => void;
   loading: boolean;
+  fileResolution: FileResolution;
+  setFileResolution: (fileResolution: FileResolution) => void;
 }
 
-const FileSummary = ({ error, setError, loading, setLoading }: Props) => {
-  const [rows, setRows] = useState<Row[]>([]);
+const FileSummary = ({
+  error,
+  setError,
+  loading,
+  setLoading,
+  fileResolution,
+  setFileResolution,
+}: Props) => {
+  const [rows, setRows] = useState<any[]>([]);
   const theme = useTheme();
-  const { fileResolution, setFileResolution } = useCube();
   const [progressMessage, setProgressMessage] = useState<string | null>(null);
 
   useEffect(() => {
@@ -47,11 +55,11 @@ const FileSummary = ({ error, setError, loading, setLoading }: Props) => {
       setLoading(true);
       try {
         setProgressMessage("Formateando archivo...");
-        const jsonData = await getJsonDataFromFileAsync(fileResolution!.file!);
+        const jsonData = await getJsonDataFromFileAsync(fileResolution.file!);
         setProgressMessage("Obteniendo columnas y filas...");
         const { columns, rows } = await getColsAndRowsAsync(jsonData);
         setFileResolution({ ...fileResolution, columns, rows, jsonData });
-        setRows((rows as Row[]).slice(0, 8));
+        setRows((rows as any[]).slice(0, 8));
         setLoading(false);
       } catch (e) {
         setError("Error al formatear el archivo");

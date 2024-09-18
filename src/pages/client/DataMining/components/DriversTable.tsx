@@ -1,5 +1,6 @@
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import { GridColDef } from "@mui/x-data-grid";
 import { useMemo } from "react";
+import { StripedDataGrid } from "src/components";
 import { IBaseData } from "src/models";
 
 interface Props {
@@ -14,13 +15,14 @@ const DriversTable = ({ data, categories }: Props) => {
         field: "driver",
         headerName: "Driver",
         valueFormatter: (value) => `% ${value}`,
-        width: 175,
+        minWidth: 150,
+        flex: 1,
       },
       ...categories.sort().map((category) => {
         return {
           field: category,
           type: "number",
-          width: 175,
+          width: 150,
           valueFormatter: (value) => `${Math.round(value * 100)}%`,
         } as GridColDef;
       }),
@@ -29,18 +31,11 @@ const DriversTable = ({ data, categories }: Props) => {
   }, [categories]);
 
   return (
-    <DataGrid
+    <StripedDataGrid
       getRowId={(row) => row.driver}
-      aria-label="CAT Table"
+      aria-label="Drivers table"
       columns={columns}
       rows={data?.rows ?? []}
-      hideFooter
-      disableAutosize
-      disableColumnMenu
-      disableColumnResize
-      disableColumnSelector
-      disableRowSelectionOnClick
-      density="compact"
     />
   );
 };

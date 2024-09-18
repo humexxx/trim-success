@@ -4,4 +4,4 @@ export { AIPage } from "./AI";
 export { SettingsPage } from "./Settings";
 export { ScorecardPage } from "./Scorecard";
 export { GeneralDataPage } from "./GeneralData";
-export { CATPage } from "./CAT";
+export { DataMiningPage } from "./DataMining";

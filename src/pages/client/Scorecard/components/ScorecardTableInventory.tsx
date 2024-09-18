@@ -1,8 +1,9 @@
+import { Box, Grid } from "@mui/material";
 import { DataGrid, GridColDef, GridRowModel } from "@mui/x-data-grid";
 import { useEffect, useMemo, useState } from "react";
 import { StripedDataGrid } from "src/components";
 import { DRIVERS } from "src/consts";
-import { IScorecardData } from "src/models/user";
+import { IScorecardData } from "src/models";
 import { formatCurrency, formatPercentage } from "src/utils";
 
 interface Props {
@@ -24,7 +25,12 @@ const ScorecardTableInventory = ({
 
   const columns: GridColDef[] = useMemo(
     () => [
-      { field: "cost", headerName: "Costos del Inventario", width: 150 },
+      {
+        field: "cost",
+        headerName: "Costos del Inventario",
+        flex: 1,
+        minWidth: 150,
+      },
       {
         field: "driver",
         headerName: "Driver",
@@ -38,7 +44,7 @@ const ScorecardTableInventory = ({
           ({
             field: category,
             headerName: category,
-            width: 150,
+            minWidth: 150,
             valueFormatter: formatCurrency,
           }) as GridColDef
       ),
@@ -51,7 +57,7 @@ const ScorecardTableInventory = ({
       {
         field: "totalPercentage",
         headerName: "% Cost",
-        width: 150,
+        width: 100,
         valueFormatter: formatPercentage,
       },
       {
@@ -66,6 +72,49 @@ const ScorecardTableInventory = ({
     [categories, investmentTypes]
   );
 
+  const totalColumns: GridColDef[] = useMemo(
+    () => [
+      {
+        field: "1",
+        headerName: "Costo total del Inventario",
+        flex: 1,
+        minWidth: 150,
+        headerClassName: "bold",
+      },
+      {
+        field: "2",
+        headerName: "",
+        width: 150,
+      },
+      ...categories.sort().map(
+        (category) =>
+          ({
+            field: category,
+            headerName: formatCurrency(Number(data?.totals[category])),
+            width: 150,
+          }) as GridColDef
+      ),
+      {
+        field: "total",
+        headerName: formatCurrency(Number(data?.totals.total)),
+        width: 150,
+      },
+      {
+        field: "totalPercentage",
+        headerName: formatPercentage(Number(data?.totals.totalPercentage)),
+        width: 100,
+      },
+      {
+        field: "4",
+        headerName: "",
+        width: 150,
+        editable: true,
+        type: "singleSelect",
+      },
+    ],
+    [categories, data?.totals]
+  );
+
   const processRowUpdate = (
     row: GridRowModel<IScorecardData["inventoryCosts"]["rows"][number]>
   ) => {
@@ -78,17 +127,20 @@ const ScorecardTableInventory = ({
   }, [data]);
 
   return (
-    <StripedDataGrid
-      getRowId={(row) => row.cost}
-      aria-label="Costos del Inventario"
-      columns={columns}
-      rows={rows}
-      disableColumnMenu
-      hideFooter
-      density="compact"
-      editMode="row"
-      processRowUpdate={processRowUpdate}
-    />
+    <>
+      <StripedDataGrid
+        getRowId={(row) => row.cost}
+        aria-label="Costos del Inventario"
+        columns={columns}
+        rows={rows}
+        disableColumnMenu
+        hideFooter
+        editMode="row"
+        processRowUpdate={processRowUpdate}
+        onProcessRowUpdateError={(error) => console.error(error)}
+        totalColumns={totalColumns}
+      />
+    </>
   );
 };
 

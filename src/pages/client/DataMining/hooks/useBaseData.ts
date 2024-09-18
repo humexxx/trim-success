@@ -3,17 +3,17 @@ import { useCallback, useState } from "react";
 import { firestore } from "src/firebase";
 import { IBaseData } from "src/models";
 
-export interface UseCatData {
+export interface UseBaseData {
   loading: boolean;
   error: string | null;
   update: (data: IBaseData) => Promise<void>;
 }
 
 function getDocumentPath(uid: string) {
-  return `settings/${uid}/data/catData`;
+  return `settings/${uid}/data/base`;
 }
 
-function useDataParams(uid: string): UseCatData {
+function useBaseData(uid: string): UseBaseData {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -35,4 +35,4 @@ function useDataParams(uid: string): UseCatData {
   return { loading, error, update };
 }
 
-export default useDataParams;
+export default useBaseData;

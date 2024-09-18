@@ -1,20 +1,14 @@
 import { Box } from "@mui/material";
 import { DropzoneArea } from "mui-file-dropzone";
-import { useCube } from "src/context/cube";
 
 interface Props {
-  handleNext: () => void;
+  handleNext: (file: File) => void;
 }
 
 const Dropzone = ({ handleNext }: Props) => {
-  const cube = useCube();
-
   function handleOnFileChange(files: File[]) {
     if (files.length > 0) {
-      cube.setFileResolution({
-        file: files[0],
-      });
-      handleNext();
+      handleNext(files[0]);
     }
   }
 

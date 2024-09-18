@@ -3,7 +3,6 @@ import { useCube } from "src/context/cube";
 import { Alert, Box, CircularProgress, Grid, Typography } from "@mui/material";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm } from "react-hook-form";
-import { IDataParams } from "src/models/user";
 import {
   paramsSchema,
   GeneralParams,
@@ -11,27 +10,31 @@ import {
   InventoryParams,
 } from "../../GeneralData";
 import { getGeneralDataAsync } from "src/utils";
+import { FileResolution } from "../Page";
+import { useParamsData } from "../../GeneralData/hooks";
+import { useAuth } from "src/context/auth";
+import { ICubeData, IParamsData } from "src/models";
 
 interface Props {
   error: string;
   setError: (error: string) => void;
   setLoading: (loading: boolean) => void;
   loading: boolean;
+  fileResolution: FileResolution;
 }
 
-const GeneralParameters = forwardRef(
-  ({ error, loading, setError, setLoading }: Props, ref) => {
-    const {
-      fileResolution,
-      dataParams: { setData: setDataParams },
-    } = useCube();
+const ParamsData = forwardRef(
+  ({ error, loading, setError, setLoading, fileResolution }: Props, ref) => {
+    const cube = useCube();
+    const { currentUser } = useAuth();
+    const paramsData = useParamsData(currentUser!.uid);
 
     const {
       formState: { errors },
       register,
       setValue,
       getValues,
-    } = useForm<IDataParams>({
+    } = useForm<IParamsData>({
       resolver: yupResolver(paramsSchema),
       defaultValues: {
         generalParams: {
@@ -84,7 +87,7 @@ const GeneralParameters = forwardRef(
 
     useImperativeHandle(ref, () => ({
       saveData: () => {
-        setDataParams({
+        const _paramsData = {
           generalParams: {
             ...getValues("generalParams"),
           },
@@ -95,7 +98,13 @@ const GeneralParameters = forwardRef(
             ...getValues("inventoryParams"),
           },
           categories: getValues("categories"),
-        });
+        };
+
+        paramsData.update(_paramsData);
+        cube.setData((prev) => ({
+          ...(prev as ICubeData),
+          paramsData: _paramsData,
+        }));
       },
     }));
 
@@ -127,8 +136,8 @@ const GeneralParameters = forwardRef(
       calculateData();
     }, [fileResolution?.rows, setError, setLoading, setValue]);
 
-    if (error) {
-      return <Alert severity="error">{error}</Alert>;
+    if (error || paramsData.error) {
+      return <Alert severity="error">{error ? error : paramsData.error}</Alert>;
     }
 
     if (loading) {
@@ -172,4 +181,4 @@ const GeneralParameters = forwardRef(
   }
 );
 
-export default GeneralParameters;
+export default ParamsData;

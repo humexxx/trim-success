@@ -7,14 +7,14 @@ import { paramsSchema } from "./schema";
 import { useEffect } from "react";
 import { LoadingButton } from "@mui/lab";
 import { useCube } from "src/context/cube";
-import { useDataParams } from "./hooks";
 import { useAuth } from "src/context/auth";
 import { ICubeData, IParamsData } from "src/models";
+import { useParamsData } from "./hooks";
 
 const Page = () => {
   const { currentUser } = useAuth();
   const { data, setData } = useCube();
-  const { error, loading, update } = useDataParams(currentUser?.uid ?? "");
+  const { error, loading, update } = useParamsData(currentUser?.uid ?? "");
 
   const paramsData = data?.paramsData;
 

@@ -6,10 +6,10 @@ import StepContent from "@mui/material/StepContent";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import {
+  ParamsData,
   Dropzone,
   FileSummary,
   FileUpload,
-  GeneralParameters,
 } from "src/pages/client/ImportPage/components";
 import { useCube } from "src/context/cube";
 import { useRef, useState } from "react";
@@ -17,14 +17,27 @@ import { Navigate, useNavigate } from "react-router-dom";
 import { useDocumentMetadata } from "src/hooks";
 import { LoadingButton } from "@mui/lab";
 
+export interface FileResolution {
+  jsonData?: any[][];
+  rows?: any[];
+  columns?: any[];
+  file?: File;
+}
+
 export default function Page() {
   useDocumentMetadata("Importar Datos - Trim Success");
+
   const [activeStep, setActiveStep] = useState(0);
   const [stepError, setStepError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const [fileResolution, setFileResolution] = useState<
+    FileResolution | undefined
+  >(undefined);
+
   const navigate = useNavigate();
   const cube = useCube();
-  const generalParamsRef = useRef<{ saveData: () => void }>(null);
+  const paramsDataComponentRef = useRef<{ saveData: () => void }>(null);
 
   if (cube.hasInitialData) return <Navigate to="/client/dashboard" replace />;
 
@@ -56,13 +69,18 @@ export default function Page() {
           </StepLabel>
           <StepContent>
             <StepContentWrapper>
-              <Dropzone handleNext={handleNext} />
+              <Dropzone
+                handleNext={(file: File) => {
+                  setFileResolution({ file });
+                  handleNext();
+                }}
+              />
             </StepContentWrapper>
             <StepperFooter
               handleBack={handleBack}
               handleNext={handleNext}
               isFirstStep
-              disableNext={!cube.fileResolution?.file || loading}
+              disableNext={!fileResolution?.file || loading}
             />
           </StepContent>
         </Step>
@@ -82,6 +100,8 @@ export default function Page() {
                 error={stepError}
                 setError={setStepError}
                 setLoading={setLoading}
+                fileResolution={fileResolution!}
+                setFileResolution={setFileResolution}
                 loading={loading}
               />
             </StepContentWrapper>
@@ -104,18 +124,19 @@ export default function Page() {
           </StepLabel>
           <StepContent>
             <StepContentWrapper>
-              <GeneralParameters
-                ref={generalParamsRef}
+              <ParamsData
+                ref={paramsDataComponentRef}
                 error={stepError}
                 setError={setStepError}
                 setLoading={setLoading}
                 loading={loading}
+                fileResolution={fileResolution!}
               />
             </StepContentWrapper>
             <StepperFooter
               handleBack={handleBack}
               handleNext={() => {
-                generalParamsRef.current?.saveData();
+                paramsDataComponentRef.current?.saveData();
                 handleNext();
               }}
               disableNext={Boolean(stepError) || loading}
@@ -134,7 +155,10 @@ export default function Page() {
           </StepLabel>
           <StepContent>
             <StepContentWrapper>
-              <FileUpload handleOnFinish={handleOnFinish} />
+              <FileUpload
+                fileResolution={fileResolution!}
+                handleOnFinish={handleOnFinish}
+              />
             </StepContentWrapper>
           </StepContent>
         </Step>

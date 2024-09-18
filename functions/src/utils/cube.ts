@@ -151,9 +151,9 @@ export function calculateScorecardData(
           acc[category] =
             paramsData.storingParams.costs[cost] *
             Number(
-              baseData.categoriesData.rows.find(
-                (row) => row.driver === driver
-              )![category]
+              baseData.driversData.rows.find((row) => row.driver === driver)![
+                category
+              ]
             );
           return acc;
         }, {} as any),
@@ -176,9 +176,9 @@ export function calculateScorecardData(
             paramsData.storingParams.investments[investment] *
             (investmentPercentage / 100) *
             Number(
-              baseData.categoriesData.rows.find(
-                (row) => row.driver === driver
-              )![category]
+              baseData.driversData.rows.find((row) => row.driver === driver)![
+                category
+              ]
             );
           return acc;
         }, {} as any),
@@ -198,9 +198,9 @@ export function calculateScorecardData(
           acc[category] =
             paramsData.inventoryParams.costs[cost] *
             Number(
-              baseData.categoriesData.rows.find(
-                (row) => row.driver === driver
-              )![category]
+              baseData.driversData.rows.find((row) => row.driver === driver)![
+                category
+              ]
             );
           return acc;
         }, {} as any),
@@ -223,9 +223,9 @@ export function calculateScorecardData(
             paramsData.inventoryParams.investments[investment] *
             (investmentPercentage / 100) *
             Number(
-              baseData.categoriesData.rows.find(
-                (row) => row.driver === driver
-              )![category]
+              baseData.driversData.rows.find((row) => row.driver === driver)![
+                category
+              ]
             );
           return acc;
         }, {} as any),
@@ -235,24 +235,24 @@ export function calculateScorecardData(
   ];
 
   const totalStoringCost = storingCosts.reduce((acc, row) => {
-    return acc + row.total;
+    return acc + Number(row.total);
   }, 0);
   storingCosts.forEach((row) => {
-    row.totalPercentage = row.total / totalStoringCost;
+    row.totalPercentage = Number(row.total) / totalStoringCost;
   });
 
   const totalInventoryCost = inventoryCosts.reduce((acc, row) => {
-    return acc + row.total;
+    return acc + Number(row.total);
   }, 0);
   inventoryCosts.forEach((row) => {
-    row.totalPercentage = row.total / totalInventoryCost;
+    row.totalPercentage = Number(row.total) / totalInventoryCost;
   });
 
   return {
     storingCosts: {
       rows: storingCosts,
       totals: {
-        total: storingCosts.reduce((acc, row) => acc + row.total, 0),
+        total: storingCosts.reduce((acc, row) => acc + Number(row.total), 0),
         totalPercentage: 1,
         ...paramsData.categories.reduce((acc, category) => {
           acc[category] = storingCosts.reduce(
@@ -266,7 +266,7 @@ export function calculateScorecardData(
     inventoryCosts: {
       rows: inventoryCosts,
       totals: {
-        total: inventoryCosts.reduce((acc, row) => acc + row.total, 0),
+        total: inventoryCosts.reduce((acc, row) => acc + Number(row.total), 0),
         totalPercentage: 1,
         ...paramsData.categories.reduce((acc, category) => {
           acc[category] = inventoryCosts.reduce(

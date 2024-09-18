@@ -18,7 +18,7 @@ export const getCubeData = functions.https.onCall(
   async (
     data,
     context
-  ): Promise<ICubeData | { error: string; noParams?: boolean }> => {
+  ): Promise<(ICubeData & { error?: string }) | { error?: string }> => {
     if (!context.auth) return { error: "Not authenticated." };
     const uid = context.auth.token.admin ? data.uid : context.auth?.uid;
 
@@ -26,20 +26,28 @@ export const getCubeData = functions.https.onCall(
       .firestore()
       .doc(`settings/${uid}/data/params`)
       .get();
-    if (!paramsData.exists)
-      return { error: "Params data not found.", noParams: true };
+    if (!paramsData.exists) return { error: "Params data not found." };
 
     const baseData = await admin
       .firestore()
       .doc(`settings/${uid}/data/base`)
       .get();
-    if (!baseData.exists) return { error: "Base data not found." };
+    if (!baseData.exists)
+      return {
+        error: "Base data not found.",
+        paramsData: paramsData.data() as IParamsData,
+      };
 
     const scorecardData = await admin
       .firestore()
       .doc(`settings/${uid}/data/scorecard`)
       .get();
-    if (!scorecardData.exists) return { error: "Scorecard data not found." };
+    if (!scorecardData.exists)
+      return {
+        error: "Scorecard data not found.",
+        baseData: baseData.data() as IBaseData,
+        paramsData: paramsData.data() as IParamsData,
+      };
 
     return {
       baseData: baseData.data() as IBaseData,
@@ -121,9 +129,12 @@ export const createScorecardData = functions.https.onCall(
         baseData.data() as IBaseData
       );
 
-      await admin.firestore().doc(`settings/${uid}/data/scorecard`).set({
-        scorecardData,
-      });
+      await admin
+        .firestore()
+        .doc(`settings/${uid}/data/scorecard`)
+        .set({
+          ...scorecardData,
+        });
     } catch (e: any) {
       return { error: e.message ?? e };
     }

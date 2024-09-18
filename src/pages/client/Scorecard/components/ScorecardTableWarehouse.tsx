@@ -2,7 +2,7 @@ import { GridColDef, GridRowModel } from "@mui/x-data-grid";
 import { useEffect, useMemo, useState } from "react";
 import { StripedDataGrid } from "src/components";
 import { DRIVERS } from "src/consts";
-import { IScorecardData } from "src/models/user";
+import { IScorecardData } from "src/models";
 import { formatCurrency, formatPercentage } from "src/utils";
 
 interface Props {
@@ -24,7 +24,12 @@ const ScorecardTableWarehouse = ({
 
   const columns: GridColDef[] = useMemo(
     () => [
-      { field: "cost", headerName: "Warehousing  Costs", width: 150 },
+      {
+        field: "cost",
+        headerName: "Warehousing  Costs",
+        minWidth: 150,
+        flex: 1,
+      },
       {
         field: "driver",
         headerName: "Driver",
@@ -51,7 +56,7 @@ const ScorecardTableWarehouse = ({
       {
         field: "totalPercentage",
         headerName: "% Cost",
-        width: 150,
+        width: 100,
         valueFormatter: formatPercentage,
       },
       {
@@ -64,6 +69,49 @@ const ScorecardTableWarehouse = ({
       },
     ],
     [categories, investmentTypes]
+  );
+
+  const totalColumns: GridColDef[] = useMemo(
+    () => [
+      {
+        field: "1",
+        headerName: "Costo total de Almacenaje",
+        headerClassName: "bold",
+        flex: 1,
+        minWidth: 150,
+      },
+      {
+        field: "2",
+        headerName: "",
+        width: 150,
+      },
+      ...categories.sort().map(
+        (category) =>
+          ({
+            field: category,
+            headerName: formatCurrency(Number(data?.totals[category])),
+            width: 150,
+          }) as GridColDef
+      ),
+      {
+        field: "total",
+        headerName: formatCurrency(Number(data?.totals.total)),
+        width: 150,
+      },
+      {
+        field: "totalPercentage",
+        headerName: formatPercentage(Number(data?.totals.totalPercentage)),
+        width: 100,
+      },
+      {
+        field: "4",
+        headerName: "",
+        width: 150,
+        editable: true,
+        type: "singleSelect",
+      },
+    ],
+    [categories, data?.totals]
   );
 
   const processRowUpdate = (row: GridRowModel) => {
@@ -82,10 +130,9 @@ const ScorecardTableWarehouse = ({
       columns={columns}
       rows={rows}
       disableColumnMenu
-      hideFooter
-      density="compact"
       editMode="row"
       processRowUpdate={processRowUpdate}
+      totalColumns={totalColumns}
     />
   );
 };
