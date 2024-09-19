@@ -7,16 +7,7 @@ self.onmessage = function (event) {
     return;
   }
 
-  const {
-    category: _category,
-    sumOfInvAvgQty,
-    sumOfInvAvgValue,
-    sumOfQtySent,
-    sumOfCubageInvAvg,
-    sumOfTotalSales,
-    sumOfGrossMargin,
-    sku,
-  } = event.data;
+  const { category: _category, drivers } = event.data;
 
   const response = {};
 
@@ -25,40 +16,23 @@ self.onmessage = function (event) {
     if (!response[category]) {
       response[category] = {
         category,
-        [sku.label]: 0,
-        [sumOfInvAvgQty.label]: 0,
-        [sumOfInvAvgValue.label]: 0,
-        [sumOfQtySent.label]: 0,
-        [sumOfCubageInvAvg.label]: 0,
-        [sumOfTotalSales.label]: 0,
-        [sumOfGrossMargin.label]: 0,
+        ...drivers.reduce((acc, driver) => {
+          acc[driver.key] = 0;
+          return acc;
+        }, {}),
       };
     }
-    response[category][sku.label]++;
-    response[category][sumOfInvAvgQty.label] += getRowValue(
-      rows[i],
-      sumOfInvAvgQty.index
-    );
-    response[category][sumOfInvAvgValue.label] += getRowValue(
-      rows[i],
-      sumOfInvAvgValue.index
-    );
-    response[category][sumOfQtySent.label] += getRowValue(
-      rows[i],
-      sumOfQtySent.index
-    );
-    response[category][sumOfCubageInvAvg.label] += getRowValue(
-      rows[i],
-      sumOfCubageInvAvg.index
-    );
-    response[category][sumOfTotalSales.label] += getRowValue(
-      rows[i],
-      sumOfTotalSales.index
-    );
-    response[category][sumOfGrossMargin.label] += getRowValue(
-      rows[i],
-      sumOfGrossMargin.index
-    );
+
+    for (let j = 0; j < drivers.length; j++) {
+      if (drivers[j].key === "SKUS") {
+        response[category][drivers[j].key]++;
+      } else {
+        response[category][drivers[j].key] += getRowValue(
+          rows[i],
+          drivers[j].columnIndexReference
+        );
+      }
+    }
 
     if (i % 10000 === 0) {
       self.postMessage({ progress: (i / rows.length) * 100 });

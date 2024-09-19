@@ -33,7 +33,10 @@ const Page = () => {
           </Typography>
         </Grid>
         <Grid item xs={12}>
-          <CategoriesTable data={baseData?.categoriesData} />
+          <CategoriesTable
+            data={baseData?.categoriesData}
+            drivers={paramsData!.drivers}
+          />
         </Grid>
         <Grid item xs={12}>
           <CategoriesGraph data={baseData?.categoriesData} />

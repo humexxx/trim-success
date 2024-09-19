@@ -1,59 +1,31 @@
-export interface IStoringDataParams {
-  costs: {
-    manoObraCost: number;
-    alquilerCost: number;
-    suministroOficinaCost: number;
-    energiaCost: number;
-    tercerizacionCost: number;
-    otherCosts: number;
-    [key: string]: number;
-  };
-  investments: {
-    terrenoEdificio: number;
-    manejoMateriales: number;
-    almacenajeMateriales: number;
-    administracionAlmacen: number;
-    otrasInversiones: number;
-    [key: string]: number;
-  };
+import { IDriver } from "./settings";
+
+export interface IParam {
+  label: string;
+  key: string;
+  value: number;
+  hint?: string;
+  type: "percentage" | "currency" | "number";
+}
+export interface IStoringParamsData {
+  costs: IParam[];
+  investments: IParam[];
 }
 
-export interface IInventoryDataParams {
-  costs: {
-    manoObraCost: number;
-    insuranceCost: number;
-    energyCost: number;
-    officeSupplyCost: number;
-    officeSpaceCost: number;
-    otherCosts: number;
-    [key: string]: number;
-  };
-  investments: {
-    hardwareInvestment: number;
-    inventoryInvestment: number;
-    managementSystemInvestment: number;
-    [key: string]: number;
-  };
+export interface IInventoryParamsData {
+  costs: IParam[];
+  investments: IParam[];
 }
 
-export interface IGeneralDataParams {
-  financial: {
-    sales: number;
-    salesCost: number;
-    inventoryAnnualCost: number;
-    companyCapitalCost: number;
-    technologyCapitalCost: number;
-    [key: string]: number;
-  };
-  operational: {
-    annualWorkingHours: number;
-    [key: string]: number;
-  };
+export interface IGeneralParamsData {
+  financial: IParam[];
+  operational: IParam[];
 }
 
 export interface IParamsData {
-  generalParams: IGeneralDataParams;
-  storingParams: IStoringDataParams;
-  inventoryParams: IInventoryDataParams;
+  generalParams: IGeneralParamsData;
+  storingParams: IStoringParamsData;
+  inventoryParams: IInventoryParamsData;
   categories: string[];
+  drivers: IDriver[];
 }

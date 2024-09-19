@@ -1,15 +1,15 @@
 import { GridColDef, GridRowModel } from "@mui/x-data-grid";
 import { useEffect, useMemo, useState } from "react";
 import { StripedDataGrid } from "src/components";
-import { DRIVERS } from "src/consts";
-import { IScorecardData } from "src/models";
+import { IDriver, IParam, IScorecardData } from "src/models";
 import { formatCurrency, formatPercentage } from "src/utils";
 
 interface Props {
   data?: IScorecardData["storingCosts"];
   categories: string[];
-  investmentTypes: string[];
+  investmentTypes: IParam[];
   updateRow: (row: IScorecardData["storingCosts"]["rows"][number]) => void;
+  drivers: IDriver[];
 }
 
 const ScorecardTableWarehouse = ({
@@ -17,6 +17,7 @@ const ScorecardTableWarehouse = ({
   categories,
   investmentTypes,
   updateRow,
+  drivers,
 }: Props) => {
   const [rows, setRows] = useState<
     GridRowModel<IScorecardData["storingCosts"]["rows"][number]>[]
@@ -36,7 +37,10 @@ const ScorecardTableWarehouse = ({
         width: 150,
         editable: true,
         type: "singleSelect",
-        valueOptions: DRIVERS.map((driver) => driver.name),
+        valueOptions: drivers.map((driver) => driver.label),
+        valueFormatter: (params) => {
+          return drivers.find((driver) => driver.key === params)?.label;
+        },
       },
       ...categories.sort().map(
         (category) =>
@@ -65,10 +69,13 @@ const ScorecardTableWarehouse = ({
         width: 150,
         editable: true,
         type: "singleSelect",
-        valueOptions: investmentTypes,
+        valueOptions: investmentTypes.map((type) => type.label),
+        valueFormatter: (params) => {
+          return investmentTypes.find((type) => type.key === params)?.label;
+        },
       },
     ],
-    [categories, investmentTypes]
+    [categories, drivers, investmentTypes]
   );
 
   const totalColumns: GridColDef[] = useMemo(

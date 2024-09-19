@@ -5,10 +5,11 @@ import {
   Typography,
   useTheme,
 } from "@mui/material";
-import { DataGrid } from "@mui/x-data-grid";
 import { useEffect, useMemo, useState } from "react";
 import { getColsAndRowsAsync, getJsonDataFromFileAsync } from "src/utils";
 import { FileResolution } from "../Page";
+import { StripedDataGrid } from "src/components";
+import { useCube } from "src/context/cube";
 
 const hexToRgb = (hex: string) => {
   hex = hex.replace(/^#/, "");
@@ -47,6 +48,7 @@ const FileSummary = ({
   setFileResolution,
 }: Props) => {
   const [rows, setRows] = useState<any[]>([]);
+  const cube = useCube();
   const theme = useTheme();
   const [progressMessage, setProgressMessage] = useState<string | null>(null);
 
@@ -58,6 +60,7 @@ const FileSummary = ({
         const jsonData = await getJsonDataFromFileAsync(fileResolution.file!);
         setProgressMessage("Obteniendo columnas y filas...");
         const { columns, rows } = await getColsAndRowsAsync(jsonData);
+        cube.setFileData({ columns, rows });
         setFileResolution({ ...fileResolution, columns, rows, jsonData });
         setRows((rows as any[]).slice(0, 8));
         setLoading(false);
@@ -112,19 +115,11 @@ const FileSummary = ({
           },
         }}
       >
-        <DataGrid
+        <StripedDataGrid
           sx={{ fontSize: "0.75rem" }}
           rows={rows}
           columns={fileResolution?.columns ?? []}
-          hideFooter
-          disableColumnSorting
-          disableAutosize
-          disableColumnFilter
-          disableColumnMenu
-          disableColumnResize
-          disableColumnSelector
-          disableRowSelectionOnClick
-          density="compact"
+          autosizeOnMount
         />
         <Box
           sx={{

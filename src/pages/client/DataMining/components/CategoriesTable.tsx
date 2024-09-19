@@ -2,40 +2,38 @@ import { Box } from "@mui/material";
 import { GridColDef } from "@mui/x-data-grid";
 import { useEffect, useMemo, useState } from "react";
 import { StripedDataGrid } from "src/components";
-import { DRIVERS } from "src/consts";
-import { IBaseData } from "src/models";
+import { IBaseData, IDriver } from "src/models";
 import { formatCurrency } from "src/utils";
-
-const columns: GridColDef[] = [
-  {
-    field: "category",
-    headerName: "Rotulos de fila",
-    flex: 1,
-  },
-  ...DRIVERS.filter((x) => !x.catHiddenByDefault).map(
-    (driver) =>
-      ({
-        field: driver.name,
-        headerName: driver.catDescription,
-        type: "number",
-        minWidth: 175,
-      }) as GridColDef
-  ),
-  {
-    field: "grossMargin",
-    headerName: "Sum of Gross Margin",
-    valueFormatter: formatCurrency,
-    type: "number",
-    minWidth: 175,
-  },
-];
 
 interface Props {
   data?: IBaseData["categoriesData"];
+  drivers: IDriver[];
 }
 
-const CategoriesTable = ({ data }: Props) => {
+const CategoriesTable = ({ data, drivers }: Props) => {
   const [rows, setRows] = useState<IBaseData["categoriesData"]["rows"]>([]);
+
+  const columns: GridColDef[] = useMemo(
+    () => [
+      {
+        field: "category",
+        headerName: "Rotulos de fila",
+        flex: 1,
+      },
+      ...drivers
+        .filter((x) => -1 !== x.columnIndexReference)
+        .map(
+          (driver, index) =>
+            ({
+              field: driver.key,
+              headerName: `${index === 0 ? "Count of" : "Sum of"} ${driver.label}`,
+              type: "number",
+              minWidth: 175,
+            }) as GridColDef
+        ),
+    ],
+    [drivers]
+  );
 
   const totalColumns: GridColDef[] = useMemo(
     () => [
@@ -45,33 +43,24 @@ const CategoriesTable = ({ data }: Props) => {
         flex: 1,
         headerClassName: "bold",
       },
-      ...DRIVERS.filter((x) => !x.catHiddenByDefault).map(
-        (driver) =>
-          ({
-            field: driver.name,
-            headerName: formatCurrency(
-              (data?.rows ?? []).reduce(
-                (acc, row) => acc + (row[driver.name] as number),
-                0
-              )
-            ),
-            type: "number",
-            minWidth: 175,
-          }) as GridColDef
-      ),
-      {
-        field: "grossMargin",
-        type: "number",
-        minWidth: 175,
-        headerName: formatCurrency(
-          (data?.rows ?? []).reduce(
-            (acc, row) => acc + Number(row.grossMargin),
-            0
-          )
+      ...drivers
+        .filter((x) => -1 !== x.columnIndexReference)
+        .map(
+          (driver) =>
+            ({
+              field: driver.key,
+              headerName: formatCurrency(
+                (data?.rows ?? []).reduce(
+                  (acc, row) => acc + (row[driver.key] as number),
+                  0
+                )
+              ),
+              type: "number",
+              minWidth: 175,
+            }) as GridColDef
         ),
-      },
     ],
-    [data?.rows]
+    [data?.rows, drivers]
   );
 
   useEffect(() => {

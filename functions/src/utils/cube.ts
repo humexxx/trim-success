@@ -1,6 +1,6 @@
-import { COLUMNS, DRIVERS } from "../consts";
-import { EColumnType, EDriverType } from "../consts/enums";
-import { IBaseData, IParamsData } from "../models";
+import { COLUMNS } from "../consts";
+import { EColumnType } from "../consts/enums";
+import { IBaseData, IDriver, IParamsData } from "../models";
 import { IScorecardData } from "../models/scorecardData";
 
 function getColumnIndex(column: EColumnType): number | undefined {
@@ -19,38 +19,15 @@ function getRowValue(
   return values[index + 1];
 }
 
-export function calculateCategoriesDataRows(rows: any[]): any[] {
+export function calculateCategoriesDataRows(
+  rows: any[],
+  drivers: IDriver[]
+): IBaseData["categoriesData"]["rows"] {
   if (!rows || rows.length === 0) {
     throw new Error("No rows provided");
   }
 
   const category = { index: getColumnIndex(EColumnType.CATEGORY)! };
-  const sku = { label: "Sku's" };
-  const sumOfInvAvgQty = {
-    index: getColumnIndex(EColumnType.AVERAGE_INVENTORY)!,
-    label: "Sum of Inventario Prom. Bultos",
-  };
-  const sumOfInvAvgValue = {
-    index: getColumnIndex(EColumnType.INVENTORY_VALUE)!,
-    label: "Sum of Inventario Promedio $",
-  };
-  const sumOfQtySent = {
-    index: getColumnIndex(EColumnType.SHIPPED_CASES)!,
-    label: "Sum of Bultos Despachados",
-  };
-  const sumOfCubageInvAvg = {
-    index: getColumnIndex(EColumnType.INVENTORY_CUBE)!,
-    label: "Sum of Cubicaje Inv Promedio",
-  };
-  const sumOfTotalSales = {
-    index: getColumnIndex(EColumnType.SALES)!,
-    label: "Sum of Ventas Totales",
-  };
-  const sumOfGrossMargin = {
-    index: getColumnIndex(EColumnType.GROSS_MARGIN)!,
-    label: "sumOfGrossMargin",
-  };
-
   const response: any = {};
 
   for (let i = 0; i < rows.length; i++) {
@@ -58,60 +35,51 @@ export function calculateCategoriesDataRows(rows: any[]): any[] {
     if (!response[categoryValue]) {
       response[categoryValue] = {
         category: categoryValue,
-        [sku.label]: 0,
-        [sumOfInvAvgQty.label]: 0,
-        [sumOfInvAvgValue.label]: 0,
-        [sumOfQtySent.label]: 0,
-        [sumOfCubageInvAvg.label]: 0,
-        [sumOfTotalSales.label]: 0,
-        [sumOfGrossMargin.label]: 0,
+        ...drivers.reduce((acc, driver) => {
+          acc[driver.key] = 0;
+          return acc;
+        }, {} as any),
       };
     }
 
-    response[categoryValue][sku.label]++;
-    response[categoryValue][sumOfInvAvgQty.label] += getRowValue(
-      rows[i],
-      sumOfInvAvgQty.index
-    );
-    response[categoryValue][sumOfInvAvgValue.label] += getRowValue(
-      rows[i],
-      sumOfInvAvgValue.index
-    );
-    response[categoryValue][sumOfQtySent.label] += getRowValue(
-      rows[i],
-      sumOfQtySent.index
-    );
-    response[categoryValue][sumOfCubageInvAvg.label] += getRowValue(
-      rows[i],
-      sumOfCubageInvAvg.index
-    );
-    response[categoryValue][sumOfTotalSales.label] += getRowValue(
-      rows[i],
-      sumOfTotalSales.index
-    );
-    response[categoryValue][sumOfGrossMargin.label] += getRowValue(
-      rows[i],
-      sumOfGrossMargin.index
-    );
+    for (let j = 0; j < drivers.length; j++) {
+      if (drivers[j].key === "SKUS") {
+        response[categoryValue][drivers[j].key]++;
+      } else {
+        response[categoryValue][drivers[j].key] += getRowValue(
+          rows[i],
+          drivers[j].columnIndexReference
+        );
+      }
+    }
   }
 
   return Object.values(response);
 }
 
 export function calculateCategoriesTotalsData(
-  categoriesDataRows: IBaseData["categoriesData"]["rows"]
+  categoriesDataRows: IBaseData["categoriesData"]["rows"],
+  drivers: IDriver[]
 ): IBaseData["categoriesData"]["totals"] {
   return {
     category: "Total",
-    ...DRIVERS.filter((x) => !x.catHiddenByDefault).reduce((acc, driver) => {
-      acc[driver.name] = categoriesDataRows.reduce(
-        (acc, row) => acc + (row[driver.name] as number),
-        0
-      );
-      return acc;
-    }, {} as any),
-    sumOfGrossMargin: categoriesDataRows.reduce(
-      (acc, row) => acc + Number(row.sumOfGrossMargin),
+    ...drivers
+      .filter((x) => -1 !== x.columnIndexReference)
+      .reduce(
+        (acc, driver) => {
+          acc[driver.key] = categoriesDataRows.reduce(
+            (acc, row) => acc + (row[driver.key] as number),
+            0
+          );
+          return acc;
+        },
+        {} as Omit<
+          IBaseData["categoriesData"]["totals"],
+          "category" | "grossMargin"
+        >
+      ),
+    grossMargin: categoriesDataRows.reduce(
+      (acc, row) => acc + row.grossMargin,
       0
     ),
   } as IBaseData["categoriesData"]["totals"];
@@ -119,16 +87,17 @@ export function calculateCategoriesTotalsData(
 
 export function calculateDriversDataRows(
   categoriesDataRows: IBaseData["categoriesData"]["rows"],
-  totals: IBaseData["categoriesData"]["totals"]
+  totals: IBaseData["categoriesData"]["totals"],
+  drivers: IDriver[]
 ): IBaseData["driversData"]["rows"] {
-  return DRIVERS.map((driver) => {
+  return drivers.map((driver) => {
     const _row = {
-      driver: driver.name,
+      driver: driver.label,
     } as IBaseData["driversData"]["rows"][number];
 
     categoriesDataRows.forEach((row) => {
-      _row[row.category] = Number(totals[driver.name])
-        ? Number(row[driver.name]) / Number(totals[driver.name])
+      _row[row.category] = Number(totals[driver.key])
+        ? Number(row[driver.key]) / Number(totals[driver.key])
         : 0;
     });
 
@@ -141,44 +110,42 @@ export function calculateScorecardData(
   baseData: IBaseData
 ): IScorecardData {
   const storingCosts: IScorecardData["storingCosts"]["rows"] = [
-    ...Object.keys(paramsData.storingParams.costs).map((cost) => {
-      const driver = EDriverType.AVERAGE_INVENTORY;
+    ...paramsData.storingParams.costs.map((cost) => {
+      const driver = paramsData.drivers[0]; // try to infer with ai
       const _row = {
-        cost,
-        total: paramsData.storingParams.costs[cost],
-        driver,
+        cost: cost.label,
+        total: cost.value,
+        driver: driver.key,
         ...paramsData.categories.reduce((acc, category) => {
           acc[category] =
-            paramsData.storingParams.costs[cost] *
+            cost.value *
             Number(
-              baseData.driversData.rows.find((row) => row.driver === driver)![
-                category
-              ]
+              baseData.driversData.rows.find(
+                (row) => row.driver === driver.label
+              )![category]
             );
           return acc;
         }, {} as any),
       };
       return _row;
     }),
-    ...Object.keys(paramsData.storingParams.investments).map((investment) => {
-      const driver = EDriverType.AVERAGE_INVENTORY;
-      const invest = "technologyCapitalCost";
-      const investmentPercentage = paramsData.generalParams.financial[invest];
+    ...paramsData.storingParams.investments.map((investment) => {
+      const driver = paramsData.drivers[0];
+      const investmentsTypes = paramsData.generalParams.financial.slice(2);
+      const investType = investmentsTypes[0]; // try to infer with ai
       const _row = {
-        invest,
-        cost: investment,
-        total:
-          paramsData.storingParams.investments[investment] *
-          (investmentPercentage / 100),
-        driver,
+        invest: investType.key,
+        cost: investment.label,
+        total: investment.value * (investType.value / 100),
+        driver: driver.key,
         ...paramsData.categories.reduce((acc, category) => {
           acc[category] =
-            paramsData.storingParams.investments[investment] *
-            (investmentPercentage / 100) *
+            investment.value *
+            (investType.value / 100) *
             Number(
-              baseData.driversData.rows.find((row) => row.driver === driver)![
-                category
-              ]
+              baseData.driversData.rows.find(
+                (row) => row.driver === driver.label
+              )![category]
             );
           return acc;
         }, {} as any),
@@ -188,44 +155,42 @@ export function calculateScorecardData(
   ];
 
   const inventoryCosts: IScorecardData["inventoryCosts"]["rows"] = [
-    ...Object.keys(paramsData.inventoryParams.costs).map((cost) => {
-      const driver = EDriverType.AVERAGE_INVENTORY;
+    ...paramsData.inventoryParams.costs.map((cost) => {
+      const driver = paramsData.drivers[0];
       const _row = {
-        cost,
-        total: paramsData.inventoryParams.costs[cost],
-        driver,
+        cost: cost.label,
+        total: cost.value,
+        driver: driver.key,
         ...paramsData.categories.reduce((acc, category) => {
           acc[category] =
-            paramsData.inventoryParams.costs[cost] *
+            cost.value *
             Number(
-              baseData.driversData.rows.find((row) => row.driver === driver)![
-                category
-              ]
+              baseData.driversData.rows.find(
+                (row) => row.driver === driver.label
+              )![category]
             );
           return acc;
         }, {} as any),
       };
       return _row;
     }),
-    ...Object.keys(paramsData.inventoryParams.investments).map((investment) => {
-      const driver = EDriverType.AVERAGE_INVENTORY;
-      const invest = "technologyCapitalCost";
-      const investmentPercentage = paramsData.generalParams.financial[invest];
+    ...paramsData.inventoryParams.investments.map((investment) => {
+      const driver = paramsData.drivers[0];
+      const investmentsTypes = paramsData.generalParams.financial.slice(2);
+      const investType = investmentsTypes[0];
       const _row = {
-        invest,
-        cost: investment,
-        total:
-          paramsData.inventoryParams.investments[investment] *
-          (investmentPercentage / 100),
-        driver,
+        invest: investType.key,
+        cost: investment.label,
+        total: investment.value * (investType.value / 100),
+        driver: driver.key,
         ...paramsData.categories.reduce((acc, category) => {
           acc[category] =
-            paramsData.inventoryParams.investments[investment] *
-            (investmentPercentage / 100) *
+            investment.value *
+            (investType.value / 100) *
             Number(
-              baseData.driversData.rows.find((row) => row.driver === driver)![
-                category
-              ]
+              baseData.driversData.rows.find(
+                (row) => row.driver === driver.label
+              )![category]
             );
           return acc;
         }, {} as any),

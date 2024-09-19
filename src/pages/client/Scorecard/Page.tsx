@@ -26,8 +26,8 @@ const Page = () => {
 
   const investmentTypes = useMemo(
     () =>
-      Object.keys(paramsData?.generalParams.financial ?? {}).filter(
-        (x) => x !== "sales" && x !== "salesCost"
+      paramsData?.generalParams.financial.filter(
+        (x) => x.key !== "sales" && x.key !== "salesCost"
       ),
     [paramsData]
   );
@@ -94,16 +94,18 @@ const Page = () => {
           <ScorecardTableWarehouse
             data={scorecardData?.storingCosts}
             categories={paramsData?.categories ?? []}
-            investmentTypes={investmentTypes}
+            investmentTypes={investmentTypes ?? []}
             updateRow={updateStoringCostsRow}
+            drivers={paramsData?.drivers ?? []}
           />
         </Grid>
         <Grid item xs={12}>
           <ScorecardTableInventory
             data={scorecardData?.inventoryCosts}
             categories={paramsData?.categories ?? []}
-            investmentTypes={investmentTypes}
+            investmentTypes={investmentTypes ?? []}
             updateRow={updateInventoryCostsRow}
+            drivers={paramsData?.drivers ?? []}
           />
         </Grid>
       </Grid>

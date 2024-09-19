@@ -6,10 +6,11 @@ import StepContent from "@mui/material/StepContent";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import {
-  ParamsData,
+  ParamsDataStep,
   Dropzone,
-  FileSummary,
-  FileUpload,
+  FileSummaryStep,
+  FileUploadStep,
+  DriversStep,
 } from "src/pages/client/ImportPage/components";
 import { useCube } from "src/context/cube";
 import { useRef, useState } from "react";
@@ -96,7 +97,7 @@ export default function Page() {
           </StepLabel>
           <StepContent>
             <StepContentWrapper>
-              <FileSummary
+              <FileSummaryStep
                 error={stepError}
                 setError={setStepError}
                 setLoading={setLoading}
@@ -104,6 +105,27 @@ export default function Page() {
                 setFileResolution={setFileResolution}
                 loading={loading}
               />
+            </StepContentWrapper>
+            <StepperFooter
+              handleBack={handleBack}
+              handleNext={handleNext}
+              disableNext={Boolean(stepError) || loading}
+            />
+          </StepContent>
+        </Step>
+        <Step>
+          <StepLabel
+            optional={
+              <Typography variant="caption">
+                Verifica los drivers por usar
+              </Typography>
+            }
+          >
+            Verificar Drivers
+          </StepLabel>
+          <StepContent>
+            <StepContentWrapper>
+              <DriversStep />
             </StepContentWrapper>
             <StepperFooter
               handleBack={handleBack}
@@ -124,7 +146,7 @@ export default function Page() {
           </StepLabel>
           <StepContent>
             <StepContentWrapper>
-              <ParamsData
+              <ParamsDataStep
                 ref={paramsDataComponentRef}
                 error={stepError}
                 setError={setStepError}
@@ -155,7 +177,7 @@ export default function Page() {
           </StepLabel>
           <StepContent>
             <StepContentWrapper>
-              <FileUpload
+              <FileUploadStep
                 fileResolution={fileResolution!}
                 handleOnFinish={handleOnFinish}
               />

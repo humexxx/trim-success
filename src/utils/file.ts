@@ -1,7 +1,6 @@
-import { GridColDef } from "@mui/x-data-grid";
-import { COLUMNS, DRIVERS } from "src/consts";
-import { EColumnType, EDriverType } from "src/enums";
-import { IBaseData, IParamsData, IScorecardData } from "src/models";
+import { COLUMNS } from "src/consts";
+import { EColumnType } from "src/enums";
+import { IBaseData, IDriver, IParamsData, IScorecardData } from "src/models";
 
 export async function getJsonDataFromFileAsync(file: Blob): Promise<any[][]> {
   return new Promise((resolve, reject) => {
@@ -30,7 +29,7 @@ export async function getJsonDataFromFileAsync(file: Blob): Promise<any[][]> {
 
 export function getColsAndRowsAsync(jsonData?: any[][]): Promise<{
   rows: any[];
-  columns: GridColDef[];
+  columns: any[];
 }> {
   if (!jsonData) throw new Error("No data found in the file.");
 
@@ -93,8 +92,9 @@ export function getGeneralDataAsync(rows?: any[]): Promise<{
   });
 }
 
-export function getCategoriesDataAsync(
-  rows: any[]
+export function getCategoriesDataRowsAsync(
+  rows: any[],
+  drivers: IDriver[]
 ): Promise<IBaseData["categoriesData"]["rows"]> {
   return new Promise((resolve, reject) => {
     const worker = new Worker(
@@ -122,49 +122,48 @@ export function getCategoriesDataAsync(
       category: {
         index: getColumnIndex(EColumnType.CATEGORY)!,
       },
-      sku: {
-        label: EDriverType.SKUS,
-      },
-      sumOfInvAvgQty: {
-        index: getColumnIndex(EColumnType.AVERAGE_INVENTORY)!,
-        label: EDriverType.AVERAGE_INVENTORY,
-      },
-      sumOfInvAvgValue: {
-        index: getColumnIndex(EColumnType.INVENTORY_VALUE)!,
-        label: EDriverType.INVENTORY_VALUE,
-      },
-      sumOfQtySent: {
-        index: getColumnIndex(EColumnType.SHIPPED_CASES)!,
-        label: EDriverType.SHIPPED_CASES,
-      },
-      sumOfCubageInvAvg: {
-        index: getColumnIndex(EColumnType.INVENTORY_CUBE)!,
-        label: EDriverType.INVENTORY_CUBE,
-      },
-      sumOfTotalSales: {
-        index: getColumnIndex(EColumnType.SALES)!,
-        label: EDriverType.SALES,
-      },
-      sumOfGrossMargin: {
-        index: getColumnIndex(EColumnType.GROSS_MARGIN)!,
-        label: "grossMargin",
-      },
+      drivers,
     });
   });
 }
 
-export function getDriversData(
+export function getCategoriesDataTotals(
+  categoriesDataRows: IBaseData["categoriesData"]["rows"],
+  drivers: IDriver[]
+): IBaseData["categoriesData"]["totals"] {
+  return {
+    category: "Total",
+    ...drivers
+      .filter((x) => -1 !== x.columnIndexReference)
+      .reduce(
+        (acc, driver) => {
+          acc[driver.key] = categoriesDataRows.reduce(
+            (acc, row) => acc + (row[driver.key] as number),
+            0
+          );
+          return acc;
+        },
+        {} as Omit<
+          IBaseData["categoriesData"]["totals"],
+          "category" | "grossMargin"
+        >
+      ),
+  } as IBaseData["categoriesData"]["totals"];
+}
+
+export function getDriversDataRows(
+  drivers: IDriver[],
   rows: IBaseData["categoriesData"]["rows"],
   totals: IBaseData["categoriesData"]["totals"]
 ): IBaseData["driversData"]["rows"] {
-  return DRIVERS.map((driver) => {
+  return drivers.map((driver) => {
     const _row = {
-      driver: driver.name,
+      driver: driver.label,
     } as IBaseData["driversData"]["rows"][number];
 
     rows.forEach((row) => {
-      _row[row.category] = Number(totals[driver.name])
-        ? Number(row[driver.name]) / Number(totals[driver.name])
+      _row[row.category] = Number(totals[driver.key])
+        ? Number(row[driver.key]) / Number(totals[driver.key])
         : 0;
     });
 

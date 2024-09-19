@@ -14,6 +14,11 @@ import { FileResolution } from "../Page";
 import { useParamsData } from "../../GeneralData/hooks";
 import { useAuth } from "src/context/auth";
 import { ICubeData, IParamsData } from "src/models";
+import {
+  DEFAULT_GENERAL_PARAMS,
+  DEFAULT_INVENTORY_PARAMS,
+  DEFAULT_STORING_PARAMS,
+} from "src/consts";
 
 interface Props {
   error: string;
@@ -25,7 +30,7 @@ interface Props {
 
 const ParamsData = forwardRef(
   ({ error, loading, setError, setLoading, fileResolution }: Props, ref) => {
-    const cube = useCube();
+    const { data, setData } = useCube();
     const { currentUser } = useAuth();
     const paramsData = useParamsData(currentUser!.uid);
 
@@ -34,74 +39,34 @@ const ParamsData = forwardRef(
       register,
       setValue,
       getValues,
-    } = useForm<IParamsData>({
+      control,
+    } = useForm<Omit<IParamsData, "categories" | "drivers">>({
       resolver: yupResolver(paramsSchema),
       defaultValues: {
-        generalParams: {
-          financial: {
-            sales: 0,
-            salesCost: 0,
-            inventoryAnnualCost: 12,
-            companyCapitalCost: 12,
-            technologyCapitalCost: 12,
-          },
-          operational: {
-            annualWorkingHours: 0,
-          },
-        },
-        storingParams: {
-          costs: {
-            manoObraCost: 0,
-            alquilerCost: 0,
-            suministroOficinaCost: 0,
-            energiaCost: 0,
-            tercerizacionCost: 0,
-            otherCosts: 0,
-          },
-          investments: {
-            terrenoEdificio: 0,
-            manejoMateriales: 0,
-            almacenajeMateriales: 0,
-            administracionAlmacen: 0,
-            otrasInversiones: 0,
-          },
-        },
-        inventoryParams: {
-          costs: {
-            manoObraCost: 0,
-            insuranceCost: 0,
-            energyCost: 0,
-            officeSupplyCost: 0,
-            officeSpaceCost: 0,
-            otherCosts: 0,
-          },
-          investments: {
-            hardwareInvestment: 0,
-            inventoryInvestment: 0,
-            managementSystemInvestment: 0,
-          },
-        },
-        categories: [],
+        generalParams: DEFAULT_GENERAL_PARAMS,
+        storingParams: DEFAULT_STORING_PARAMS,
+        inventoryParams: DEFAULT_INVENTORY_PARAMS,
       },
     });
 
     useImperativeHandle(ref, () => ({
       saveData: () => {
-        const _paramsData = {
-          generalParams: {
-            ...getValues("generalParams"),
-          },
-          storingParams: {
-            ...getValues("storingParams"),
-          },
-          inventoryParams: {
-            ...getValues("inventoryParams"),
-          },
-          categories: getValues("categories"),
+        const _paramsData: IParamsData = {
+          generalParams: getValues(
+            "generalParams"
+          ) as IParamsData["generalParams"],
+          storingParams: getValues(
+            "storingParams"
+          ) as IParamsData["storingParams"],
+          inventoryParams: getValues(
+            "inventoryParams"
+          ) as IParamsData["inventoryParams"],
+          categories: data!.paramsData.categories!,
+          drivers: data!.paramsData.drivers!,
         };
 
         paramsData.update(_paramsData);
-        cube.setData((prev) => ({
+        setData((prev) => ({
           ...(prev as ICubeData),
           paramsData: _paramsData,
         }));
@@ -114,19 +79,33 @@ const ParamsData = forwardRef(
         try {
           const { sumCostSales, sumSales, categories } =
             await getGeneralDataAsync(fileResolution?.rows);
+
           setValue("generalParams", {
-            financial: {
-              sales: sumSales,
-              salesCost: sumCostSales,
-              inventoryAnnualCost: 12,
-              companyCapitalCost: 12,
-              technologyCapitalCost: 12,
-            },
-            operational: {
-              annualWorkingHours: 0,
-            },
+            financial: [
+              {
+                ...DEFAULT_GENERAL_PARAMS.financial.find(
+                  (param) => param.key === "sales"
+                )!,
+                value: sumSales,
+              },
+              {
+                ...DEFAULT_GENERAL_PARAMS.financial.find(
+                  (param) => param.key === "salesCost"
+                )!,
+                value: sumCostSales,
+              },
+              ...DEFAULT_GENERAL_PARAMS.financial.slice(2),
+            ],
+            operational: DEFAULT_GENERAL_PARAMS.operational,
           });
-          setValue("categories", categories);
+
+          setData((prev) => ({
+            ...(prev as ICubeData),
+            paramsData: {
+              ...prev!.paramsData,
+              categories,
+            },
+          }));
         } catch (error: any) {
           setError(error.message);
         } finally {
@@ -134,7 +113,7 @@ const ParamsData = forwardRef(
         }
       }
       calculateData();
-    }, [fileResolution?.rows, setError, setLoading, setValue]);
+    }, [fileResolution?.rows, setError, setLoading, setValue, setData]);
 
     if (error || paramsData.error) {
       return <Alert severity="error">{error ? error : paramsData.error}</Alert>;
@@ -155,26 +134,38 @@ const ParamsData = forwardRef(
         <Grid item xs={12} sm={6} md={4}>
           <Grid item xs={12} mb={2}>
             <Typography color="text.primary" variant="body1">
-              Parametros Generales
+              Parámetros Generales
             </Typography>
           </Grid>
-          <GeneralParams errors={errors} register={register} />
+          <GeneralParams
+            errors={errors}
+            register={register}
+            control={control}
+          />
         </Grid>
         <Grid item xs={12} sm={6} md={4}>
           <Grid item xs={12} mb={2}>
             <Typography color="text.primary" variant="body1">
-              Parametros de Almacenaje
+              Parámetros de Almacenaje
             </Typography>
           </Grid>
-          <StoringParams errors={errors} register={register} />
+          <StoringParams
+            errors={errors}
+            register={register}
+            control={control}
+          />
         </Grid>
         <Grid item xs={12} sm={6} md={4}>
           <Grid item xs={12} mb={2}>
             <Typography color="text.primary" variant="body1">
-              Parametros de Inventario
+              Parámetros de Inventario
             </Typography>
           </Grid>
-          <InventoryParams errors={errors} register={register} />
+          <InventoryParams
+            errors={errors}
+            register={register}
+            control={control}
+          />
         </Grid>
       </Grid>
     );

@@ -62,6 +62,12 @@ export const createBaseData = functions.https.onCall(
     if (!context.auth) return { error: "Not authenticated." };
     const uid = context.auth.token.admin ? data.uid : context.auth?.uid;
 
+    const paramsData = await admin
+      .firestore()
+      .doc(`settings/${uid}/data/params`)
+      .get();
+    if (!paramsData.exists) return { error: "Params data not found." };
+
     const baseData = await admin
       .firestore()
       .doc(`settings/${uid}/data/base`)
@@ -73,12 +79,20 @@ export const createBaseData = functions.https.onCall(
       const jsonData = processExcelFile(fileBuffer);
       const { rows } = processJsonData(jsonData);
 
-      const categoriesDataRows = calculateCategoriesDataRows(rows);
-      const categoriesDataTotals =
-        calculateCategoriesTotalsData(categoriesDataRows);
+      const _paramsData = paramsData.data() as IParamsData;
+
+      const categoriesDataRows = calculateCategoriesDataRows(
+        rows,
+        _paramsData.drivers
+      );
+      const categoriesDataTotals = calculateCategoriesTotalsData(
+        categoriesDataRows,
+        _paramsData.drivers
+      );
       const driversDataRows = calculateDriversDataRows(
         categoriesDataRows,
-        categoriesDataTotals
+        categoriesDataTotals,
+        _paramsData.drivers
       );
 
       await admin
@@ -104,12 +118,6 @@ export const createScorecardData = functions.https.onCall(
   async (data, context): Promise<{ success: boolean } | { error: string }> => {
     if (!context.auth) return { error: "Not authenticated." };
     const uid = context.auth.token.admin ? data.uid : context.auth?.uid;
-
-    const scorecardData = await admin
-      .firestore()
-      .doc(`settings/${uid}/data/scorecard`)
-      .get();
-    if (scorecardData.exists) return { success: true };
 
     const paramsData = await admin
       .firestore()

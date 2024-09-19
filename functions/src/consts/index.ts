@@ -1,4 +1,4 @@
-import { EColumnType, EDriverType } from "./enums";
+import { EColumnType } from "./enums";
 
 interface IColumn {
   code: EColumnType;
@@ -6,43 +6,6 @@ interface IColumn {
   index?: number;
   indexRange?: number[];
 }
-
-interface IDriver {
-  name: EDriverType;
-  catDescription: string;
-  catHiddenByDefault?: boolean;
-}
-
-export const DRIVERS: IDriver[] = [
-  { name: EDriverType.SKUS, catDescription: "Count of Codigo Producto" },
-  {
-    name: EDriverType.AVERAGE_INVENTORY,
-    catDescription: "Sum of Inventario Prom. Bultos",
-  },
-  {
-    name: EDriverType.INVENTORY_VALUE,
-    catDescription: "Sum of Inventario Promedio $",
-  },
-  {
-    name: EDriverType.SHIPPED_CASES,
-    catDescription: "Sum of Bultos Despachados",
-  },
-  {
-    name: EDriverType.INVENTORY_CUBE,
-    catDescription: "Sum of Cubicaje Inv Promedio",
-  },
-  { name: EDriverType.SALES, catDescription: "Sum of Ventas Totales" },
-  {
-    name: EDriverType.PLANNERS,
-    catDescription: "Count of Planners",
-    catHiddenByDefault: true,
-  },
-  {
-    name: EDriverType.ORDERS,
-    catDescription: "Count of Orders",
-    catHiddenByDefault: true,
-  },
-];
 
 export const COLUMNS: IColumn[] = [
   { code: EColumnType.SKU, name: "Codigo Producto", index: 0 },

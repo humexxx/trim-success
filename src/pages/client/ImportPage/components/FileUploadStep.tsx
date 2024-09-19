@@ -3,14 +3,18 @@ import { Alert, Box, Grid, Typography } from "@mui/material";
 import { functions, storage } from "src/firebase";
 import { useAuth } from "src/context/auth";
 import { ref, uploadBytes } from "firebase/storage";
-import { DRIVERS, STORAGE_PATH } from "src/consts";
+import { STORAGE_PATH } from "src/consts";
 import { useCube } from "src/context/cube";
 import DevicesIcon from "@mui/icons-material/Devices";
 import StorageIcon from "@mui/icons-material/Storage";
 import ForwardIcon from "@mui/icons-material/Forward";
 import { LoadingButton } from "@mui/lab";
 import { FileResolution } from "../Page";
-import { getCategoriesDataAsync, getDriversData } from "src/utils";
+import {
+  getCategoriesDataRowsAsync,
+  getCategoriesDataTotals,
+  getDriversDataRows,
+} from "src/utils";
 import { IBaseData, ICubeData } from "src/models";
 import { httpsCallable } from "firebase/functions";
 import { useBaseData } from "../../DataMining/hooks";
@@ -45,35 +49,24 @@ const FileUpload = ({ handleOnFinish, fileResolution }: Props) => {
       //   console.log("File available at", downloadURL);
       // });
 
-      const categoriesData = await getCategoriesDataAsync(fileResolution.rows!);
-      const categoriesDataTotals = {
-        category: "Total",
-        ...DRIVERS.filter((x) => !x.catHiddenByDefault).reduce(
-          (acc, driver) => {
-            acc[driver.name] = categoriesData.reduce(
-              (acc, row) => acc + (row[driver.name] as number),
-              0
-            );
-            return acc;
-          },
-          {} as Omit<
-            IBaseData["categoriesData"]["totals"],
-            "category" | "grossMargin"
-          >
-        ),
-        grossMargin: categoriesData.reduce(
-          (acc, row) => acc + row.grossMargin,
-          0
-        ),
-      } as IBaseData["categoriesData"]["totals"];
+      const drivers = cube.data!.paramsData.drivers!;
+      const categoriesDataRows = await getCategoriesDataRowsAsync(
+        fileResolution.rows!,
+        drivers
+      );
+      const categoriesDataTotals = getCategoriesDataTotals(
+        categoriesDataRows,
+        drivers
+      );
 
-      const driversFirstData = getDriversData(
-        categoriesData,
+      const driversFirstData = getDriversDataRows(
+        drivers,
+        categoriesDataRows,
         categoriesDataTotals
       );
       const _baseData: IBaseData = {
         categoriesData: {
-          rows: categoriesData,
+          rows: categoriesDataRows,
           totals: categoriesDataTotals,
         },
         driversData: { rows: driversFirstData },

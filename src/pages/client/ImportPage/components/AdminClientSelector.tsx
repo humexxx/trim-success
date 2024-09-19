@@ -8,7 +8,7 @@ import { useCube } from "src/context/cube";
 const AdminClientSelector = () => {
   const { users, loading } = useUsers();
   const { setCustomUid, customUid } = useAuth();
-  const { isLoadingCube } = useCube();
+  const { isCubeLoading } = useCube();
 
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
@@ -67,7 +67,7 @@ const AdminClientSelector = () => {
           variant="contained"
           onClick={handleOnClick}
           sx={{ mt: 1, mr: 1 }}
-          loading={loading || isLoadingCube}
+          loading={loading || isCubeLoading}
           disabled={!selectedUser || loading}
         >
           Terminar
