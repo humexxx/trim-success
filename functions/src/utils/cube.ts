@@ -73,15 +73,8 @@ export function calculateCategoriesTotalsData(
           );
           return acc;
         },
-        {} as Omit<
-          IBaseData["categoriesData"]["totals"],
-          "category" | "grossMargin"
-        >
+        {} as Omit<IBaseData["categoriesData"]["totals"], "category">
       ),
-    grossMargin: categoriesDataRows.reduce(
-      (acc, row) => acc + row.grossMargin,
-      0
-    ),
   } as IBaseData["categoriesData"]["totals"];
 }
 

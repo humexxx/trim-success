@@ -27,6 +27,8 @@ const CategoriesTable = ({ data, drivers }: Props) => {
             ({
               field: driver.key,
               headerName: `${index === 0 ? "Count of" : "Sum of"} ${driver.label}`,
+              valueFormatter: (value) =>
+                index === 0 ? value : formatCurrency(value as number),
               type: "number",
               minWidth: 175,
             }) as GridColDef

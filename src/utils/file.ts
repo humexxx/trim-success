@@ -143,10 +143,7 @@ export function getCategoriesDataTotals(
           );
           return acc;
         },
-        {} as Omit<
-          IBaseData["categoriesData"]["totals"],
-          "category" | "grossMargin"
-        >
+        {} as Omit<IBaseData["categoriesData"]["totals"], "category">
       ),
   } as IBaseData["categoriesData"]["totals"];
 }
