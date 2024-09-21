@@ -3,7 +3,6 @@ import {
   ReactNode,
   useCallback,
   useEffect,
-  useRef,
   useState,
 } from "react";
 import { CubeContextType } from "./CubeContext.types";
@@ -21,30 +20,26 @@ export const CubeContext = createContext<CubeContextType | undefined>(
 
 interface CubeProviderProps {
   onCubeLoadError: () => void;
-  onCubeLoadSuccess: () => void;
   children: ReactNode;
 }
 
 export default function CubeProvider({
   children,
   onCubeLoadError,
-  onCubeLoadSuccess,
 }: CubeProviderProps) {
-  const { isAdmin, customUid, currentUser } = useAuth();
+  const { isAdmin, customUser, currentUser } = useAuth();
   const [hasInitialData, setHasInitialData] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [isCubeLoading, setIsCubeLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [data, setData] = useState<ICubeData | undefined>(undefined);
   const [fileData, setFileData] = useState<{
     columns: string[];
     rows: any[];
   }>();
-  const isInitialLoad = useRef(true);
 
   const getFile = useCallback(async (): Promise<Blob | undefined> => {
     const folderRef = ref(
       storage,
-      `${STORAGE_PATH}/${isAdmin ? customUid : currentUser?.uid}/`
+      `${STORAGE_PATH}/${isAdmin ? customUser?.uid : currentUser?.uid}/`
     );
 
     try {
@@ -58,48 +53,40 @@ export default function CubeProvider({
       console.error("Error fetching files:", error);
       return undefined;
     }
-  }, [currentUser?.uid, customUid, isAdmin]);
+  }, [currentUser?.uid, customUser?.uid, isAdmin]);
 
-  const loadCubeData = useCallback(
-    async (triggerSuccess = false) => {
-      setIsCubeLoading(true);
-      const getCubeData = httpsCallable(functions, "getCubeData");
+  const loadCubeData = useCallback(async () => {
+    const _uid = isAdmin ? customUser!.uid : currentUser!.uid;
+    setLoading(true);
+    const getCubeData = httpsCallable(functions, "getCubeData");
 
-      try {
-        if (isAdmin && !customUid) {
-          throw new Error("Custom UID is required for admin");
-        }
+    try {
+      const response = await getCubeData({ uid: _uid });
+      const data = response.data as ICubeData | { error: string };
 
-        const response = await getCubeData(isAdmin ? { uid: customUid } : null);
-        const data = response.data as ICubeData | { error: string };
-
-        if ("error" in data) {
-          throw new Error(data.error);
-        }
-        setData(data);
-        setHasInitialData(true);
-      } catch (e) {
-        // console.error(e);
-        onCubeLoadError();
-        setHasInitialData(false);
-      } finally {
-        setLoading(false);
-        setIsCubeLoading(false);
-        if (triggerSuccess) onCubeLoadSuccess();
+      if ("error" in data) {
+        throw new Error(data.error);
       }
-    },
-    [customUid, isAdmin, onCubeLoadError, onCubeLoadSuccess]
-  );
+      setData(data);
+      setHasInitialData(true);
+    } catch (e) {
+      // console.error(e);
+      onCubeLoadError();
+      setHasInitialData(false);
+    } finally {
+      setLoading(false);
+    }
+  }, [currentUser, customUser, isAdmin, onCubeLoadError]);
 
   useEffect(() => {
-    loadCubeData(!isInitialLoad.current);
-    isInitialLoad.current = false;
-  }, [loadCubeData]);
+    if (isAdmin ? customUser?.uid : true) loadCubeData();
+    else onCubeLoadError();
+  }, [currentUser, customUser?.uid, isAdmin, loadCubeData, onCubeLoadError]);
 
   const value: CubeContextType = {
     hasInitialData,
     setHasInitialData,
-    isCubeLoading,
+    isCubeLoading: loading,
 
     getFile,
     fileData,
@@ -111,7 +98,10 @@ export default function CubeProvider({
     reloadCubeData: loadCubeData,
   };
 
-  if (loading) return <GlobalLoader />;
-
-  return <CubeContext.Provider value={value}>{children}</CubeContext.Provider>;
+  return (
+    <CubeContext.Provider value={value}>
+      {loading ? <GlobalLoader /> : null}
+      {children}
+    </CubeContext.Provider>
+  );
 }

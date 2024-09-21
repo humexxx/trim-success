@@ -15,8 +15,8 @@ import {
   GeneralDataPage,
   DataMiningPage,
 } from "./pages/client";
+import { UserSelectPage } from "./pages/admin";
 import { ClientLayout } from "./layouts";
-import { AdminImportPage } from "./pages/client/ImportPage";
 
 export const router = createBrowserRouter([
   {
@@ -45,6 +45,10 @@ export const router = createBrowserRouter([
     element: <ClientLayout />,
     children: [
       {
+        path: "/client/impersonate",
+        element: <UserSelectPage />,
+      },
+      {
         path: "/client/settings",
         element: <SettingsPage />,
       },
@@ -52,10 +56,7 @@ export const router = createBrowserRouter([
         path: "/client/import",
         element: <ImportPage />,
       },
-      {
-        path: "/client/import-admin",
-        element: <AdminImportPage />,
-      },
+
       {
         path: "/client/dashboard",
         element: <DashboardPage />,

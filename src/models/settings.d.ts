@@ -11,3 +11,11 @@ export interface IColumn {
   indexRange?: number[];
   name: string;
 }
+
+export interface IUser {
+  uid: string;
+  createdAt: string;
+  email: string;
+  name: string;
+  description: string;
+}

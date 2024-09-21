@@ -3,11 +3,12 @@ import { User, onAuthStateChanged } from "firebase/auth";
 import { auth } from "src/firebase";
 import AuthContext from "./AuthContext";
 import { AuthContextType, AuthProviderProps } from "./AuthContext.types";
+import { IUser } from "src/models";
 
 export default function AuthProvider({ children }: AuthProviderProps) {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  const [customUid, setCustomUid] = useState<string | null>(null);
+  const [customUser, setCustomUser] = useState<IUser | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
@@ -31,8 +32,8 @@ export default function AuthProvider({ children }: AuthProviderProps) {
     currentUser,
     isAdmin,
 
-    setCustomUid,
-    customUid,
+    customUser,
+    setCustomUser,
   };
 
   return (

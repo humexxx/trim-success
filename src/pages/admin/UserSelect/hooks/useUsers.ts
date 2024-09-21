@@ -1,17 +1,10 @@
 import { getDocs, collection } from "firebase/firestore";
 import { useState, useEffect } from "react";
 import { firestore } from "src/firebase";
-
-export interface User {
-  uid: string;
-  createdAt: string;
-  email: string;
-  name: string;
-  description: string;
-}
+import { IUser } from "src/models";
 
 export const useUsers = () => {
-  const [users, setUsers] = useState<User[]>([]);
+  const [users, setUsers] = useState<IUser[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
@@ -21,7 +14,7 @@ export const useUsers = () => {
         const usersList = querySnapshot.docs.map((doc) => ({
           uid: doc.id,
           ...doc.data(),
-        })) as User[];
+        })) as IUser[];
         setUsers(usersList);
       } catch (error) {
         console.error("Error fetching users: ", error);

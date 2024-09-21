@@ -11,7 +11,7 @@ import {
 } from "@mui/material";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import DownloadIcon from "@mui/icons-material/Download";
-import SystemUpdateAltIcon from "@mui/icons-material/SystemUpdateAlt";
+import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
 import SettingsIcon from "@mui/icons-material/Settings";
 import { useCube } from "src/context/cube";
 import { useAuth } from "src/context/auth";
@@ -21,73 +21,85 @@ import DescriptionOutlinedIcon from "@mui/icons-material/DescriptionOutlined";
 import Filter1OutlinedIcon from "@mui/icons-material/Filter1Outlined";
 import Filter2OutlinedIcon from "@mui/icons-material/Filter2Outlined";
 
-function getRoutes(isAdmin: boolean, hasInitialData: boolean) {
+function getRoutes(isAdmin: boolean) {
   return [
     {
+      admin: true,
+      text: "Impersonar",
+      icon: <PeopleAltIcon />,
+      path: "/client/impersonate",
+    },
+    {
       text: "Importar",
-      caption: isAdmin ? "Administrador" : "",
-      icon: isAdmin ? <SystemUpdateAltIcon /> : <DownloadIcon />,
-      path: isAdmin ? "/client/import-admin" : "/client/import",
-      isLoader: true,
+      icon: <DownloadIcon />,
+      path: "/client/import",
+      requireContextUid: true,
     },
     {
       text: "Panel",
       icon: <DashboardIcon />,
       path: "/client/dashboard",
+      requireInitialData: true,
     },
     {
       text: "Generales",
       icon: <DescriptionOutlinedIcon />,
       path: "/client/general-data",
+      requireInitialData: true,
     },
     {
       text: "Data Mining",
       icon: <Filter1OutlinedIcon />,
       path: "/client/data-mining",
+      requireInitialData: true,
     },
     {
       text: "Scorecard",
       icon: <Filter2OutlinedIcon />,
       path: "/client/scorecard",
+      requireInitialData: true,
     },
     {
       text: "IA",
       icon: <SmartToyIcon />,
       path: "/client/ai",
+      requireInitialData: true,
     },
-  ].filter(({ isLoader }) => isAdmin || hasInitialData !== Boolean(isLoader));
+  ].filter((route) => (route.admin ? isAdmin : true));
 }
 
 const Drawer = () => {
   const { hasInitialData, isCubeLoading } = useCube();
-  const { isAdmin, customUid } = useAuth();
+  const { isAdmin, currentUser, customUser } = useAuth();
   const location = useLocation();
 
-  const routes = useMemo(
-    () => getRoutes(Boolean(isAdmin), hasInitialData),
-    [hasInitialData, isAdmin]
-  );
+  const routes = useMemo(() => getRoutes(isAdmin), [isAdmin]);
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
       <Toolbar />
       <Divider />
       <List sx={{ flexGrow: 1 }}>
-        {routes.map(({ text, caption, icon, path, isLoader }) => (
-          <ListItem key={text}>
-            <ListItemButton
-              sx={{ borderRadius: 2 }}
-              selected={location.pathname.includes(path)}
-              component={NavLink}
-              to={path}
-              unstable_viewTransition
-              disabled={isCubeLoading || (isAdmin && !customUid && !isLoader)}
-            >
-              <ListItemIcon>{icon}</ListItemIcon>
-              <ListItemText primary={text} secondary={caption} />
-            </ListItemButton>
-          </ListItem>
-        ))}
+        {routes.map(
+          ({ text, icon, path, requireInitialData, requireContextUid }) => (
+            <ListItem key={text}>
+              <ListItemButton
+                sx={{ borderRadius: 2 }}
+                selected={location.pathname.includes(path)}
+                component={NavLink}
+                to={path}
+                unstable_viewTransition
+                disabled={
+                  (requireInitialData && !hasInitialData) ||
+                  (requireContextUid && isAdmin && !customUser?.uid)
+                }
+              >
+                <ListItemIcon>{icon}</ListItemIcon>
+                <ListItemText primary={text} />
+              </ListItemButton>
+            </ListItem>
+          )
+        )}
       </List>
       <Divider />
       <List>

@@ -1,5 +1,5 @@
 import { Alert, Grid } from "@mui/material";
-import { GlobalLoader, PageHeader } from "src/components";
+import { PageHeader } from "src/components";
 import { useCube } from "src/context/cube";
 import { useDocumentMetadata } from "src/hooks";
 import { ScorecardTableInventory, ScorecardTableWarehouse } from "./components";
@@ -9,15 +9,13 @@ import {
   updateStoringScorecardDataRow,
   updateInventoryScorecardDataRow,
 } from "src/utils";
-import { useAuth } from "src/context/auth";
 import { ICubeData, IScorecardData } from "src/models";
 
 const Page = () => {
   useDocumentMetadata("Scorecard - Trim Success");
 
-  const { currentUser } = useAuth();
   const { data, setData } = useCube();
-  const { error, update } = useScorecardData(currentUser?.uid ?? "");
+  const { error, update } = useScorecardData();
 
   const [isStoringCostsLoading, setIsStoringCostsLoading] = useState(false);
   const [isInventoryCostsLoading, setIsInventoryCostsLoading] = useState(false);

@@ -27,8 +27,8 @@ interface Props {
 const FileUpload = ({ handleOnFinish, fileResolution }: Props) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { currentUser } = useAuth();
-  const baseData = useBaseData(currentUser!.uid);
+  const { currentUser, isAdmin, customUser } = useAuth();
+  const baseData = useBaseData();
   const cube = useCube();
 
   async function handleOnClick() {
@@ -40,9 +40,10 @@ const FileUpload = ({ handleOnFinish, fileResolution }: Props) => {
     setLoading(true);
 
     try {
+      const uid = isAdmin ? customUser?.uid : currentUser!.uid;
       const storageRef = ref(
         storage,
-        `${STORAGE_PATH}${currentUser!.uid}/${fileResolution.file.name}`
+        `${STORAGE_PATH}${uid}/${fileResolution.file.name}`
       );
       const snapshot = await uploadBytes(storageRef, fileResolution.file);
       // getDownloadURL(snapshot.ref).then((downloadURL) => {
@@ -79,7 +80,7 @@ const FileUpload = ({ handleOnFinish, fileResolution }: Props) => {
       }));
 
       const scorecardFunction = httpsCallable(functions, "createScorecardData");
-      const response = await scorecardFunction();
+      const response = await scorecardFunction({ uid });
       const data = response.data as { error?: string };
       if ("error" in data) {
         throw new Error(data.error);

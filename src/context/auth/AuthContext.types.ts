@@ -1,12 +1,13 @@
 import { User } from "firebase/auth";
 import { ReactNode } from "react";
+import { IUser } from "src/models";
 
 export interface AuthContextType {
   currentUser: User | null;
   isAdmin: boolean;
 
-  setCustomUid: (uid: string | null) => void;
-  customUid: string | null;
+  setCustomUser: (user: IUser | null) => void;
+  customUser: IUser | null;
 }
 
 export interface AuthProviderProps {

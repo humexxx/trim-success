@@ -8,6 +8,7 @@ import Brightness7Icon from "@mui/icons-material/Brightness7";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { useTheme } from "@mui/material/styles";
 import { DRAWER_WIDTH } from "./Drawer";
+import { useAuth } from "src/context/auth";
 
 interface Props {
   handleDrawerToggle: () => void;
@@ -18,10 +19,13 @@ const Header = ({ handleDrawerToggle }: Props) => {
   const themeContext = useThemeContext();
   const navigate = useNavigate();
 
+  const { isAdmin, customUser, setCustomUser } = useAuth();
+
   function handleLogout() {
     auth
       .signOut()
       .then(() => {
+        setCustomUser(null);
         navigate("/login");
       })
       .catch((error) => {
@@ -50,7 +54,12 @@ const Header = ({ handleDrawerToggle }: Props) => {
           <MenuIcon />
         </IconButton>
         <Typography variant="h6" component="div" flexGrow="1">
-          Trim Success
+          Trim Success{" "}
+          {isAdmin && customUser ? (
+            <Typography variant="caption" mb={1}>
+              (as {customUser.name})
+            </Typography>
+          ) : null}
         </Typography>
         <IconButton
           sx={{ ml: 2 }}

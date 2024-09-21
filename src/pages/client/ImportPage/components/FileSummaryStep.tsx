@@ -118,7 +118,11 @@ const FileSummary = ({
         <StripedDataGrid
           sx={{ fontSize: "0.75rem" }}
           rows={rows}
-          columns={fileResolution?.columns ?? []}
+          columns={
+            fileResolution?.columns?.map((x) => {
+              return { field: x, headerName: x };
+            }) ?? []
+          }
           autosizeOnMount
         />
         <Box

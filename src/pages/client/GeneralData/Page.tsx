@@ -7,7 +7,6 @@ import { paramsSchema } from "./schema";
 import { useEffect, useState } from "react";
 import { LoadingButton } from "@mui/lab";
 import { useCube } from "src/context/cube";
-import { useAuth } from "src/context/auth";
 import { IBaseData, ICubeData, IParamsData } from "src/models";
 import { useParamsData } from "./hooks";
 import {
@@ -27,10 +26,9 @@ import { httpsCallable } from "firebase/functions";
 import { functions } from "src/firebase";
 
 const Page = () => {
-  const { currentUser } = useAuth();
   const cube = useCube();
-  const { error, loading, update } = useParamsData(currentUser?.uid ?? "");
-  const baseData = useBaseData(currentUser!.uid);
+  const { error, loading, update } = useParamsData();
+  const baseData = useBaseData();
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -110,14 +108,6 @@ const Page = () => {
     setIsSubmitting(false);
   }
 
-  if (error) {
-    return <Alert severity="error">{error}</Alert>;
-  }
-
-  if (loading && !paramsData) {
-    return <GlobalLoader />;
-  }
-
   return (
     <>
       {isSubmitting && <GlobalLoader />}
@@ -164,6 +154,11 @@ const Page = () => {
               control={control}
             />
           </Grid>
+          {error && (
+            <Grid item xs={12}>
+              <Alert severity="error">{error}</Alert>
+            </Grid>
+          )}
           <Grid item xs={12} mt={2} textAlign="right">
             <LoadingButton
               loading={loading || isSubmitting}

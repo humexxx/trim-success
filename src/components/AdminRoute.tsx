@@ -3,7 +3,7 @@ import { Navigate } from "react-router-dom";
 import { useAuth } from "src/context/auth";
 
 interface AdminRouteProps {
-  children: React.ReactElement;
+  children: React.ReactNode;
 }
 
 const AdminRoute: React.FC<AdminRouteProps> = ({ children }) => {
