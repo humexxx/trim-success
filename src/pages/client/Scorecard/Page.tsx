@@ -4,7 +4,7 @@ import { useCube } from "src/context/cube";
 import { useDocumentMetadata } from "src/hooks";
 import { ScorecardTableInventory, ScorecardTableWarehouse } from "./components";
 import { useScorecardData } from "./hooks";
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 import {
   updateStoringScorecardDataRow,
   updateInventoryScorecardDataRow,
@@ -16,9 +16,11 @@ const Page = () => {
   useDocumentMetadata("Scorecard - Trim Success");
 
   const { currentUser } = useAuth();
-
   const { data, setData } = useCube();
-  const { error, loading, update } = useScorecardData(currentUser?.uid ?? "");
+  const { error, update } = useScorecardData(currentUser?.uid ?? "");
+
+  const [isStoringCostsLoading, setIsStoringCostsLoading] = useState(false);
+  const [isInventoryCostsLoading, setIsInventoryCostsLoading] = useState(false);
 
   const scorecardData = data?.scorecardData;
   const paramsData = data?.paramsData;
@@ -33,62 +35,87 @@ const Page = () => {
   );
 
   const updateStoringCostsRow = useCallback(
-    (newRow: IScorecardData["storingCosts"]["rows"][number]) => {
-      const data = updateStoringScorecardDataRow(
-        newRow,
-        scorecardData?.storingCosts.rows ?? [],
-        paramsData!,
-        baseData!
-      );
+    async (newRow: IScorecardData["storingCosts"]["rows"][number]) => {
+      try {
+        setIsStoringCostsLoading(true);
 
-      setData(
-        (prev) =>
-          ({
-            ...prev,
-            scorecardData: {
-              ...prev!.scorecardData,
-              storingCosts: {
-                ...data,
-              },
-            },
-          }) as ICubeData
-      );
+        const data = updateStoringScorecardDataRow(
+          newRow,
+          scorecardData?.storingCosts.rows ?? [],
+          paramsData!,
+          baseData!
+        );
+
+        const newScorcardData: IScorecardData = {
+          ...scorecardData!,
+          storingCosts: {
+            ...data,
+          },
+        };
+
+        await update(newScorcardData);
+
+        setData(
+          (prev) =>
+            ({
+              ...prev,
+              scorecardData: newScorcardData,
+            }) as ICubeData
+        );
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setIsStoringCostsLoading(false);
+      }
     },
-    [baseData, paramsData, scorecardData?.storingCosts.rows, setData]
+    [baseData, paramsData, scorecardData, setData, update]
   );
 
   const updateInventoryCostsRow = useCallback(
-    (newRow: IScorecardData["inventoryCosts"]["rows"][number]) => {
-      const data = updateInventoryScorecardDataRow(
-        newRow,
-        scorecardData?.inventoryCosts.rows ?? [],
-        paramsData!,
-        baseData!
-      );
+    async (newRow: IScorecardData["inventoryCosts"]["rows"][number]) => {
+      try {
+        setIsInventoryCostsLoading(true);
 
-      setData(
-        (prev) =>
-          ({
-            ...prev,
-            scorecardData: {
-              ...prev!.scorecardData,
-              inventoryCosts: {
-                ...data,
-              },
-            },
-          }) as ICubeData
-      );
+        const data = updateInventoryScorecardDataRow(
+          newRow,
+          scorecardData?.inventoryCosts.rows ?? [],
+          paramsData!,
+          baseData!
+        );
+
+        const newScorcardData: IScorecardData = {
+          ...scorecardData!,
+          inventoryCosts: {
+            ...data,
+          },
+        };
+
+        await update(newScorcardData);
+
+        setData(
+          (prev) =>
+            ({
+              ...prev,
+              scorecardData: newScorcardData,
+            }) as ICubeData
+        );
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setIsInventoryCostsLoading(false);
+      }
     },
-    [baseData, paramsData, scorecardData?.inventoryCosts.rows, setData]
+    [baseData, paramsData, scorecardData, setData, update]
   );
-
-  if (loading) return <GlobalLoader />;
 
   if (error) return <Alert severity="error">{error}</Alert>;
 
   return (
     <>
-      <PageHeader title="Scorecard" description="Página de Scorecard" />
+      <PageHeader
+        title="Scorecard"
+        description="Scorecard del Almacén & Inventory"
+      />
       <Grid container spacing={4}>
         <Grid item xs={12}>
           <ScorecardTableWarehouse
@@ -97,10 +124,12 @@ const Page = () => {
             investmentTypes={investmentTypes ?? []}
             updateRow={updateStoringCostsRow}
             drivers={paramsData?.drivers ?? []}
+            loading={isStoringCostsLoading}
           />
         </Grid>
         <Grid item xs={12}>
           <ScorecardTableInventory
+            loading={isInventoryCostsLoading}
             data={scorecardData?.inventoryCosts}
             categories={paramsData?.categories ?? []}
             investmentTypes={investmentTypes ?? []}

@@ -10,7 +10,7 @@ export interface UseScorecardData {
 }
 
 function getDocumentPath(uid: string) {
-  return `settings/${uid}/data/scorecardData`;
+  return `settings/${uid}/data/scorecard`;
 }
 
 function useScorecardData(uid: string): UseScorecardData {

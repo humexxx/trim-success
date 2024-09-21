@@ -1,4 +1,4 @@
-import { GridColDef, GridRowModel } from "@mui/x-data-grid";
+import { GridCellParams, GridColDef, GridRowModel } from "@mui/x-data-grid";
 import { useEffect, useMemo, useState } from "react";
 import { StripedDataGrid } from "src/components";
 import { IDriver, IParam, IScorecardData } from "src/models";
@@ -8,8 +8,18 @@ interface Props {
   data?: IScorecardData["inventoryCosts"];
   categories: string[];
   investmentTypes: IParam[];
-  updateRow: (row: IScorecardData["inventoryCosts"]["rows"][number]) => void;
+  updateRow: (
+    row: IScorecardData["inventoryCosts"]["rows"][number]
+  ) => Promise<void>;
   drivers: IDriver[];
+  loading: boolean;
+}
+
+function isCellEditable(params: GridCellParams) {
+  if (params.field === "invest") {
+    return "invest" in params.row;
+  }
+  return true;
 }
 
 const ScorecardTableInventory = ({
@@ -18,6 +28,7 @@ const ScorecardTableInventory = ({
   investmentTypes,
   updateRow,
   drivers,
+  loading,
 }: Props) => {
   const [rows, setRows] = useState<
     GridRowModel<IScorecardData["inventoryCosts"]["rows"][number]>[]
@@ -37,7 +48,9 @@ const ScorecardTableInventory = ({
         width: 150,
         editable: true,
         type: "singleSelect",
-        valueOptions: drivers.map((driver) => driver.label),
+        valueOptions: drivers,
+        getOptionValue: (value: IDriver) => value.key,
+        getOptionLabel: (value: IDriver) => value.label,
         valueFormatter: (params) => {
           return drivers.find((driver) => driver.key === params)?.label;
         },
@@ -65,13 +78,22 @@ const ScorecardTableInventory = ({
       },
       {
         field: "invest",
-        headerName: "Investment Type",
+        headerName: "% Investment Type",
         width: 150,
         editable: true,
         type: "singleSelect",
-        valueOptions: investmentTypes.map((type) => type.label),
+        valueOptions: investmentTypes,
+        getOptionValue: (value: IParam) => value.key,
+        getOptionLabel: (value: IParam) =>
+          `${value.label} (${formatPercentage(value.value / 100)})`,
         valueFormatter: (params) => {
-          return investmentTypes.find((type) => type.key === params)?.label;
+          return (
+            formatPercentage(
+              Number(
+                investmentTypes.find((type) => type.key === params)?.value
+              ) / 100
+            ) || "n/a"
+          );
         },
       },
     ],
@@ -145,6 +167,8 @@ const ScorecardTableInventory = ({
         processRowUpdate={processRowUpdate}
         onProcessRowUpdateError={(error) => console.error(error)}
         totalColumns={totalColumns}
+        isCellEditable={isCellEditable}
+        loading={loading}
       />
     </>
   );

@@ -50,6 +50,7 @@ export default function StripedGrid({ totalColumns, ...props }: Props) {
           sx={{
             "& .MuiDataGrid-columnHeader *": { fontWeight: "bold" },
             "& .MuiDataGrid-cell": { fontSize: 12 },
+            "& .MuiDataGrid-columnHeaderTitle": { fontSize: 12 },
           }}
           getRowClassName={(params) =>
             params.indexRelativeToCurrentPage % 2 === 0 ? "even" : "odd"

@@ -186,7 +186,11 @@ export function updateStoringScorecardDataRow(
             newRow.total *
             Number(
               catData.driversData.rows.find(
-                (row) => row.driver === newRow.driver
+                (row) =>
+                  row.driver ===
+                  paramsData.drivers.find(
+                    (driver) => driver.key === newRow.driver
+                  )?.label
               )![category]
             );
           return acc;
@@ -234,7 +238,11 @@ export function updateInventoryScorecardDataRow(
             newRow.total *
             Number(
               catData.driversData.rows.find(
-                (row) => row.driver === newRow.driver
+                (row) =>
+                  row.driver ===
+                  paramsData.drivers.find(
+                    (driver) => driver.key === newRow.driver
+                  )?.label
               )![category]
             );
           return acc;
