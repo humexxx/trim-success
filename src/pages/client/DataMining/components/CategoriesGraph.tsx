@@ -68,10 +68,6 @@ const CategoriesGraph = ({ data, drivers }: Props) => {
               {
                 scaleType: "band",
                 data: categories,
-                valueFormatter: (category, context) =>
-                  context.location === "tick"
-                    ? category
-                    : `${category}: ${formatCurrency(0)}`,
               },
             ]}
             series={series.filter((x) => x.label !== "Sku's")}
