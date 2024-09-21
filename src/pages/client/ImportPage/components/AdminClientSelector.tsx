@@ -1,27 +1,29 @@
 import { useEffect, useState } from "react";
 import { Autocomplete, Box, CircularProgress, TextField } from "@mui/material";
-import { useCube } from "src/context/cube";
 import { useUsers, User } from "./AdminClientSelector.hooks";
 import { LoadingButton } from "@mui/lab";
+import { useAuth } from "src/context/auth";
+import { useCube } from "src/context/cube";
 
 const AdminClientSelector = () => {
   const { users, loading } = useUsers();
-  const cube = useCube();
+  const { setCustomUid, customUid } = useAuth();
+  const { isCubeLoading } = useCube();
 
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
   useEffect(() => {
-    if (cube.customUid && users.length > 0) {
-      const user = users.find((u) => u.uid === cube.customUid);
+    if (customUid && users.length > 0) {
+      const user = users.find((u) => u.uid === customUid);
       if (user) {
         setSelectedUser(user);
       }
     }
-  }, [cube.customUid, users]);
+  }, [customUid, users]);
 
-  function handleOnClick() {
+  async function handleOnClick() {
     if (selectedUser) {
-      cube.setCustomUid(selectedUser.uid);
+      setCustomUid(selectedUser.uid);
     }
   }
 
@@ -65,7 +67,7 @@ const AdminClientSelector = () => {
           variant="contained"
           onClick={handleOnClick}
           sx={{ mt: 1, mr: 1 }}
-          loading={cube.loading}
+          loading={loading || isCubeLoading}
           disabled={!selectedUser || loading}
         >
           Terminar

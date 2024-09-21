@@ -41,9 +41,9 @@ function getRoutes(isAdmin: boolean, hasInitialData: boolean) {
       path: "/client/general-data",
     },
     {
-      text: "CAT",
+      text: "Data Mining",
       icon: <Filter1OutlinedIcon />,
-      path: "/client/cat",
+      path: "/client/data-mining",
     },
     {
       text: "Scorecard",
@@ -59,13 +59,13 @@ function getRoutes(isAdmin: boolean, hasInitialData: boolean) {
 }
 
 const Drawer = () => {
-  const { hasInitialData } = useCube();
-  const user = useAuth();
+  const { hasInitialData, isCubeLoading } = useCube();
+  const { isAdmin, customUid } = useAuth();
   const location = useLocation();
 
   const routes = useMemo(
-    () => getRoutes(Boolean(user.currentUser!.isAdmin), hasInitialData),
-    [hasInitialData, user.currentUser]
+    () => getRoutes(Boolean(isAdmin), hasInitialData),
+    [hasInitialData, isAdmin]
   );
 
   return (
@@ -73,7 +73,7 @@ const Drawer = () => {
       <Toolbar />
       <Divider />
       <List sx={{ flexGrow: 1 }}>
-        {routes.map(({ text, caption, icon, path }) => (
+        {routes.map(({ text, caption, icon, path, isLoader }) => (
           <ListItem key={text}>
             <ListItemButton
               sx={{ borderRadius: 2 }}
@@ -81,6 +81,7 @@ const Drawer = () => {
               component={NavLink}
               to={path}
               unstable_viewTransition
+              disabled={isCubeLoading || (isAdmin && !customUid && !isLoader)}
             >
               <ListItemIcon>{icon}</ListItemIcon>
               <ListItemText primary={text} secondary={caption} />
@@ -97,6 +98,7 @@ const Drawer = () => {
             component={NavLink}
             to="/client/settings"
             unstable_viewTransition
+            disabled={isCubeLoading}
           >
             <ListItemIcon>
               <SettingsIcon />

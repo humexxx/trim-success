@@ -1,15 +1,25 @@
-import { DataGrid, GridColDef, GridRowModel } from "@mui/x-data-grid";
+import { GridCellParams, GridColDef, GridRowModel } from "@mui/x-data-grid";
 import { useEffect, useMemo, useState } from "react";
 import { StripedDataGrid } from "src/components";
-import { DRIVERS } from "src/consts";
-import { IScorecardData } from "src/models/user";
+import { IDriver, IParam, IScorecardData } from "src/models";
 import { formatCurrency, formatPercentage } from "src/utils";
 
 interface Props {
   data?: IScorecardData["inventoryCosts"];
   categories: string[];
-  investmentTypes: string[];
-  updateRow: (row: IScorecardData["inventoryCosts"]["rows"][number]) => void;
+  investmentTypes: IParam[];
+  updateRow: (
+    row: IScorecardData["inventoryCosts"]["rows"][number]
+  ) => Promise<void>;
+  drivers: IDriver[];
+  loading: boolean;
+}
+
+function isCellEditable(params: GridCellParams) {
+  if (params.field === "invest") {
+    return "invest" in params.row;
+  }
+  return true;
 }
 
 const ScorecardTableInventory = ({
@@ -17,6 +27,8 @@ const ScorecardTableInventory = ({
   categories,
   investmentTypes,
   updateRow,
+  drivers,
+  loading,
 }: Props) => {
   const [rows, setRows] = useState<
     GridRowModel<IScorecardData["inventoryCosts"]["rows"][number]>[]
@@ -24,21 +36,31 @@ const ScorecardTableInventory = ({
 
   const columns: GridColDef[] = useMemo(
     () => [
-      { field: "cost", headerName: "Costos del Inventario", width: 150 },
+      {
+        field: "cost",
+        headerName: "Costos del Inventario",
+        flex: 1,
+        minWidth: 150,
+      },
       {
         field: "driver",
         headerName: "Driver",
         width: 150,
         editable: true,
         type: "singleSelect",
-        valueOptions: DRIVERS.map((driver) => driver.name),
+        valueOptions: drivers,
+        getOptionValue: (value: IDriver) => value.key,
+        getOptionLabel: (value: IDriver) => value.label,
+        valueFormatter: (params) => {
+          return drivers.find((driver) => driver.key === params)?.label;
+        },
       },
       ...categories.sort().map(
         (category) =>
           ({
             field: category,
             headerName: category,
-            width: 150,
+            minWidth: 150,
             valueFormatter: formatCurrency,
           }) as GridColDef
       ),
@@ -51,19 +73,74 @@ const ScorecardTableInventory = ({
       {
         field: "totalPercentage",
         headerName: "% Cost",
-        width: 150,
+        width: 100,
         valueFormatter: formatPercentage,
       },
       {
         field: "invest",
-        headerName: "Investment Type",
+        headerName: "% Investment Type",
         width: 150,
         editable: true,
         type: "singleSelect",
         valueOptions: investmentTypes,
+        getOptionValue: (value: IParam) => value.key,
+        getOptionLabel: (value: IParam) =>
+          `${value.label} (${formatPercentage(value.value / 100)})`,
+        valueFormatter: (params) => {
+          return (
+            formatPercentage(
+              Number(
+                investmentTypes.find((type) => type.key === params)?.value
+              ) / 100
+            ) || "n/a"
+          );
+        },
       },
     ],
-    [categories, investmentTypes]
+    [categories, drivers, investmentTypes]
+  );
+
+  const totalColumns: GridColDef[] = useMemo(
+    () => [
+      {
+        field: "1",
+        headerName: "Costo total del Inventario",
+        flex: 1,
+        minWidth: 150,
+        headerClassName: "bold",
+      },
+      {
+        field: "2",
+        headerName: "",
+        width: 150,
+      },
+      ...categories.sort().map(
+        (category) =>
+          ({
+            field: category,
+            headerName: formatCurrency(Number(data?.totals[category])),
+            width: 150,
+          }) as GridColDef
+      ),
+      {
+        field: "total",
+        headerName: formatCurrency(Number(data?.totals.total)),
+        width: 150,
+      },
+      {
+        field: "totalPercentage",
+        headerName: formatPercentage(Number(data?.totals.totalPercentage)),
+        width: 100,
+      },
+      {
+        field: "4",
+        headerName: "",
+        width: 150,
+        editable: true,
+        type: "singleSelect",
+      },
+    ],
+    [categories, data?.totals]
   );
 
   const processRowUpdate = (
@@ -78,17 +155,22 @@ const ScorecardTableInventory = ({
   }, [data]);
 
   return (
-    <StripedDataGrid
-      getRowId={(row) => row.cost}
-      aria-label="Costos del Inventario"
-      columns={columns}
-      rows={rows}
-      disableColumnMenu
-      hideFooter
-      density="compact"
-      editMode="row"
-      processRowUpdate={processRowUpdate}
-    />
+    <>
+      <StripedDataGrid
+        getRowId={(row) => row.cost}
+        aria-label="Costos del Inventario"
+        columns={columns}
+        rows={rows}
+        disableColumnMenu
+        hideFooter
+        editMode="row"
+        processRowUpdate={processRowUpdate}
+        onProcessRowUpdateError={(error) => console.error(error)}
+        totalColumns={totalColumns}
+        isCellEditable={isCellEditable}
+        loading={loading}
+      />
+    </>
   );
 };
 

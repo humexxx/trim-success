@@ -24,7 +24,7 @@ function getTabProps(id: string) {
 
 const Page = () => {
   useDocumentMetadata(`Settings - Champions`);
-  const user = useAuth();
+  const { isAdmin } = useAuth();
 
   const [selectedTab, setSelectedTab] = useState("0");
 
@@ -40,7 +40,7 @@ const Page = () => {
           >
             <Tab label="Usuario" value="0" {...getTabProps("0")} />
             <Tab label="Cube" value="1" {...getTabProps("1")} />
-            {Boolean(user.currentUser?.isAdmin) && (
+            {Boolean(isAdmin) && (
               <Tab label="Admin" value="2" {...getTabProps("2")} />
             )}
           </TabList>

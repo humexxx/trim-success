@@ -1,4 +1,4 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import APP_DRAWER, {
   DRAWER_WIDTH,
 } from "src/layouts/ClientLayout/components/Drawer";
@@ -6,9 +6,10 @@ import APP_DRAWER, {
 import { ThemeProvider } from "src/context/theme";
 import { Box, Drawer, Toolbar, Container } from "@mui/material";
 import { CubeProvider } from "src/context/cube";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { PrivateRoute } from "src/components";
 import { Header } from "./components";
+import { useAuth } from "src/context/auth";
 
 function ClientLayout() {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -90,10 +91,24 @@ function ClientLayout() {
 }
 
 export default function ClientLayoutWrapper() {
+  const { isAdmin } = useAuth();
+  const navigate = useNavigate();
+
+  const onCubeLoadError = useCallback(() => {
+    navigate(`/client/import${isAdmin ? "-admin" : ""}`, { replace: true });
+  }, [isAdmin, navigate]);
+
+  const onCubeLoadSuccess = useCallback(() => {
+    navigate("/client/dashboard");
+  }, [navigate]);
+
   return (
     <PrivateRoute>
       <ThemeProvider>
-        <CubeProvider>
+        <CubeProvider
+          onCubeLoadError={onCubeLoadError}
+          onCubeLoadSuccess={onCubeLoadSuccess}
+        >
           <ClientLayout />
         </CubeProvider>
       </ThemeProvider>

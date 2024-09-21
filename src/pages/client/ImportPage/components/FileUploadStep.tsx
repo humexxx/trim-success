@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Alert, Box, Grid, Typography } from "@mui/material";
-import { storage } from "src/firebase";
+import { functions, storage } from "src/firebase";
 import { useAuth } from "src/context/auth";
 import { ref, uploadBytes } from "firebase/storage";
 import { STORAGE_PATH } from "src/consts";
@@ -9,21 +9,27 @@ import DevicesIcon from "@mui/icons-material/Devices";
 import StorageIcon from "@mui/icons-material/Storage";
 import ForwardIcon from "@mui/icons-material/Forward";
 import { LoadingButton } from "@mui/lab";
-import { useDataParams } from "../../GeneralData/hooks";
+import { FileResolution } from "../Page";
+import {
+  getCategoriesDataRowsAsync,
+  getCategoriesDataTotals,
+  getDriversDataRows,
+} from "src/utils";
+import { IBaseData, ICubeData } from "src/models";
+import { httpsCallable } from "firebase/functions";
+import { useBaseData } from "../../DataMining/hooks";
 
-interface FileUploadProps {
+interface Props {
   handleOnFinish: () => void;
+  fileResolution: FileResolution;
 }
 
-const FileUpload = ({ handleOnFinish }: FileUploadProps) => {
+const FileUpload = ({ handleOnFinish, fileResolution }: Props) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { updateDataParams } = useDataParams({ autoload: false });
-  const user = useAuth();
-  const {
-    fileResolution,
-    dataParams: { data: dataParams },
-  } = useCube();
+  const { currentUser } = useAuth();
+  const baseData = useBaseData(currentUser!.uid);
+  const cube = useCube();
 
   async function handleOnClick() {
     if (!fileResolution?.file) {
@@ -36,14 +42,50 @@ const FileUpload = ({ handleOnFinish }: FileUploadProps) => {
     try {
       const storageRef = ref(
         storage,
-        `${STORAGE_PATH}${user.currentUser!.uid}/${fileResolution.file.name}`
+        `${STORAGE_PATH}${currentUser!.uid}/${fileResolution.file.name}`
       );
       const snapshot = await uploadBytes(storageRef, fileResolution.file);
-      console.log("Uploaded a file!", snapshot);
       // getDownloadURL(snapshot.ref).then((downloadURL) => {
       //   console.log("File available at", downloadURL);
       // });
-      await updateDataParams(dataParams!);
+
+      const drivers = cube.data!.paramsData.drivers!;
+      const categoriesDataRows = await getCategoriesDataRowsAsync(
+        fileResolution.rows!,
+        drivers
+      );
+      const categoriesDataTotals = getCategoriesDataTotals(
+        categoriesDataRows,
+        drivers
+      );
+
+      const driversFirstData = getDriversDataRows(
+        drivers,
+        categoriesDataRows,
+        categoriesDataTotals
+      );
+      const _baseData: IBaseData = {
+        categoriesData: {
+          rows: categoriesDataRows,
+          totals: categoriesDataTotals,
+        },
+        driversData: { rows: driversFirstData },
+      };
+
+      await baseData.update(_baseData);
+      cube.setData((prev) => ({
+        ...(prev as ICubeData),
+        baseData: _baseData,
+      }));
+
+      const scorecardFunction = httpsCallable(functions, "createScorecardData");
+      const response = await scorecardFunction();
+      const data = response.data as { error?: string };
+      if ("error" in data) {
+        throw new Error(data.error);
+      }
+
+      await cube.reloadCubeData();
     } catch (error) {
       setError(`Error al subir el archivo: ${error}`);
     } finally {

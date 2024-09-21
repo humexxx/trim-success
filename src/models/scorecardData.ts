@@ -1,13 +1,11 @@
-import { EDriverType } from "src/enums";
-
 export interface IScorecardData {
   storingCosts: {
     rows: {
       cost: string;
-      driver?: EDriverType;
+      driver: string;
       total: number;
       totalPercentage: number;
-      invest?: string;
+      invest: string;
       [category: string]: string | number;
     }[];
     totals: {
@@ -20,10 +18,10 @@ export interface IScorecardData {
   inventoryCosts: {
     rows: {
       cost: string;
-      driver: EDriverType;
+      driver: string;
       total: number;
       totalPercentage: number;
-      invest?: string;
+      invest: string;
       [category: string]: string | number;
     }[];
     totals: {

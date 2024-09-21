@@ -27,5 +27,7 @@ module.exports = {
     "@typescript-eslint/no-explicit-any": "warn",
     "no-constant-condition": "warn",
     "import/no-unresolved": "warn",
+    "require-jsdoc": "off",
+    "@typescript-eslint/no-non-null-assertion": "off",
   },
 };

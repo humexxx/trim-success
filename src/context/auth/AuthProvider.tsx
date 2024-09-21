@@ -5,16 +5,17 @@ import AuthContext from "./AuthContext";
 import { AuthContextType, AuthProviderProps } from "./AuthContext.types";
 
 export default function AuthProvider({ children }: AuthProviderProps) {
-  const [currentUser, setCurrentUser] = useState<
-    (User & { isAdmin?: boolean }) | null
-  >(null);
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [customUid, setCustomUid] = useState<string | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
+        setCurrentUser(user);
         user.getIdTokenResult().then((token) => {
-          setCurrentUser({ ...user, isAdmin: Boolean(token.claims.admin) });
+          setIsAdmin(Boolean(token.claims.admin));
           setLoading(false);
         });
       } else {
@@ -28,6 +29,10 @@ export default function AuthProvider({ children }: AuthProviderProps) {
 
   const value: AuthContextType = {
     currentUser,
+    isAdmin,
+
+    setCustomUid,
+    customUid,
   };
 
   return (

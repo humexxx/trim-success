@@ -1,1 +1,1 @@
-export { default as useDataParams } from "./useDataParams";
+export { default as useParamsData } from "./useParamsData";

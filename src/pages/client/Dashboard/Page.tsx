@@ -1,7 +1,6 @@
 import { Box, Typography } from "@mui/material";
 import { useCube } from "src/context/cube";
 import { useDocumentMetadata } from "src/hooks";
-import { MainGrid } from "./components";
 
 const Page = () => {
   useDocumentMetadata("Panel - Trim Success");
@@ -13,7 +12,9 @@ const Page = () => {
         {cube.fileResolution?.file?.name}
       </Typography>
       <Box mt={4}>
-        <MainGrid />
+        <Typography variant="h6" component="h2" color="text.primary">
+          Some information about the cube
+        </Typography>
       </Box>
     </>
   );

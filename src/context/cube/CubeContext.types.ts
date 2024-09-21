@@ -1,44 +1,18 @@
-import { GridColDef } from "@mui/x-data-grid";
-import { ICatData, IDataParams, IScorecardData } from "src/models/user";
-
-export interface Row {
-  id: number;
-  [key: string]: any;
-}
-
-export interface FileResolution {
-  jsonData?: any[][];
-  rows?: Row[];
-  columns?: GridColDef[];
-  file?: (File | Blob) & { name: string };
-}
+import { ICubeData } from "src/models";
 
 export interface CubeContextType {
   hasInitialData: boolean;
   setHasInitialData: (hasInitialData: boolean) => void;
-  setFileResolution: (fileResolution: FileResolution) => void;
-  fileResolution?: FileResolution;
-  customUid?: string;
-  setCustomUid: (uid: string) => void;
-  loadCube: (extraStepsToLoad?: ExtraStepToLoad[]) => void;
   isCubeLoading: boolean;
 
-  dataParams: {
-    data?: IDataParams;
-    setData: (data: IDataParams) => void;
-  };
-  catData: {
-    data?: ICatData;
-    setData: (data: ICatData) => void;
-  };
-  scorecardData: {
-    data?: IScorecardData;
-    setData: (data: IScorecardData) => void;
-  };
-}
+  getFile: () => Promise<Blob | undefined>;
+  fileData?: { columns: string[]; rows: any[] };
+  setFileData: React.Dispatch<
+    React.SetStateAction<{ columns: string[]; rows: any[] } | undefined>
+  >;
 
-export interface ExtraStepToLoad {
-  loader: (data?: any) => Promise<void>;
-  label: string;
-  status: "not loaded" | "loaded" | "loading";
+  data: ICubeData | undefined;
+  setData: React.Dispatch<React.SetStateAction<ICubeData | undefined>>;
+
+  reloadCubeData: (triggerSuccess?: boolean) => Promise<void>;
 }

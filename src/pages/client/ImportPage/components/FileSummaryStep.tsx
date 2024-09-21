@@ -5,10 +5,11 @@ import {
   Typography,
   useTheme,
 } from "@mui/material";
-import { DataGrid } from "@mui/x-data-grid";
 import { useEffect, useMemo, useState } from "react";
-import { Row, useCube } from "src/context/cube";
 import { getColsAndRowsAsync, getJsonDataFromFileAsync } from "src/utils";
+import { FileResolution } from "../Page";
+import { StripedDataGrid } from "src/components";
+import { useCube } from "src/context/cube";
 
 const hexToRgb = (hex: string) => {
   hex = hex.replace(/^#/, "");
@@ -34,12 +35,21 @@ interface Props {
   setError: (error: string) => void;
   setLoading: (loading: boolean) => void;
   loading: boolean;
+  fileResolution: FileResolution;
+  setFileResolution: (fileResolution: FileResolution) => void;
 }
 
-const FileSummary = ({ error, setError, loading, setLoading }: Props) => {
-  const [rows, setRows] = useState<Row[]>([]);
+const FileSummary = ({
+  error,
+  setError,
+  loading,
+  setLoading,
+  fileResolution,
+  setFileResolution,
+}: Props) => {
+  const [rows, setRows] = useState<any[]>([]);
+  const cube = useCube();
   const theme = useTheme();
-  const { fileResolution, setFileResolution } = useCube();
   const [progressMessage, setProgressMessage] = useState<string | null>(null);
 
   useEffect(() => {
@@ -47,11 +57,12 @@ const FileSummary = ({ error, setError, loading, setLoading }: Props) => {
       setLoading(true);
       try {
         setProgressMessage("Formateando archivo...");
-        const jsonData = await getJsonDataFromFileAsync(fileResolution!.file!);
+        const jsonData = await getJsonDataFromFileAsync(fileResolution.file!);
         setProgressMessage("Obteniendo columnas y filas...");
         const { columns, rows } = await getColsAndRowsAsync(jsonData);
+        cube.setFileData({ columns, rows });
         setFileResolution({ ...fileResolution, columns, rows, jsonData });
-        setRows((rows as Row[]).slice(0, 8));
+        setRows((rows as any[]).slice(0, 8));
         setLoading(false);
       } catch (e) {
         setError("Error al formatear el archivo");
@@ -104,19 +115,11 @@ const FileSummary = ({ error, setError, loading, setLoading }: Props) => {
           },
         }}
       >
-        <DataGrid
+        <StripedDataGrid
           sx={{ fontSize: "0.75rem" }}
           rows={rows}
           columns={fileResolution?.columns ?? []}
-          hideFooter
-          disableColumnSorting
-          disableAutosize
-          disableColumnFilter
-          disableColumnMenu
-          disableColumnResize
-          disableColumnSelector
-          disableRowSelectionOnClick
-          density="compact"
+          autosizeOnMount
         />
         <Box
           sx={{

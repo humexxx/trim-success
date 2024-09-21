@@ -1,14 +1,46 @@
-import { IDataParams } from "src/models/user";
-import { FieldErrors, UseFormRegister } from "react-hook-form";
-import { Grid, Typography } from "@mui/material";
-import { CurrencyField } from "src/components/form";
+import {
+  Control,
+  FieldErrors,
+  useFieldArray,
+  UseFormRegister,
+} from "react-hook-form";
+import { Grid, TextField, Typography } from "@mui/material";
+import { CurrencyField, PercentageField } from "src/components/form";
+import { IParamsData } from "src/models";
 
 interface Props {
-  register: UseFormRegister<IDataParams>;
-  errors: FieldErrors<IDataParams>;
+  register: UseFormRegister<Omit<IParamsData, "drivers" | "categories">>;
+  errors: FieldErrors<Omit<IParamsData, "drivers" | "categories">>;
+  control: Control<Omit<IParamsData, "drivers" | "categories">>;
 }
 
-const InventoryParams = ({ register, errors }: Props) => {
+const InventoryParams = ({ register, errors, control }: Props) => {
+  const costsFieldArray = useFieldArray({
+    control,
+    name: "inventoryParams.costs",
+  });
+
+  const investmentsFieldArray = useFieldArray({
+    control,
+    name: "inventoryParams.investments",
+  });
+
+  const inputField = ({ type, ...props }: any) => {
+    switch (type) {
+      case "currency":
+        return <CurrencyField {...props} />;
+      case "percentage":
+        return <PercentageField {...props} />;
+      default:
+        return (
+          <TextField
+            type="number"
+            InputLabelProps={{ shrink: true }}
+            {...props}
+          />
+        );
+    }
+  };
   return (
     <Grid container spacing={2}>
       <Grid item xs={12}>
@@ -16,103 +48,42 @@ const InventoryParams = ({ register, errors }: Props) => {
           Costos
         </Typography>
       </Grid>
-      <Grid item xs={12}>
-        <CurrencyField
-          {...register("inventoryParams.costs.manoObraCost")}
-          label="Costo Mano de Obra"
-          error={!!errors.inventoryParams?.costs.manoObraCost}
-          helperText={errors.inventoryParams?.costs.manoObraCost?.message}
-          fullWidth
-        />
-      </Grid>
-      <Grid item xs={12}>
-        <CurrencyField
-          {...register("inventoryParams.costs.energyCost")}
-          label="Costo de Energía"
-          error={!!errors.inventoryParams?.costs.energyCost}
-          helperText={errors.inventoryParams?.costs.energyCost?.message}
-          fullWidth
-        />
-      </Grid>
-      <Grid item xs={12}>
-        <CurrencyField
-          {...register("inventoryParams.costs.officeSupplyCost")}
-          label="Costo Suministro de Oficina"
-          error={!!errors.inventoryParams?.costs.officeSupplyCost}
-          helperText={errors.inventoryParams?.costs.officeSupplyCost?.message}
-          fullWidth
-        />
-      </Grid>
-      <Grid item xs={12}>
-        <CurrencyField
-          {...register("inventoryParams.costs.officeSpaceCost")}
-          label="Costo Espacio de Oficina"
-          error={!!errors.inventoryParams?.costs.officeSpaceCost}
-          helperText={errors.inventoryParams?.costs.officeSpaceCost?.message}
-          fullWidth
-        />
-      </Grid>
-      <Grid item xs={12}>
-        <CurrencyField
-          {...register("inventoryParams.costs.insuranceCost")}
-          label="Costo de Seguro"
-          error={!!errors.inventoryParams?.costs.insuranceCost}
-          helperText={errors.inventoryParams?.costs.insuranceCost?.message}
-          fullWidth
-        />
-      </Grid>
-      <Grid item xs={12}>
-        <CurrencyField
-          {...register("inventoryParams.costs.otherCosts")}
-          label="Otros Costos"
-          error={!!errors.inventoryParams?.costs.otherCosts}
-          helperText={errors.inventoryParams?.costs.otherCosts?.message}
-          fullWidth
-        />
-      </Grid>
+      {costsFieldArray.fields.map((field, index) => (
+        <Grid item xs={12} key={field.id}>
+          {inputField({
+            type: field.type,
+            ...register(`inventoryParams.costs.${index}.value` as const, {
+              valueAsNumber: true,
+            }),
+            label: field.label,
+            error: !!errors.inventoryParams?.costs?.[index]?.value,
+            helperText: errors.inventoryParams?.costs?.[index]?.value?.message,
+
+            fullWidth: true,
+          })}
+        </Grid>
+      ))}
       <Grid item xs={12} mt={2}>
         <Typography color="text.secondary" variant="body1">
           Inversiones
         </Typography>
       </Grid>
-      <Grid item xs={12}>
-        <CurrencyField
-          {...register("inventoryParams.investments.hardwareInvestment")}
-          label="Inversión en Hardware"
-          error={!!errors.inventoryParams?.investments.hardwareInvestment}
-          helperText={
-            errors.inventoryParams?.investments.hardwareInvestment?.message
-          }
-          fullWidth
-        />
-      </Grid>
-      <Grid item xs={12}>
-        <CurrencyField
-          {...register("inventoryParams.investments.inventoryInvestment")}
-          label="Inversión en Inventario"
-          error={!!errors.inventoryParams?.investments.inventoryInvestment}
-          helperText={
-            errors.inventoryParams?.investments.inventoryInvestment?.message
-          }
-          fullWidth
-        />
-      </Grid>
-      <Grid item xs={12}>
-        <CurrencyField
-          {...register(
-            "inventoryParams.investments.managementSystemInvestment"
-          )}
-          label="Inversión en Sistema de Gestión"
-          error={
-            !!errors.inventoryParams?.investments.managementSystemInvestment
-          }
-          helperText={
-            errors.inventoryParams?.investments.managementSystemInvestment
-              ?.message
-          }
-          fullWidth
-        />
-      </Grid>
+      {investmentsFieldArray.fields.map((field, index) => (
+        <Grid item xs={12} key={field.id}>
+          {inputField({
+            type: field.type,
+            ...register(`inventoryParams.investments.${index}.value` as const, {
+              valueAsNumber: true,
+            }),
+            label: field.label,
+            error: !!errors.inventoryParams?.investments?.[index]?.value,
+            helperText:
+              errors.inventoryParams?.investments?.[index]?.value?.message,
+
+            fullWidth: true,
+          })}
+        </Grid>
+      ))}
     </Grid>
   );
 };

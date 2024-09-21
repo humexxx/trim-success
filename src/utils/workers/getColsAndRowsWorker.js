@@ -21,11 +21,6 @@ self.onmessage = function (event) {
     }
   }
 
-  const columns = header.map((col) => ({
-    field: col,
-    headerName: col,
-  }));
-
-  self.postMessage({ rows: rowsData, columns: columns });
+  self.postMessage({ rows: rowsData, columns: header });
   self.close();
 };

@@ -1,26 +1,28 @@
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import { GridColDef } from "@mui/x-data-grid";
 import { useMemo } from "react";
-import { ICatData } from "src/models/user";
+import { StripedDataGrid } from "src/components";
+import { IBaseData } from "src/models";
 
 interface Props {
-  data?: ICatData["catDriversFirst"];
+  data?: IBaseData["driversData"];
   categories: string[];
 }
 
-const CATTable = ({ data, categories }: Props) => {
+const DriversTable = ({ data, categories }: Props) => {
   const columns: GridColDef[] = useMemo(() => {
     const columns: GridColDef[] = [
       {
         field: "driver",
         headerName: "Driver",
         valueFormatter: (value) => `% ${value}`,
-        width: 175,
+        minWidth: 150,
+        flex: 1,
       },
       ...categories.sort().map((category) => {
         return {
           field: category,
           type: "number",
-          width: 175,
+          width: 150,
           valueFormatter: (value) => `${Math.round(value * 100)}%`,
         } as GridColDef;
       }),
@@ -29,20 +31,13 @@ const CATTable = ({ data, categories }: Props) => {
   }, [categories]);
 
   return (
-    <DataGrid
+    <StripedDataGrid
       getRowId={(row) => row.driver}
-      aria-label="CAT Table"
+      aria-label="Drivers table"
       columns={columns}
       rows={data?.rows ?? []}
-      hideFooter
-      disableAutosize
-      disableColumnMenu
-      disableColumnResize
-      disableColumnSelector
-      disableRowSelectionOnClick
-      density="compact"
     />
   );
 };
 
-export default CATTable;
+export default DriversTable;

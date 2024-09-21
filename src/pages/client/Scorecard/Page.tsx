@@ -1,177 +1,140 @@
-import { Grid, Typography } from "@mui/material";
-import { PageHeader } from "src/components";
-import { ExtraStepToLoad, useCube } from "src/context/cube";
+import { Alert, Grid } from "@mui/material";
+import { GlobalLoader, PageHeader } from "src/components";
+import { useCube } from "src/context/cube";
 import { useDocumentMetadata } from "src/hooks";
 import { ScorecardTableInventory, ScorecardTableWarehouse } from "./components";
 import { useScorecardData } from "./hooks";
-import { useCallback, useEffect, useMemo } from "react";
-import { useCatData } from "../CAT/hooks";
-import { DRIVERS } from "src/consts";
-import { EDriverType } from "src/enums";
-import { ICatData, IScorecardData } from "src/models/user";
+import { useCallback, useMemo, useState } from "react";
 import {
-  getCatDataCategoryFirstAsync,
-  getCatDataDriversFirst,
-  calculateScorecardData,
   updateStoringScorecardDataRow,
   updateInventoryScorecardDataRow,
 } from "src/utils";
+import { useAuth } from "src/context/auth";
+import { ICubeData, IScorecardData } from "src/models";
 
 const Page = () => {
   useDocumentMetadata("Scorecard - Trim Success");
 
-  const {
-    loadCube,
-    fileResolution,
-    dataParams,
-    scorecardData: memoryScorecardData,
-    catData: memoryCatData,
-  } = useCube();
+  const { currentUser } = useAuth();
+  const { data, setData } = useCube();
+  const { error, update } = useScorecardData(currentUser?.uid ?? "");
 
-  const scorecardData = useScorecardData({
-    initialData: memoryScorecardData.data ?? null,
-  });
-  const catData = useCatData({
-    initialData: memoryCatData.data ?? null,
-  });
+  const [isStoringCostsLoading, setIsStoringCostsLoading] = useState(false);
+  const [isInventoryCostsLoading, setIsInventoryCostsLoading] = useState(false);
 
-  // useEffect(() => {
-  //   if (!catData.loading) {
-  //     const extraSteps: ExtraStepToLoad[] = [];
-
-  //     if (!catData.data) {
-  //       extraSteps.push({
-  //         label: "Calcular data mining",
-  //         status: "not loaded",
-  //         loader: async ({ rows }: any) => {
-  //           try {
-  //             const categoryFirstData =
-  //               await getCatDataCategoryFirstAsync(rows);
-  //             const categoryFirstDataTotals = {
-  //               category: "Total",
-  //               ...DRIVERS.filter((x) => !x.catHiddenByDefault).reduce(
-  //                 (acc, driver) => {
-  //                   acc[driver.name] = categoryFirstData.reduce(
-  //                     (acc, row) =>
-  //                       acc + (row[driver.name as EDriverType] as number),
-  //                     0
-  //                   );
-  //                   return acc;
-  //                 },
-  //                 {} as Omit<
-  //                   ICatData["catCategoriesFirst"]["totals"],
-  //                   "category" | "sumGrossMargin"
-  //                 >
-  //               ),
-  //               sumOfGrossMargin: categoryFirstData.reduce(
-  //                 (acc, row) => acc + row.sumOfGrossMargin,
-  //                 0
-  //               ),
-  //             } as ICatData["catCategoriesFirst"]["totals"];
-
-  //             const driversFirstData = getCatDataDriversFirst(
-  //               categoryFirstData,
-  //               categoryFirstDataTotals
-  //             );
-  //             const _catData: ICatData = {
-  //               catCategoriesFirst: {
-  //                 rows: categoryFirstData,
-  //                 totals: categoryFirstDataTotals,
-  //               },
-  //               catDriversFirst: { rows: driversFirstData },
-  //             };
-  //             memoryCatData.setData(_catData);
-  //             catData.updateCatData(_catData);
-  //           } catch (error: any) {
-  //             console.error(error.message ?? error.toString());
-  //             throw error;
-  //           }
-  //         },
-  //       });
-  //       loadCube(extraSteps);
-  //     } else {
-  //       memoryCatData.setData(catData.data);
-  //     }
-  //   }
-  // }, [fileResolution, loadCube, catData, memoryCatData]);
-
-  useEffect(() => {
-    if (!memoryScorecardData.data && catData.data) {
-      const data = calculateScorecardData(dataParams.data!, catData.data);
-      memoryScorecardData.setData(data);
-    }
-  }, [
-    scorecardData.loading,
-    scorecardData.data,
-    catData.data,
-    dataParams,
-    memoryScorecardData,
-  ]);
+  const scorecardData = data?.scorecardData;
+  const paramsData = data?.paramsData;
+  const baseData = data?.baseData;
 
   const investmentTypes = useMemo(
     () =>
-      Object.keys(dataParams.data?.generalParams.financial ?? {}).filter(
-        (x) => x !== "sales" && x !== "salesCost"
+      paramsData?.generalParams.financial.filter(
+        (x) => x.key !== "sales" && x.key !== "salesCost"
       ),
-    [dataParams]
+    [paramsData]
   );
 
   const updateStoringCostsRow = useCallback(
-    (newRow: IScorecardData["storingCosts"]["rows"][number]) => {
-      const data = updateStoringScorecardDataRow(
-        newRow,
-        memoryScorecardData.data?.storingCosts.rows ?? [],
-        dataParams.data!,
-        catData.data!
-      );
+    async (newRow: IScorecardData["storingCosts"]["rows"][number]) => {
+      try {
+        setIsStoringCostsLoading(true);
 
-      memoryScorecardData.setData({
-        ...memoryScorecardData.data!,
-        storingCosts: {
-          ...data,
-        },
-      });
+        const data = updateStoringScorecardDataRow(
+          newRow,
+          scorecardData?.storingCosts.rows ?? [],
+          paramsData!,
+          baseData!
+        );
+
+        const newScorcardData: IScorecardData = {
+          ...scorecardData!,
+          storingCosts: {
+            ...data,
+          },
+        };
+
+        await update(newScorcardData);
+
+        setData(
+          (prev) =>
+            ({
+              ...prev,
+              scorecardData: newScorcardData,
+            }) as ICubeData
+        );
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setIsStoringCostsLoading(false);
+      }
     },
-    [catData.data, dataParams.data, memoryScorecardData]
+    [baseData, paramsData, scorecardData, setData, update]
   );
 
   const updateInventoryCostsRow = useCallback(
-    (newRow: IScorecardData["inventoryCosts"]["rows"][number]) => {
-      const data = updateInventoryScorecardDataRow(
-        newRow,
-        memoryScorecardData.data?.inventoryCosts.rows ?? [],
-        dataParams.data!,
-        catData.data!
-      );
+    async (newRow: IScorecardData["inventoryCosts"]["rows"][number]) => {
+      try {
+        setIsInventoryCostsLoading(true);
 
-      memoryScorecardData.setData({
-        ...memoryScorecardData.data!,
-        inventoryCosts: {
-          ...data,
-        },
-      });
+        const data = updateInventoryScorecardDataRow(
+          newRow,
+          scorecardData?.inventoryCosts.rows ?? [],
+          paramsData!,
+          baseData!
+        );
+
+        const newScorcardData: IScorecardData = {
+          ...scorecardData!,
+          inventoryCosts: {
+            ...data,
+          },
+        };
+
+        await update(newScorcardData);
+
+        setData(
+          (prev) =>
+            ({
+              ...prev,
+              scorecardData: newScorcardData,
+            }) as ICubeData
+        );
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setIsInventoryCostsLoading(false);
+      }
     },
-    [catData.data, dataParams.data, memoryScorecardData]
+    [baseData, paramsData, scorecardData, setData, update]
   );
+
+  if (error) return <Alert severity="error">{error}</Alert>;
 
   return (
     <>
-      <PageHeader title="Scorecard" description="Página de Scorecard" />
+      <PageHeader
+        title="Scorecard"
+        description="Scorecard del Almacén & Inventory"
+      />
       <Grid container spacing={4}>
         <Grid item xs={12}>
           <ScorecardTableWarehouse
-            data={memoryScorecardData.data?.storingCosts}
-            categories={dataParams.data?.categories ?? []}
-            investmentTypes={investmentTypes}
+            data={scorecardData?.storingCosts}
+            categories={paramsData?.categories ?? []}
+            investmentTypes={investmentTypes ?? []}
             updateRow={updateStoringCostsRow}
+            drivers={paramsData?.drivers ?? []}
+            loading={isStoringCostsLoading}
           />
         </Grid>
         <Grid item xs={12}>
           <ScorecardTableInventory
-            data={memoryScorecardData.data?.inventoryCosts}
-            categories={dataParams.data?.categories ?? []}
-            investmentTypes={investmentTypes}
+            loading={isInventoryCostsLoading}
+            data={scorecardData?.inventoryCosts}
+            categories={paramsData?.categories ?? []}
+            investmentTypes={investmentTypes ?? []}
             updateRow={updateInventoryCostsRow}
+            drivers={paramsData?.drivers ?? []}
           />
         </Grid>
       </Grid>

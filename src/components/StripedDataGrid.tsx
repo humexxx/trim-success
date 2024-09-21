@@ -1,3 +1,4 @@
+import { Grid } from "@mui/material";
 import { alpha, styled } from "@mui/material/styles";
 import { DataGrid, DataGridProps, gridClasses } from "@mui/x-data-grid";
 
@@ -36,13 +37,40 @@ const StripedDataGrid = styled(DataGrid)(({ theme }) => ({
   },
 }));
 
-export default function StripedGrid(props: DataGridProps) {
+interface Props extends DataGridProps {
+  totalColumns?: DataGridProps["columns"];
+}
+
+export default function StripedGrid({ totalColumns, ...props }: Props) {
   return (
-    <StripedDataGrid
-      {...props}
-      getRowClassName={(params) =>
-        params.indexRelativeToCurrentPage % 2 === 0 ? "even" : "odd"
-      }
-    />
+    <>
+      <Grid item>
+        <StripedDataGrid
+          {...props}
+          sx={{
+            "& .MuiDataGrid-columnHeader *": { fontWeight: "bold" },
+            "& .MuiDataGrid-cell": { fontSize: 12 },
+            "& .MuiDataGrid-columnHeaderTitle": { fontSize: 12 },
+          }}
+          getRowClassName={(params) =>
+            params.indexRelativeToCurrentPage % 2 === 0 ? "even" : "odd"
+          }
+          density="compact"
+          hideFooter
+        />
+      </Grid>
+      {totalColumns && (
+        <Grid item>
+          <DataGrid
+            columns={totalColumns}
+            hideFooter
+            disableColumnMenu
+            disableColumnFilter
+            disableColumnSorting
+            sx={{ "& .bold *": { fontWeight: "bold" } }}
+          />
+        </Grid>
+      )}
+    </>
   );
 }

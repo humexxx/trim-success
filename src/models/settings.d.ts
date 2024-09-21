@@ -1,7 +1,8 @@
 export interface IDriver {
-  name: string;
-  catDescription: string;
-  catHiddenByDefault?: boolean;
+  label: string;
+  miningLabel: string;
+  key: string;
+  columnIndexReference: number;
 }
 
 export interface IColumn {
