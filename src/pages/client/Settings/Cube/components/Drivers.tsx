@@ -14,7 +14,7 @@ const Drivers = ({ drivers }: Props) => {
       <List disablePadding>
         {drivers?.map((driver, index) => (
           <ListItem key={index}>
-            <ListItemText primary={driver.name} />
+            <ListItemText primary={driver.label} />
           </ListItem>
         ))}
       </List>

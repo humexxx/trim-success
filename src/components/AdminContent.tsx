@@ -6,9 +6,9 @@ interface AdminContentProps {
 }
 
 const AdminContent: React.FC<AdminContentProps> = ({ children }) => {
-  const { currentUser } = useAuth();
+  const { isAdmin } = useAuth();
 
-  if (!currentUser?.isAdmin) {
+  if (!isAdmin) {
     return null;
   }
 

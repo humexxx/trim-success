@@ -1,5 +1,5 @@
 import { Typography } from "@mui/material";
-import { DataGrid } from "@mui/x-data-grid";
+import StripedGrid from "src/components/StripedDataGrid";
 import { useCube } from "src/context/cube";
 
 const MainGrid = () => {
@@ -8,22 +8,14 @@ const MainGrid = () => {
   return (
     <>
       <Typography color="text.primary" mt={2}>
-        <strong>Cantidad de columnas:</strong>{" "}
-        {cube.fileResolution?.columns?.length}
+        <strong>Cantidad de columnas:</strong> {cube.fileData?.columns?.length}
       </Typography>
       <Typography color="text.primary" mb={2}>
-        <strong>Cantidad de filas:</strong> {cube.fileResolution?.rows?.length}
+        <strong>Cantidad de filas:</strong> {cube.fileData?.rows?.length}
       </Typography>
-      <DataGrid
-        sx={{ fontSize: "0.75rem" }}
-        loading={cube.loading}
-        rows={cube.fileResolution?.rows ?? []}
-        columns={cube.fileResolution?.columns ?? []}
-        disableAutosize
-        disableColumnSelector
-        disableRowSelectionOnClick
-        density="compact"
-        autoHeight
+      <StripedGrid
+        rows={cube.fileData?.rows ?? []}
+        columns={(cube.fileData?.columns as any) ?? []}
       />
     </>
   );
