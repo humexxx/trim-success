@@ -1,7 +1,6 @@
 import { Box, Tab } from "@mui/material";
 import { useDocumentMetadata } from "src/hooks";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
-import SwipeableViews from "react-swipeable-views-react-18-fix";
 import { useState } from "react";
 import { UserSettings } from "./components";
 import { CubeSettings } from "./Cube";
@@ -45,13 +44,6 @@ const Page = () => {
             )}
           </TabList>
         </Box>
-        <SwipeableViews
-          index={Number(selectedTab)}
-          onChangeIndex={(i) => setSelectedTab(i.toString())}
-          containerStyle={{
-            transition: "transform 0.35s cubic-bezier(0.15, 0.3, 0.25, 1) 0s",
-          }}
-        >
           <TabPanel value={"0"} sx={{ p: 2 }}>
             <UserSettings />
           </TabPanel>
@@ -61,7 +53,6 @@ const Page = () => {
           <TabPanel value={"2"} sx={{ p: 2 }}>
             <AdminSettings />
           </TabPanel>
-        </SwipeableViews>
       </TabContext>
     </Box>
   );

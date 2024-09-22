@@ -9,7 +9,6 @@ import DevicesIcon from "@mui/icons-material/Devices";
 import StorageIcon from "@mui/icons-material/Storage";
 import ForwardIcon from "@mui/icons-material/Forward";
 import { LoadingButton } from "@mui/lab";
-import { FileResolution } from "../Page";
 import {
   getCategoriesDataRowsAsync,
   getCategoriesDataTotals,
@@ -18,6 +17,7 @@ import {
 import { IBaseData, ICubeData } from "src/models";
 import { httpsCallable } from "firebase/functions";
 import { useBaseData } from "../../DataMining/hooks";
+import { FileResolution } from "./ImportDataPage";
 
 interface Props {
   handleOnFinish: () => void;

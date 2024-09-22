@@ -6,10 +6,10 @@ import {
   CircularProgress,
   TextField,
 } from "@mui/material";
-import { useUsers } from "../hooks/useUsers";
 import { useAuth } from "src/context/auth";
 import { IUser } from "src/models";
 import { useNavigate } from "react-router-dom";
+import { useUsers } from "../hooks";
 
 const AdminClientSelector = () => {
   const { users, loading } = useUsers();

@@ -26,7 +26,6 @@
     "react-hook-form": "^7.53.0",
     "react-imask": "^7.6.1",
     "react-router-dom": "^6.26.2",
-    "react-swipeable-views-react-18-fix": "^0.14.1",
     "xlsx": "^0.18.5",
     "yup": "^1.4.0"
   },
