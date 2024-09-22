@@ -10,15 +10,14 @@ import {
   InventoryParams,
 } from "../../GeneralData";
 import { getGeneralDataAsync } from "src/utils";
-import { FileResolution } from "../Page";
 import { useParamsData } from "../../GeneralData/hooks";
-import { useAuth } from "src/context/auth";
 import { ICubeData, IParamsData } from "src/models";
 import {
   DEFAULT_GENERAL_PARAMS,
   DEFAULT_INVENTORY_PARAMS,
   DEFAULT_STORING_PARAMS,
 } from "src/consts";
+import { FileResolution } from "./ImportDataPage";
 
 interface Props {
   error: string;
@@ -31,8 +30,7 @@ interface Props {
 const ParamsData = forwardRef(
   ({ error, loading, setError, setLoading, fileResolution }: Props, ref) => {
     const { data, setData } = useCube();
-    const { currentUser } = useAuth();
-    const paramsData = useParamsData(currentUser!.uid);
+    const paramsData = useParamsData();
 
     const {
       formState: { errors },

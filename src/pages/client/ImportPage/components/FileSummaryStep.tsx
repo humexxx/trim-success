@@ -7,9 +7,9 @@ import {
 } from "@mui/material";
 import { useEffect, useMemo, useState } from "react";
 import { getColsAndRowsAsync, getJsonDataFromFileAsync } from "src/utils";
-import { FileResolution } from "../Page";
 import { StripedDataGrid } from "src/components";
 import { useCube } from "src/context/cube";
+import { FileResolution } from "./ImportDataPage";
 
 const hexToRgb = (hex: string) => {
   hex = hex.replace(/^#/, "");
