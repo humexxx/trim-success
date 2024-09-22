@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { firestore } from "src/firebase";
 import { IUser } from "src/models";
 
-export const useUsers = () => {
+const useUsers = () => {
   const [users, setUsers] = useState<IUser[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
@@ -28,3 +28,5 @@ export const useUsers = () => {
 
   return { users, loading };
 };
+
+export default useUsers;
