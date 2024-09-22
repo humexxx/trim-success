@@ -27,7 +27,7 @@ const PageHeader = ({ children, title, description }: Props) => {
           {description}
         </Typography>
       )}
-      {children}
+      <Box mt={4}>{children}</Box>
     </Box>
   );
 };

@@ -36,7 +36,9 @@ export default function CubeProvider({
     rows: any[];
   }>();
 
-  const getFile = useCallback(async (): Promise<Blob | undefined> => {
+  const getFile = useCallback(async (): Promise<
+    (Blob & { name: string }) | undefined
+  > => {
     const folderRef = ref(
       storage,
       `${STORAGE_PATH}/${isAdmin ? customUser?.uid : currentUser?.uid}/`
@@ -47,7 +49,7 @@ export default function CubeProvider({
       if (result.items.length > 0) {
         const firstFileRef = result.items[0];
         const fileBlob = await getBlob(firstFileRef);
-        return fileBlob;
+        return { ...fileBlob, name: firstFileRef.name };
       }
     } catch (error) {
       console.error("Error fetching files:", error);

@@ -5,7 +5,7 @@ export interface CubeContextType {
   setHasInitialData: (hasInitialData: boolean) => void;
   isCubeLoading: boolean;
 
-  getFile: () => Promise<Blob | undefined>;
+  getFile: () => Promise<(Blob & { name: string }) | undefined>;
   fileData?: { columns: string[]; rows: any[] };
   setFileData: React.Dispatch<
     React.SetStateAction<{ columns: string[]; rows: any[] } | undefined>
