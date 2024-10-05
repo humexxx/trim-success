@@ -19,7 +19,6 @@ import {
   getCategoriesDataTotals,
   getColsAndRowsAsync,
   getDriversDataRows,
-  getJsonDataFromFileAsync,
 } from "src/utils";
 import { useBaseData } from "../DataMining/hooks";
 import { httpsCallable } from "firebase/functions";
@@ -66,7 +65,9 @@ const Page = () => {
     let rows = cube.fileData?.rows;
     if (!rows) {
       const file = await cube.getFile();
-      const jsonData = await getJsonDataFromFileAsync(file!);
+      throw new Error("No file found");
+      // const jsonData = await getJsonDataFromFileAsync(file!);
+      const jsonData = [];
       const { rows: _rows, columns } = await getColsAndRowsAsync(jsonData);
       cube.setFileData({ rows: _rows, columns });
       rows = _rows;

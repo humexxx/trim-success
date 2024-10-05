@@ -14,6 +14,7 @@ const Dropzone = ({ handleNext }: Props) => {
 
   return (
     <Box
+      maxWidth={600}
       className="dropzone"
       sx={{
         "& .dropzone-text": { color: "text.primary" },
