@@ -6,11 +6,11 @@ import {
 } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import { AutoLogRoute } from "src/components";
-import { handleAuthError } from "src/utils/auth";
 import { useDocumentMetadata } from "src/hooks";
 import { auth } from "src/firebase";
 import SignUp from "./components";
 import { SignUpFormInputs } from "./components/SignUp";
+import { getError } from "src/utils";
 
 const Page = () => {
   useDocumentMetadata("Sign Up - Trim Success");
@@ -30,7 +30,7 @@ const Page = () => {
         navigate("/client/dashboard");
       });
     } catch (error) {
-      handleAuthError(error);
+      throw new Error(getError(error));
     }
   }
 

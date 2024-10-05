@@ -6,7 +6,7 @@ import {
   useTheme,
 } from "@mui/material";
 import { useEffect, useMemo, useState } from "react";
-import { getColsAndRowsAsync, getJsonDataFromFileAsync } from "src/utils";
+import { getColsAndRowsAsync } from "src/utils";
 import { StripedDataGrid } from "src/components";
 import { useCube } from "src/context/cube";
 import { FileResolution } from "./ImportDataPage";
@@ -56,13 +56,13 @@ const FileSummary = ({
     async function formatData() {
       setLoading(true);
       try {
-        setProgressMessage("Formateando archivo...");
-        const jsonData = await getJsonDataFromFileAsync(fileResolution.file!);
         setProgressMessage("Obteniendo columnas y filas...");
-        const { columns, rows } = await getColsAndRowsAsync(jsonData);
+        const { columns, rows } = await getColsAndRowsAsync(
+          fileResolution.jsonData
+        );
         cube.setFileData({ columns, rows });
-        setFileResolution({ ...fileResolution, columns, rows, jsonData });
-        setRows((rows as any[]).slice(0, 8));
+        setFileResolution({ ...fileResolution, columns, rows });
+        setRows(rows.slice(0, 8));
         setLoading(false);
       } catch (e) {
         setError("Error al formatear el archivo");

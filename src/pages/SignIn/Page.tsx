@@ -6,11 +6,11 @@ import {
 } from "firebase/auth";
 import { AutoLogRoute } from "src/components";
 import { useNavigate } from "react-router-dom";
-import { handleAuthError } from "src/utils/auth";
 import { useDocumentMetadata } from "src/hooks";
 import { auth } from "src/firebase";
 import SignIn from "./components";
 import { SignInFormInputs } from "./components/SignIn";
+import { getError } from "src/utils";
 
 const SignInPage = () => {
   useDocumentMetadata("Sign In - Trim Success");
@@ -28,7 +28,7 @@ const SignInPage = () => {
         }
       );
     } catch (error) {
-      handleAuthError(error);
+      throw new Error(getError(error));
     }
   }
 

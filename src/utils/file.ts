@@ -1,15 +1,15 @@
 import { COLUMNS } from "src/consts";
 import { EColumnType } from "src/enums";
 import { IBaseData, IDriver, IParamsData, IScorecardData } from "src/models";
+import { WorkBook } from "xlsx";
 
-export async function getJsonDataFromFileAsync(file: Blob): Promise<any[][]> {
+export async function getWorkbookFromFileAsync(file: Blob): Promise<WorkBook> {
   return new Promise((resolve, reject) => {
     const worker = new Worker(
       new URL("./workers/fileReaderWorker.js", import.meta.url)
     );
 
     worker.postMessage(file);
-
     worker.onmessage = (event) => {
       const { status, data, message } = event.data;
       if (status === "success") {
@@ -27,9 +27,36 @@ export async function getJsonDataFromFileAsync(file: Blob): Promise<any[][]> {
   });
 }
 
-export function getColsAndRowsAsync(jsonData?: any[][]): Promise<{
-  rows: any[];
-  columns: any[];
+export async function getJsonDataFromWorkbookAsync(
+  workbook: WorkBook,
+  sheet: string
+): Promise<unknown[]> {
+  return new Promise((resolve, reject) => {
+    const worker = new Worker(
+      new URL("./workers/sheetReaderWorker.js", import.meta.url)
+    );
+
+    worker.postMessage({ workbook, sheet });
+    worker.onmessage = (event) => {
+      const { status, data, message } = event.data;
+      if (status === "success") {
+        resolve(data);
+      } else {
+        reject(new Error(message));
+      }
+      worker.terminate();
+    };
+
+    worker.onerror = (error) => {
+      reject(new Error("Error in worker: " + error.message));
+      worker.terminate();
+    };
+  });
+}
+
+export function getColsAndRowsAsync(jsonData?: unknown[]): Promise<{
+  rows: string[];
+  columns: string[];
 }> {
   if (!jsonData) throw new Error("No data found in the file.");
 

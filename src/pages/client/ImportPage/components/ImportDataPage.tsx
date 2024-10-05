@@ -7,10 +7,11 @@ import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import {
   ParamsDataStep,
-  Dropzone,
+  DropzoneStep,
   FileSummaryStep,
   FileUploadStep,
   DriversStep,
+  SelectTabStep,
 } from "src/pages/client/ImportPage/components";
 import { useCube } from "src/context/cube";
 import { useRef, useState } from "react";
@@ -18,9 +19,9 @@ import { useNavigate } from "react-router-dom";
 import { LoadingButton } from "@mui/lab";
 
 export interface FileResolution {
-  jsonData?: any[][];
-  rows?: any[];
-  columns?: any[];
+  jsonData?: unknown[];
+  rows?: string[];
+  columns?: string[];
   file?: File;
 }
 
@@ -53,18 +54,10 @@ export default function ImportDataPage() {
   return (
     <Stepper activeStep={activeStep} orientation="vertical">
       <Step>
-        <StepLabel
-          optional={
-            <Typography variant="caption">
-              Archivo base para todas las operaciones
-            </Typography>
-          }
-        >
-          Importar Archivo
-        </StepLabel>
+        <StepLabel>Importar Archivo</StepLabel>
         <StepContent>
           <StepContentWrapper>
-            <Dropzone
+            <DropzoneStep
               handleNext={(file: File) => {
                 setFileResolution({ file });
                 handleNext();
@@ -75,7 +68,7 @@ export default function ImportDataPage() {
             handleBack={handleBack}
             handleNext={handleNext}
             isFirstStep
-            disableNext={!fileResolution?.file || loading}
+            disableNext={!fileResolution?.file || !fileResolution.jsonData}
           />
         </StepContent>
       </Step>
@@ -83,12 +76,32 @@ export default function ImportDataPage() {
         <StepLabel
           optional={
             <Typography variant="caption">
-              Verifica las columnas y las filas
+              Formatear archivo y seleccionar la hoja de trabajo
             </Typography>
           }
         >
-          Verificar Datos
+          Formatear Archivo
         </StepLabel>
+        <StepContent>
+          <StepContentWrapper>
+            <SelectTabStep
+              fileResolution={fileResolution!}
+              setFileResolution={setFileResolution}
+              stepperLoading={loading}
+              setStepperLoading={setLoading}
+            />
+          </StepContentWrapper>
+          <StepperFooter
+            handleBack={handleBack}
+            handleNext={handleNext}
+            isFirstStep
+            loading={loading}
+            disableNext={!fileResolution?.file || !fileResolution.jsonData}
+          />
+        </StepContent>
+      </Step>
+      <Step>
+        <StepLabel>Verificar Datos</StepLabel>
         <StepContent>
           <StepContentWrapper>
             <FileSummaryStep
@@ -108,15 +121,7 @@ export default function ImportDataPage() {
         </StepContent>
       </Step>
       <Step>
-        <StepLabel
-          optional={
-            <Typography variant="caption">
-              Verifica los drivers por usar
-            </Typography>
-          }
-        >
-          Verificar Drivers
-        </StepLabel>
+        <StepLabel>Verificar Drivers</StepLabel>
         <StepContent>
           <StepContentWrapper>
             <DriversStep />
@@ -132,7 +137,7 @@ export default function ImportDataPage() {
         <StepLabel
           optional={
             <Typography variant="caption">
-              Verifica los parametros para la generación de reportes
+              Parametros para la generación de reportes
             </Typography>
           }
         >
@@ -213,6 +218,7 @@ function StepperFooter({
           sx={{ mt: 1, mr: 1 }}
           disabled={disableNext}
           loading={loading}
+          disableElevation
         >
           Continuar
         </LoadingButton>
