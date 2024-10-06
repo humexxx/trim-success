@@ -11,18 +11,22 @@ import {
   FileSummaryStep,
   FileUploadStep,
   DriversStep,
-  SelectTabStep,
+  SelectSheetStep,
 } from "src/pages/client/ImportPage/components";
 import { useCube } from "src/context/cube";
 import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { LoadingButton } from "@mui/lab";
+import { getError, getJsonDataFromWorkbookAsync } from "src/utils";
+import * as XLSX from "xlsx";
 
 export interface FileResolution {
   jsonData?: unknown[];
   rows?: string[];
   columns?: string[];
   file?: File;
+  sheetName?: string;
+  workbook?: XLSX.WorkBook;
 }
 
 export default function ImportDataPage() {
@@ -50,6 +54,27 @@ export default function ImportDataPage() {
     cube.setHasInitialData(true);
     navigate("/client/dashboard");
   };
+
+  async function handleSelectSheetStepOnNext() {
+    if (!fileResolution) return;
+    setLoading(true);
+
+    try {
+      const jsonData = await getJsonDataFromWorkbookAsync(
+        fileResolution.workbook!,
+        fileResolution.sheetName!
+      );
+      setFileResolution({
+        ...fileResolution,
+        jsonData,
+      });
+      handleNext();
+    } catch (e) {
+      setStepError(getError(e));
+    } finally {
+      setLoading(false);
+    }
+  }
 
   return (
     <Stepper activeStep={activeStep} orientation="vertical">
@@ -84,19 +109,17 @@ export default function ImportDataPage() {
         </StepLabel>
         <StepContent>
           <StepContentWrapper>
-            <SelectTabStep
+            <SelectSheetStep
               fileResolution={fileResolution!}
               setFileResolution={setFileResolution}
-              stepperLoading={loading}
-              setStepperLoading={setLoading}
             />
           </StepContentWrapper>
           <StepperFooter
             handleBack={handleBack}
-            handleNext={handleNext}
+            handleNext={handleSelectSheetStepOnNext}
             isFirstStep
             loading={loading}
-            disableNext={!fileResolution?.file || !fileResolution.jsonData}
+            disableNext={!fileResolution?.sheetName}
           />
         </StepContent>
       </Step>

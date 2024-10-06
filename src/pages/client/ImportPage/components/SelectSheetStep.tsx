@@ -7,31 +7,17 @@ import {
   Typography,
 } from "@mui/material";
 import { useEffect, useState } from "react";
-import {
-  getError,
-  getJsonDataFromWorkbookAsync,
-  getWorkbookFromFileAsync,
-} from "src/utils";
-import * as XLSX from "xlsx";
+import { getError, getWorkbookFromFileAsync } from "src/utils";
 import { FileResolution } from "./ImportDataPage";
 
 interface Props {
   fileResolution: FileResolution;
   setFileResolution: (fileResolution: FileResolution) => void;
-  stepperLoading: boolean;
-  setStepperLoading: (loading: boolean) => void;
 }
 
-const SelectTabStep = ({
-  setFileResolution,
-  fileResolution,
-  stepperLoading,
-  setStepperLoading,
-}: Props) => {
-  const [sheet, setSheet] = useState<string>("");
+const SelectSheetStep = ({ setFileResolution, fileResolution }: Props) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [workbook, setWorkbook] = useState<XLSX.WorkBook | null>(null);
 
   useEffect(() => {
     async function formatData() {
@@ -39,8 +25,11 @@ const SelectTabStep = ({
       setLoading(true);
       try {
         const workbook = await getWorkbookFromFileAsync(fileResolution.file);
-        setSheet(workbook.SheetNames[0]);
-        setWorkbook(workbook);
+        setFileResolution({
+          ...fileResolution,
+          sheetName: workbook.SheetNames[0],
+          workbook,
+        });
       } catch (e) {
         setError(getError(e));
       } finally {
@@ -49,31 +38,8 @@ const SelectTabStep = ({
     }
 
     formatData();
-  }, [fileResolution.file]);
-
-  useEffect(() => {
-    if (!sheet || !workbook) return;
-
-    async function formatData() {
-      setStepperLoading(true);
-      setFileResolution({ ...fileResolution, jsonData: undefined });
-
-      try {
-        const jsonData = await getJsonDataFromWorkbookAsync(workbook!, sheet);
-
-        setFileResolution({
-          ...fileResolution,
-          jsonData,
-        });
-      } catch (e) {
-        setError(getError(e));
-      } finally {
-        setStepperLoading(false);
-      }
-    }
-    formatData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sheet]);
+  }, [fileResolution.file]);
 
   return (
     <Box maxWidth={600} my={4}>
@@ -87,18 +53,19 @@ const SelectTabStep = ({
           <CircularProgress size={15} sx={{ mr: 2 }} /> Formateando archivo...
         </Typography>
       )}
-      {Boolean(workbook?.SheetNames.length) && (
+      {Boolean(fileResolution.workbook?.SheetNames.length) && (
         <TextField
           variant="filled"
           select
-          label="Hoja"
-          value={sheet}
-          onChange={(ev) => setSheet(ev.target.value)}
+          label="Sheet"
+          value={fileResolution.sheetName}
+          onChange={(ev) =>
+            setFileResolution({ ...fileResolution, sheetName: ev.target.value })
+          }
           fullWidth
           sx={{ mt: 2 }}
-          disabled={stepperLoading}
         >
-          {workbook!.SheetNames.map((sheetName) => (
+          {fileResolution.workbook!.SheetNames.map((sheetName) => (
             <MenuItem key={sheetName} value={sheetName}>
               {sheetName}
             </MenuItem>
@@ -109,4 +76,4 @@ const SelectTabStep = ({
   );
 };
 
-export default SelectTabStep;
+export default SelectSheetStep;
