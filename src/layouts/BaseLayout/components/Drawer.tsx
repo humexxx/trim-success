@@ -26,6 +26,7 @@ function getRoutes(isAdmin: boolean) {
     {
       admin: true,
       text: "Impersonar",
+      hint: "Administrador",
       icon: <PeopleAltIcon />,
       path: "/client/impersonate",
     },
@@ -81,7 +82,14 @@ const Drawer = () => {
       <Divider />
       <List sx={{ flexGrow: 1 }}>
         {routes.map(
-          ({ text, icon, path, requireInitialData, requireContextUid }) => (
+          ({
+            text,
+            hint,
+            icon,
+            path,
+            requireInitialData,
+            requireContextUid,
+          }) => (
             <ListItem key={text}>
               <ListItemButton
                 sx={{ borderRadius: 2 }}
@@ -95,7 +103,7 @@ const Drawer = () => {
                 }
               >
                 <ListItemIcon>{icon}</ListItemIcon>
-                <ListItemText primary={text} />
+                <ListItemText primary={text} secondary={hint} />
               </ListItemButton>
             </ListItem>
           )

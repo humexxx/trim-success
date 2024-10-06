@@ -99,7 +99,10 @@ export default function StripedGrid({ totalColumns, ...props }: Props) {
             disableColumnMenu
             disableColumnFilter
             disableColumnSorting
-            sx={{ "& .bold *": { fontWeight: "bold" } }}
+            sx={{
+              "& .bold *": { fontWeight: "bold" },
+              "& .MuiDataGrid-overlay": { display: "none" },
+            }}
           />
         </Grid>
       )}
