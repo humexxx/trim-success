@@ -9,7 +9,7 @@ import {
   StoringParams,
   InventoryParams,
 } from "../../GeneralData";
-import { getGeneralDataAsync } from "src/utils";
+import { getError, getGeneralDataAsync } from "src/utils";
 import { useParamsData } from "../../GeneralData/hooks";
 import { ICubeData, IParamsData } from "src/models";
 import {
@@ -62,7 +62,6 @@ const ParamsData = forwardRef(
           categories: data!.paramsData.categories!,
           drivers: data!.paramsData.drivers!,
         };
-
         paramsData.update(_paramsData);
         setData((prev) => ({
           ...(prev as ICubeData),
@@ -77,6 +76,10 @@ const ParamsData = forwardRef(
         try {
           const { sumCostSales, sumSales, categories } =
             await getGeneralDataAsync(fileResolution?.rows);
+
+          if (isNaN(sumCostSales) || isNaN(sumSales)) {
+            throw new Error("Error al calcular los datos generales");
+          }
 
           setValue("generalParams", {
             financial: [
@@ -104,8 +107,8 @@ const ParamsData = forwardRef(
               categories,
             },
           }));
-        } catch (error: any) {
-          setError(error.message);
+        } catch (e) {
+          setError(getError(e));
         } finally {
           setLoading(false);
         }

@@ -7,20 +7,24 @@ import {
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useCube } from "src/context/cube";
-import xls from "src/assets/images/xls.svg";
 import { Delete } from "@mui/icons-material";
 import { ConfirmDialog } from "src/components";
 import { httpsCallable } from "firebase/functions";
 import { functions } from "src/firebase";
 import { useAuth } from "src/context/auth";
+import { getError } from "src/utils";
+
+import xls from "src/assets/images/xls.svg";
+import json from "src/assets/images/json.avif";
+import { EFileType } from "src/enums";
 
 const ImportedDataPage = () => {
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | undefined>(undefined);
-  const [files, setFiles] = useState<(Blob & { name: string })[] | undefined>(
-    undefined
-  );
+  const [files, setFiles] = useState<
+    { name: string; size: string; type: string }[] | undefined
+  >(undefined);
 
   const cube = useCube();
   const { customUser, isAdmin } = useAuth();
@@ -29,11 +33,11 @@ const ImportedDataPage = () => {
     async function fetch() {
       setLoading(true);
       try {
-        const file = await cube.getFile();
-        if (!file) throw new Error("No file found");
-        setFiles([file]);
-      } catch (e: any) {
-        setError(e);
+        const files = await cube.getFiles();
+        if (!files?.length) throw new Error("No files found");
+        setFiles(files);
+      } catch (e) {
+        setError(getError(e));
       } finally {
         setLoading(false);
       }
@@ -81,25 +85,32 @@ const ImportedDataPage = () => {
         agreeText="Borrar"
         disagreeText="Cancelar"
       />
-      {files?.map((file) => (
-        <Stack key={file.name} direction={"row"} gap={2} alignItems={"center"}>
-          <img src={xls} width={50} height={50} />
-          <Typography variant="body1" color="text.primary">
-            {file.name}
-          </Typography>
-          {isAdmin && (
-            <Button
-              startIcon={<Delete />}
-              variant={"contained"}
-              color="error"
-              sx={{ ml: 2 }}
-              onClick={() => setIsConfirmDialogOpen(true)}
-            >
-              Delete
-            </Button>
-          )}
-        </Stack>
-      ))}
+      <Stack direction={"column"} gap={4}>
+        {files?.map((file) => (
+          <Stack
+            key={file.name}
+            direction={"row"}
+            gap={2}
+            alignItems={"center"}
+          >
+            <img src={file.type === EFileType.JSON ? json : xls} width={40} />
+            <Typography variant="body1" color="text.primary">
+              {file.name}
+            </Typography>
+            {isAdmin && (
+              <Button
+                startIcon={<Delete />}
+                variant={"contained"}
+                color="error"
+                sx={{ ml: 2 }}
+                onClick={() => setIsConfirmDialogOpen(true)}
+              >
+                Delete
+              </Button>
+            )}
+          </Stack>
+        ))}
+      </Stack>
     </>
   );
 };

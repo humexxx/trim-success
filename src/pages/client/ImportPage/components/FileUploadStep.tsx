@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Alert, Box, Grid, Typography } from "@mui/material";
 import { functions, storage } from "src/firebase";
 import { useAuth } from "src/context/auth";
-import { ref, uploadBytes } from "firebase/storage";
+import { ref, uploadBytes, UploadResult } from "firebase/storage";
 import { STORAGE_PATH } from "src/consts";
 import { useCube } from "src/context/cube";
 import DevicesIcon from "@mui/icons-material/Devices";
@@ -31,6 +31,21 @@ const FileUpload = ({ handleOnFinish, fileResolution }: Props) => {
   const baseData = useBaseData();
   const cube = useCube();
 
+  async function uploadJsonData(
+    uid: string,
+    jsonData: unknown[]
+  ): Promise<UploadResult> {
+    const jsonBlob = new Blob([JSON.stringify(jsonData)], {
+      type: "application/json",
+    });
+    const storageRef = ref(
+      storage,
+      `${STORAGE_PATH}${uid}/parsedData.json` // Puedes ajustar el nombre y la ruta según lo necesites
+    );
+    const snapshot = await uploadBytes(storageRef, jsonBlob);
+    return snapshot;
+  }
+
   async function handleOnClick() {
     if (!fileResolution?.file) {
       setError("No hay archivo para subir");
@@ -40,7 +55,7 @@ const FileUpload = ({ handleOnFinish, fileResolution }: Props) => {
     setLoading(true);
 
     try {
-      const uid = isAdmin ? customUser?.uid : currentUser!.uid;
+      const uid = isAdmin ? customUser!.uid : currentUser!.uid;
       const storageRef = ref(
         storage,
         `${STORAGE_PATH}${uid}/${fileResolution.file.name}`
@@ -49,6 +64,9 @@ const FileUpload = ({ handleOnFinish, fileResolution }: Props) => {
       // getDownloadURL(snapshot.ref).then((downloadURL) => {
       //   console.log("File available at", downloadURL);
       // });
+
+      // upload json data
+      await uploadJsonData(uid, fileResolution.jsonData!);
 
       const drivers = cube.data!.paramsData.drivers!;
       const categoriesDataRows = await getCategoriesDataRowsAsync(

@@ -47,6 +47,7 @@ export default function ImportDataPage() {
   };
 
   const handleBack = () => {
+    setStepError("");
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
 
