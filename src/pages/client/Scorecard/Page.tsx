@@ -2,7 +2,11 @@ import { Alert, Grid } from "@mui/material";
 import { PageHeader } from "src/components";
 import { useCube } from "src/context/cube";
 import { useDocumentMetadata } from "src/hooks";
-import { ScorecardTableInventory, ScorecardTableWarehouse } from "./components";
+import {
+  GrandTotalGrid,
+  ScorecardTableInventory,
+  ScorecardTableWarehouse,
+} from "./components";
 import { useScorecardData } from "./hooks";
 import { useCallback, useMemo, useState } from "react";
 import {
@@ -133,6 +137,13 @@ const Page = () => {
             investmentTypes={investmentTypes ?? []}
             updateRow={updateInventoryCostsRow}
             drivers={paramsData?.drivers ?? []}
+          />
+        </Grid>
+        <Grid item xs={12}>
+          <GrandTotalGrid
+            categories={paramsData?.categories ?? []}
+            loading={isStoringCostsLoading || isInventoryCostsLoading}
+            data={scorecardData}
           />
         </Grid>
       </Grid>

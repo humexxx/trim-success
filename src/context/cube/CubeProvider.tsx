@@ -35,15 +35,18 @@ export default function CubeProvider({
     columns: string[];
     rows: any[];
   }>();
+  const [files, setFiles] = useState<
+    { name: string; blob: Blob }[] | undefined
+  >();
 
   const getFiles = useCallback(async (): Promise<
-    { name: string; type: string; size: string }[] | undefined
+    { name: string; blob: Blob }[] | undefined
   > => {
     const folderRef = ref(
       storage,
       `${STORAGE_PATH}/${isAdmin ? customUser?.uid : currentUser?.uid}/`
     );
-
+    if (files) return files;
     try {
       const result = await listAll(folderRef);
       if (result.items.length) {
@@ -52,19 +55,18 @@ export default function CubeProvider({
             const blob = await getBlob(itemRef);
             return {
               name: itemRef.name,
-              type: blob.type,
-              size: blob.size.toString(),
+              blob: blob,
             };
           })
         );
-
+        setFiles(files);
         return files;
       }
     } catch (error) {
       console.error("Error fetching files:", error);
       return undefined;
     }
-  }, [currentUser?.uid, customUser?.uid, isAdmin]);
+  }, [currentUser?.uid, customUser?.uid, files, isAdmin]);
 
   const loadCubeData = useCallback(async () => {
     const _uid = isAdmin ? customUser!.uid : currentUser!.uid;

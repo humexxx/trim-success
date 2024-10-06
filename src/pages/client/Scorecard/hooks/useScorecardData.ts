@@ -1,13 +1,16 @@
 import { doc, setDoc } from "firebase/firestore";
+import { httpsCallable, HttpsCallableResult } from "firebase/functions";
 import { useCallback, useState } from "react";
 import { useAuth } from "src/context/auth";
-import { firestore } from "src/firebase";
+import { firestore, functions } from "src/firebase";
 import { IScorecardData } from "src/models";
+import { getError } from "src/utils";
 
 export interface UseScorecardData {
   loading: boolean;
   error: string | null;
   update: (data: IScorecardData) => Promise<void>;
+  calculate: () => Promise<HttpsCallableResult<unknown>>;
 }
 
 function getDocumentPath(uid: string) {
@@ -28,8 +31,8 @@ function useScorecardData(): UseScorecardData {
           getDocumentPath(isAdmin ? customUser!.uid : currentUser!.uid)
         );
         await setDoc(docRef, { ...data });
-      } catch (error: any) {
-        setError(error.message ?? error.toString());
+      } catch (error) {
+        setError(getError(error));
       } finally {
         setLoading(false);
       }
@@ -37,7 +40,17 @@ function useScorecardData(): UseScorecardData {
     [currentUser, customUser, isAdmin]
   );
 
-  return { loading, error, update };
+  const calculate = useCallback(async () => {
+    setLoading(true);
+    const createScorecardData = httpsCallable(functions, "createScorecardData");
+    const response = await createScorecardData({
+      uid: isAdmin ? customUser!.uid : currentUser!.uid,
+    });
+    setLoading(false);
+    return response;
+  }, [currentUser, customUser, isAdmin]);
+
+  return { loading, error, update, calculate };
 }
 
 export default useScorecardData;

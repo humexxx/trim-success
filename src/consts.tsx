@@ -9,6 +9,7 @@ import {
 import { getColumnIndex } from "./utils";
 
 export const STORAGE_PATH = "cubes/";
+export const JSON_FILE_NAME = "parsedData.json";
 
 export const COLUMNS: IColumn[] = [
   { code: EColumnType.SKU, name: "Codigo Producto", index: 0 },
