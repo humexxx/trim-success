@@ -196,14 +196,18 @@ export function calculateScorecardData(
     return acc + Number(row.total);
   }, 0);
   storingCosts.forEach((row) => {
-    row.totalPercentage = Number(row.total) / totalStoringCost;
+    row.totalPercentage = totalStoringCost
+      ? Number(row.total) / totalStoringCost
+      : 0;
   });
 
   const totalInventoryCost = inventoryCosts.reduce((acc, row) => {
     return acc + Number(row.total);
   }, 0);
   inventoryCosts.forEach((row) => {
-    row.totalPercentage = Number(row.total) / totalInventoryCost;
+    row.totalPercentage = totalInventoryCost
+      ? Number(row.total) / totalInventoryCost
+      : 0;
   });
 
   return {

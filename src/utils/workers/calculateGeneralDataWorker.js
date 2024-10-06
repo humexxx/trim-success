@@ -18,20 +18,19 @@ self.onmessage = function (event) {
   for (let i = 0; i < rows.length; i++) {
     const row = rows[i];
 
-    // Procesar categorías
     const category = getRowValue(row, categoryIndex);
     categoriesSet.add(category);
 
-    // Sumar ventas totales
-    const totalSales = getRowValue(row, salesIndex);
-    sumSales += totalSales;
+    const sales = getRowValue(row, salesIndex);
+    sumSales += sales;
 
-    // Sumar costo de ventas
     const costSales = getRowValue(row, salesCostIndex);
     sumCostSales += costSales;
 
     if (i % 10000 === 0) {
-      self.postMessage({ progress: (i / rows.length) * 100 });
+      self.postMessage({
+        progress: (i / rows.length) * 100,
+      });
     }
   }
 

@@ -14,7 +14,7 @@ self.onmessage = function (event) {
       { id: i }
     );
 
-    rowsData.push(rowObj);
+    if (rowObj[header[0]]) rowsData.push(rowObj);
 
     if (i % 10000 === 0) {
       self.postMessage({ progress: (i / jsonData.length) * 100 });

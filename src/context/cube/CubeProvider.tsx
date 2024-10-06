@@ -36,8 +36,8 @@ export default function CubeProvider({
     rows: any[];
   }>();
 
-  const getFile = useCallback(async (): Promise<
-    (Blob & { name: string }) | undefined
+  const getFiles = useCallback(async (): Promise<
+    { name: string; type: string; size: string }[] | undefined
   > => {
     const folderRef = ref(
       storage,
@@ -46,10 +46,19 @@ export default function CubeProvider({
 
     try {
       const result = await listAll(folderRef);
-      if (result.items.length > 0) {
-        const firstFileRef = result.items[0];
-        const fileBlob = await getBlob(firstFileRef);
-        return { ...fileBlob, name: firstFileRef.name };
+      if (result.items.length) {
+        const files = await Promise.all(
+          result.items.map(async (itemRef) => {
+            const blob = await getBlob(itemRef);
+            return {
+              name: itemRef.name,
+              type: blob.type,
+              size: blob.size.toString(),
+            };
+          })
+        );
+
+        return files;
       }
     } catch (error) {
       console.error("Error fetching files:", error);
@@ -90,7 +99,7 @@ export default function CubeProvider({
     setHasInitialData,
     isCubeLoading: loading,
 
-    getFile,
+    getFiles,
     fileData,
     setFileData,
 
