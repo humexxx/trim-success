@@ -5,3 +5,4 @@ export { SettingsPage } from "./Settings";
 export { ScorecardPage } from "./Scorecard";
 export { GeneralDataPage } from "./GeneralData";
 export { DataMiningPage } from "./DataMining";
+export { InventoryPerformancePage } from "./InventoryPerformance";
