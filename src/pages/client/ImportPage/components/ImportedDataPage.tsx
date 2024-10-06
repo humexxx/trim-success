@@ -15,7 +15,7 @@ import { useAuth } from "src/context/auth";
 import { getError } from "src/utils";
 
 import xls from "src/assets/images/xls.svg";
-import json from "src/assets/images/json.avif";
+import json from "src/assets/images/json.webp";
 import { EFileType } from "src/enums";
 
 const ImportedDataPage = () => {
