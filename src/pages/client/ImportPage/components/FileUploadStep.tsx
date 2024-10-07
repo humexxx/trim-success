@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Alert, Box, Grid, Typography } from "@mui/material";
-import { functions, storage } from "src/firebase";
+import { storage } from "src/firebase";
 import { useAuth } from "src/context/auth";
 import { ref, uploadBytes, UploadResult } from "firebase/storage";
 import { JSON_FILE_NAME, STORAGE_PATH } from "src/consts";
@@ -17,7 +17,7 @@ import {
 import { IBaseData, ICubeData } from "src/models";
 import { useBaseData } from "../../DataMining/hooks";
 import { FileResolution } from "./ImportDataPage";
-import { useScorecardData } from "../../Scorecard/hooks";
+import { useScorecard } from "../../Scorecard/hooks";
 
 interface Props {
   handleOnFinish: () => void;
@@ -29,7 +29,7 @@ const FileUpload = ({ handleOnFinish, fileResolution }: Props) => {
   const [error, setError] = useState<string | null>(null);
   const { currentUser, isAdmin, customUser } = useAuth();
   const baseData = useBaseData();
-  const scorecard = useScorecardData();
+  const scorecard = useScorecard();
   const cube = useCube();
 
   async function uploadJsonData(

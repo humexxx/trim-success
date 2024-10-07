@@ -7,11 +7,12 @@ import {
   ScorecardTableInventory,
   ScorecardTableWarehouse,
 } from "./components";
-import { useScorecardData } from "./hooks";
+import { useScorecard } from "./hooks";
 import { useCallback, useMemo, useState } from "react";
 import {
   updateStoringScorecardDataRow,
   updateInventoryScorecardDataRow,
+  getError,
 } from "src/utils";
 import { ICubeData, IScorecardData } from "src/models";
 
@@ -19,7 +20,8 @@ const Page = () => {
   useDocumentMetadata("Scorecard - Trim Success");
 
   const { data, setData } = useCube();
-  const { error, update } = useScorecardData();
+  const { update } = useScorecard();
+  const [error, setError] = useState<string | null>(null);
 
   const [isStoringCostsLoading, setIsStoringCostsLoading] = useState(false);
   const [isInventoryCostsLoading, setIsInventoryCostsLoading] = useState(false);
@@ -65,7 +67,7 @@ const Page = () => {
             }) as ICubeData
         );
       } catch (error) {
-        console.error(error);
+        setError(getError(error));
       } finally {
         setIsStoringCostsLoading(false);
       }

@@ -10,7 +10,8 @@ import {
   calculateCategoriesDataRows,
   calculateCategoriesTotalsData,
   calculateDriversDataRows,
-  calculateScorecardData,
+  calculateScorecardData as _calculateScorecardData,
+  calculateInventoryPerformance as _calculateInventoryPerformance,
 } from "./utils/cube";
 import { IScorecardData } from "./models/scorecardData";
 
@@ -114,7 +115,7 @@ export const createBaseData = functions.https.onCall(
   }
 );
 
-export const createScorecardData = functions.https.onCall(
+export const calculateScorecardData = functions.https.onCall(
   async (data, context): Promise<{ success: boolean } | { error: string }> => {
     if (!context.auth) return { error: "Not authenticated." };
     const uid = context.auth.token.admin ? data.uid : context.auth?.uid;
@@ -132,7 +133,7 @@ export const createScorecardData = functions.https.onCall(
     if (!baseData.exists) return { error: "Base data not found." };
 
     try {
-      const scorecardData = calculateScorecardData(
+      const data = _calculateScorecardData(
         paramsData.data() as IParamsData,
         baseData.data() as IBaseData
       );
@@ -141,7 +142,50 @@ export const createScorecardData = functions.https.onCall(
         .firestore()
         .doc(`settings/${uid}/data/scorecard`)
         .set({
-          ...scorecardData,
+          ...data,
+        });
+    } catch (e: any) {
+      return { error: e.message ?? e };
+    }
+    return { success: true };
+  }
+);
+
+export const calculateInventoryPerformance = functions.https.onCall(
+  async (data, context): Promise<{ success: boolean } | { error: string }> => {
+    if (!context.auth) return { error: "Not authenticated." };
+    const uid = context.auth.token.admin ? data.uid : context.auth?.uid;
+
+    const paramsData = await admin
+      .firestore()
+      .doc(`settings/${uid}/data/params`)
+      .get();
+    if (!paramsData.exists) return { error: "Params data not found." };
+
+    const baseData = await admin
+      .firestore()
+      .doc(`settings/${uid}/data/base`)
+      .get();
+    if (!baseData.exists) return { error: "Base data not found." };
+
+    const scorecardData = await admin
+      .firestore()
+      .doc(`settings/${uid}/data/scorecard`)
+      .get();
+    if (!scorecardData.exists) return { error: "Scorecard data not found." };
+
+    try {
+      const data = _calculateInventoryPerformance(
+        (paramsData.data() as IParamsData).categories,
+        baseData.data() as IBaseData,
+        scorecardData.data() as IScorecardData
+      );
+
+      await admin
+        .firestore()
+        .doc(`settings/${uid}/data/inventoryPerformance`)
+        .set({
+          ...data,
         });
     } catch (e: any) {
       return { error: e.message ?? e };

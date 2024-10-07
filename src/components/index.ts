@@ -7,3 +7,4 @@ export { default as AdminContent } from "./AdminContent";
 export { default as StripedDataGrid } from "./StripedDataGrid";
 export { default as ConfirmDialog } from "./ConfirmDialog";
 export { default as TotalGrid } from "./TotalGrid";
+export { default as CardButton } from "./CardButton";

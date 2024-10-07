@@ -21,6 +21,7 @@ import DescriptionOutlinedIcon from "@mui/icons-material/DescriptionOutlined";
 import Filter1OutlinedIcon from "@mui/icons-material/Filter1Outlined";
 import Filter2OutlinedIcon from "@mui/icons-material/Filter2Outlined";
 import Filter3OutlinedIcon from "@mui/icons-material/Filter3Outlined";
+import SpeedIcon from "@mui/icons-material/Speed";
 
 function getRoutes(isAdmin: boolean) {
   return [
@@ -66,6 +67,14 @@ function getRoutes(isAdmin: boolean) {
       icon: <Filter3OutlinedIcon />,
       path: "/client/inventory-performance",
       requireInitialData: true,
+    },
+    {
+      admin: true,
+      text: "Testing",
+      hint: "Administrador",
+      icon: <SpeedIcon />,
+      requireInitialData: true,
+      path: "/client/testing",
     },
     {
       text: "IA",

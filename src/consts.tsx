@@ -1,4 +1,4 @@
-import { EColumnType } from "./enums";
+import { EColumnType, EDriverType } from "./enums";
 import {
   IColumn,
   IDriver,
@@ -239,55 +239,55 @@ export const DEFAULT_GENERAL_PARAMS: IGeneralParamsData = {
 export const DEFAULT_DRIVERS: IDriver[] = [
   {
     label: "Sku's",
-    key: "SKUS",
+    key: EDriverType.SKUS,
     columnIndexReference: getColumnIndex(EColumnType.SKU)!,
     miningLabel: "% Sku's",
   },
   {
     label: "Average Inventory",
-    key: "AVERAGE_INVENTORY",
+    key: EDriverType.AVERAGE_INVENTORY,
     columnIndexReference: getColumnIndex(EColumnType.AVERAGE_INVENTORY)!,
     miningLabel: "% Average Inventory",
   },
   {
     label: "$ Inventory Value",
-    key: "INVENTORY_VALUE",
+    key: EDriverType.INVENTORY_VALUE,
     columnIndexReference: getColumnIndex(EColumnType.INVENTORY_VALUE)!,
     miningLabel: "% $ Inventory Value",
   },
   {
     label: "Shipped Cases",
-    key: "SHIPPED_CASES",
+    key: EDriverType.SHIPPED_CASES,
     columnIndexReference: getColumnIndex(EColumnType.SHIPPED_CASES)!,
     miningLabel: "% Shipped Cases",
   },
   {
     label: "Inventory Cube",
-    key: "INVENTORY_CUBE",
+    key: EDriverType.INVENTORY_CUBE,
     columnIndexReference: getColumnIndex(EColumnType.INVENTORY_CUBE)!,
     miningLabel: "% Inventory Cube",
   },
   {
     label: "Sales",
-    key: "SALES",
+    key: EDriverType.SALES,
     columnIndexReference: getColumnIndex(EColumnType.SALES)!,
     miningLabel: "% Sales",
   },
   {
     label: "Planners",
-    key: "PLANNERS",
+    key: EDriverType.PLANNERS,
     columnIndexReference: -1, // TODO: Add column index
     miningLabel: "% Planners",
   },
   {
     label: "Orders",
-    key: "ORDERS",
+    key: EDriverType.ORDERS,
     columnIndexReference: -1, // TODO: Add column index
     miningLabel: "% Orders",
   },
   {
     label: "Gross Margin",
-    key: "GROSS_MARGIN",
+    key: EDriverType.GROSS_MARGIN,
     columnIndexReference: getColumnIndex(EColumnType.GROSS_MARGIN)!,
     miningLabel: "% Gross Margin",
   },

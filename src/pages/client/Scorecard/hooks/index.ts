@@ -1,1 +1,1 @@
-export { default as useScorecardData } from "./useScorecardData";
+export { default as useScorecard } from "./useScorecard";

@@ -7,7 +7,7 @@ import { paramsSchema } from "./schema";
 import { useEffect, useState } from "react";
 import { LoadingButton } from "@mui/lab";
 import { useCube } from "src/context/cube";
-import { IBaseData, ICubeData, IParamsData } from "src/models";
+import { IBaseData, IParamsData } from "src/models";
 import { useParamsData } from "./hooks";
 import {
   DEFAULT_GENERAL_PARAMS,
@@ -23,13 +23,13 @@ import {
   getError,
 } from "src/utils";
 import { useBaseData } from "../DataMining/hooks";
-import { useScorecardData } from "../Scorecard/hooks";
+import { useScorecard } from "../Scorecard/hooks";
 
 const Page = () => {
   const cube = useCube();
   const { error, loading, update } = useParamsData();
   const baseData = useBaseData();
-  const scorecard = useScorecardData();
+  const scorecard = useScorecard();
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
