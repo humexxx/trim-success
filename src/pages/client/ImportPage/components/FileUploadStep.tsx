@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { Alert, Box, Grid, Typography } from "@mui/material";
-import { functions, storage } from "src/firebase";
+import { storage } from "src/firebase";
 import { useAuth } from "src/context/auth";
 import { ref, uploadBytes, UploadResult } from "firebase/storage";
-import { STORAGE_PATH } from "src/consts";
+import { JSON_FILE_NAME, STORAGE_PATH } from "src/consts";
 import { useCube } from "src/context/cube";
 import DevicesIcon from "@mui/icons-material/Devices";
 import StorageIcon from "@mui/icons-material/Storage";
@@ -15,9 +15,9 @@ import {
   getDriversDataRows,
 } from "src/utils";
 import { IBaseData, ICubeData } from "src/models";
-import { httpsCallable } from "firebase/functions";
 import { useBaseData } from "../../DataMining/hooks";
 import { FileResolution } from "./ImportDataPage";
+import { useScorecard } from "../../Scorecard/hooks";
 
 interface Props {
   handleOnFinish: () => void;
@@ -29,6 +29,7 @@ const FileUpload = ({ handleOnFinish, fileResolution }: Props) => {
   const [error, setError] = useState<string | null>(null);
   const { currentUser, isAdmin, customUser } = useAuth();
   const baseData = useBaseData();
+  const scorecard = useScorecard();
   const cube = useCube();
 
   async function uploadJsonData(
@@ -40,7 +41,7 @@ const FileUpload = ({ handleOnFinish, fileResolution }: Props) => {
     });
     const storageRef = ref(
       storage,
-      `${STORAGE_PATH}${uid}/parsedData.json` // Puedes ajustar el nombre y la ruta según lo necesites
+      `${STORAGE_PATH}${uid}/${JSON_FILE_NAME}` // Puedes ajustar el nombre y la ruta según lo necesites
     );
     const snapshot = await uploadBytes(storageRef, jsonBlob);
     return snapshot;
@@ -97,8 +98,7 @@ const FileUpload = ({ handleOnFinish, fileResolution }: Props) => {
         baseData: _baseData,
       }));
 
-      const scorecardFunction = httpsCallable(functions, "createScorecardData");
-      const response = await scorecardFunction({ uid });
+      const response = await scorecard.calculate();
       const data = response.data as { error?: string };
       if ("error" in data) {
         throw new Error(data.error);

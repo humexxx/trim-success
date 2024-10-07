@@ -14,8 +14,9 @@ import {
   SettingsPage,
   GeneralDataPage,
   DataMiningPage,
+  InventoryPerformancePage,
 } from "./pages/client";
-import { UserSelectPage } from "./pages/admin";
+import { TestPage, UserSelectPage } from "./pages/admin";
 import { ClientLayout } from "./layouts";
 
 export const router = createBrowserRouter([
@@ -72,6 +73,14 @@ export const router = createBrowserRouter([
       {
         path: "/client/scorecard",
         element: <ScorecardPage />,
+      },
+      {
+        path: "/client/inventory-performance",
+        element: <InventoryPerformancePage />,
+      },
+      {
+        path: "/client/testing",
+        element: <TestPage />,
       },
       {
         path: "/client/ai",

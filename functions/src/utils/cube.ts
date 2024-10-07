@@ -1,6 +1,12 @@
 import { COLUMNS } from "../consts";
 import { EColumnType } from "../consts/enums";
-import { IBaseData, IDriver, IParamsData } from "../models";
+import { EDriverType } from "../enums";
+import {
+  IBaseData,
+  IDriver,
+  IInventoryPerformanceData,
+  IParamsData,
+} from "../models";
 import { IScorecardData } from "../models/scorecardData";
 
 function getColumnIndex(column: EColumnType): number | undefined {
@@ -240,4 +246,43 @@ export function calculateScorecardData(
       },
     },
   };
+}
+
+export function calculateInventoryPerformance(
+  categories: string[],
+  baseData: IBaseData,
+  scorecard: IScorecardData
+): IInventoryPerformanceData {
+  const DEFAULT_VALUES: { label: string; description: string }[] = [
+    {
+      label: "Tasa de Mantener el Inventario (ICR)",
+      description: "ICC / Inv Promedio",
+    },
+  ];
+
+  const response: IInventoryPerformanceData = {
+    rows: DEFAULT_VALUES.map((value) => {
+      return {
+        label: value.label,
+        description: value.description,
+        ...categories.reduce((acc, category) => {
+          acc[category] =
+            (Number(scorecard.inventoryCosts.totals[category]) +
+              Number(scorecard.storingCosts.totals[category])) /
+            Number(
+              baseData.categoriesData.rows.find(
+                (row) => row.category === category
+              )![EDriverType.INVENTORY_VALUE]
+            );
+          return acc;
+        }, {} as any),
+        total:
+          (Number(scorecard.inventoryCosts.totals.total) +
+            Number(scorecard.storingCosts.totals.total)) /
+          Number(baseData.categoriesData.totals[EDriverType.INVENTORY_VALUE]),
+      };
+    }),
+  };
+
+  return response;
 }

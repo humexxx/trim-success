@@ -23,7 +23,7 @@ const ImportedDataPage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | undefined>(undefined);
   const [files, setFiles] = useState<
-    { name: string; size: string; type: string }[] | undefined
+    { name: string; blob: Blob }[] | undefined
   >(undefined);
 
   const cube = useCube();
@@ -93,7 +93,10 @@ const ImportedDataPage = () => {
             gap={2}
             alignItems={"center"}
           >
-            <img src={file.type === EFileType.JSON ? json : xls} width={40} />
+            <img
+              src={file.blob.type === EFileType.JSON ? json : xls}
+              width={40}
+            />
             <Typography variant="body1" color="text.primary">
               {file.name}
             </Typography>

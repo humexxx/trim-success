@@ -7,27 +7,29 @@ import { paramsSchema } from "./schema";
 import { useEffect, useState } from "react";
 import { LoadingButton } from "@mui/lab";
 import { useCube } from "src/context/cube";
-import { IBaseData, ICubeData, IParamsData } from "src/models";
+import { IBaseData, IParamsData } from "src/models";
 import { useParamsData } from "./hooks";
 import {
   DEFAULT_GENERAL_PARAMS,
   DEFAULT_STORING_PARAMS,
   DEFAULT_INVENTORY_PARAMS,
+  JSON_FILE_NAME,
 } from "src/consts";
 import {
   getCategoriesDataRowsAsync,
   getCategoriesDataTotals,
   getColsAndRowsAsync,
   getDriversDataRows,
+  getError,
 } from "src/utils";
 import { useBaseData } from "../DataMining/hooks";
-import { httpsCallable } from "firebase/functions";
-import { functions } from "src/firebase";
+import { useScorecard } from "../Scorecard/hooks";
 
 const Page = () => {
   const cube = useCube();
   const { error, loading, update } = useParamsData();
   const baseData = useBaseData();
+  const scorecard = useScorecard();
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -64,49 +66,50 @@ const Page = () => {
 
     let rows = cube.fileData?.rows;
     if (!rows) {
-      const file = await cube.getFile();
-      throw new Error("No file found");
-      // const jsonData = await getJsonDataFromFileAsync(file!);
-      const jsonData = [];
+      const files = await cube.getFiles();
+      const jsonFile = files?.find((file) =>
+        file.name.includes(JSON_FILE_NAME)
+      );
+      const jsonData = await new Response(jsonFile!.blob).json();
+
       const { rows: _rows, columns } = await getColsAndRowsAsync(jsonData);
       cube.setFileData({ rows: _rows, columns });
       rows = _rows;
     }
 
-    const categoriesDataRows = await getCategoriesDataRowsAsync(
-      rows,
-      cube.data!.paramsData.drivers!
-    );
-    const categoriesDataTotals = getCategoriesDataTotals(
-      categoriesDataRows,
-      cube.data!.paramsData.drivers!
-    );
+    try {
+      const categoriesDataRows = await getCategoriesDataRowsAsync(
+        rows,
+        cube.data!.paramsData.drivers!
+      );
+      const categoriesDataTotals = getCategoriesDataTotals(
+        categoriesDataRows,
+        cube.data!.paramsData.drivers!
+      );
 
-    const driversFirstData = getDriversDataRows(
-      cube.data!.paramsData.drivers!,
-      categoriesDataRows,
-      categoriesDataTotals
-    );
+      const driversFirstData = getDriversDataRows(
+        cube.data!.paramsData.drivers!,
+        categoriesDataRows,
+        categoriesDataTotals
+      );
 
-    const _baseData: IBaseData = {
-      categoriesData: {
-        rows: categoriesDataRows,
-        totals: categoriesDataTotals,
-      },
-      driversData: { rows: driversFirstData },
-    };
+      const _baseData: IBaseData = {
+        categoriesData: {
+          rows: categoriesDataRows,
+          totals: categoriesDataTotals,
+        },
+        driversData: { rows: driversFirstData },
+      };
 
-    await baseData.update(_baseData);
-    await update(paramsData);
-
-    const createScorecardData = httpsCallable(functions, "createScorecardData");
-    await createScorecardData();
-
-    cube.setData(
-      (prev) => ({ ...prev, paramsData, baseData: _baseData }) as ICubeData
-    );
-
-    setIsSubmitting(false);
+      await baseData.update(_baseData);
+      await update(paramsData);
+      await scorecard.calculate();
+      await cube.reloadCubeData();
+    } catch (error) {
+      console.error(getError(error));
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   return (

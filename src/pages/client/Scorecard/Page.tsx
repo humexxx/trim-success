@@ -2,12 +2,17 @@ import { Alert, Grid } from "@mui/material";
 import { PageHeader } from "src/components";
 import { useCube } from "src/context/cube";
 import { useDocumentMetadata } from "src/hooks";
-import { ScorecardTableInventory, ScorecardTableWarehouse } from "./components";
-import { useScorecardData } from "./hooks";
+import {
+  GrandTotalGrid,
+  ScorecardTableInventory,
+  ScorecardTableWarehouse,
+} from "./components";
+import { useScorecard } from "./hooks";
 import { useCallback, useMemo, useState } from "react";
 import {
   updateStoringScorecardDataRow,
   updateInventoryScorecardDataRow,
+  getError,
 } from "src/utils";
 import { ICubeData, IScorecardData } from "src/models";
 
@@ -15,7 +20,8 @@ const Page = () => {
   useDocumentMetadata("Scorecard - Trim Success");
 
   const { data, setData } = useCube();
-  const { error, update } = useScorecardData();
+  const { update } = useScorecard();
+  const [error, setError] = useState<string | null>(null);
 
   const [isStoringCostsLoading, setIsStoringCostsLoading] = useState(false);
   const [isInventoryCostsLoading, setIsInventoryCostsLoading] = useState(false);
@@ -61,7 +67,7 @@ const Page = () => {
             }) as ICubeData
         );
       } catch (error) {
-        console.error(error);
+        setError(getError(error));
       } finally {
         setIsStoringCostsLoading(false);
       }
@@ -133,6 +139,13 @@ const Page = () => {
             investmentTypes={investmentTypes ?? []}
             updateRow={updateInventoryCostsRow}
             drivers={paramsData?.drivers ?? []}
+          />
+        </Grid>
+        <Grid item xs={12}>
+          <GrandTotalGrid
+            categories={paramsData?.categories ?? []}
+            loading={isStoringCostsLoading || isInventoryCostsLoading}
+            data={scorecardData}
           />
         </Grid>
       </Grid>

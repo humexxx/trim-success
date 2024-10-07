@@ -1,6 +1,7 @@
 import { Grid } from "@mui/material";
 import { alpha, styled } from "@mui/material/styles";
 import { DataGrid, DataGridProps, gridClasses } from "@mui/x-data-grid";
+import TotalGrid from "./TotalGrid";
 
 const ODD_OPACITY = 0.2;
 
@@ -93,14 +94,7 @@ export default function StripedGrid({ totalColumns, ...props }: Props) {
       </Grid>
       {totalColumns && (
         <Grid item>
-          <DataGrid
-            columns={totalColumns}
-            hideFooter
-            disableColumnMenu
-            disableColumnFilter
-            disableColumnSorting
-            sx={{ "& .bold *": { fontWeight: "bold" } }}
-          />
+          <TotalGrid columns={totalColumns} />
         </Grid>
       )}
     </>

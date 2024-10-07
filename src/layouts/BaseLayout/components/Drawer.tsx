@@ -20,12 +20,15 @@ import SmartToyIcon from "@mui/icons-material/SmartToy";
 import DescriptionOutlinedIcon from "@mui/icons-material/DescriptionOutlined";
 import Filter1OutlinedIcon from "@mui/icons-material/Filter1Outlined";
 import Filter2OutlinedIcon from "@mui/icons-material/Filter2Outlined";
+import Filter3OutlinedIcon from "@mui/icons-material/Filter3Outlined";
+import SpeedIcon from "@mui/icons-material/Speed";
 
 function getRoutes(isAdmin: boolean) {
   return [
     {
       admin: true,
       text: "Impersonar",
+      hint: "Administrador",
       icon: <PeopleAltIcon />,
       path: "/client/impersonate",
     },
@@ -60,6 +63,20 @@ function getRoutes(isAdmin: boolean) {
       requireInitialData: true,
     },
     {
+      text: "Rendimiento de Inventario",
+      icon: <Filter3OutlinedIcon />,
+      path: "/client/inventory-performance",
+      requireInitialData: true,
+    },
+    {
+      admin: true,
+      text: "Testing",
+      hint: "Administrador",
+      icon: <SpeedIcon />,
+      requireInitialData: true,
+      path: "/client/testing",
+    },
+    {
       text: "IA",
       icon: <SmartToyIcon />,
       path: "/client/ai",
@@ -70,7 +87,7 @@ function getRoutes(isAdmin: boolean) {
 
 const Drawer = () => {
   const { hasInitialData, isCubeLoading } = useCube();
-  const { isAdmin, currentUser, customUser } = useAuth();
+  const { isAdmin, customUser } = useAuth();
   const location = useLocation();
 
   const routes = useMemo(() => getRoutes(isAdmin), [isAdmin]);
@@ -81,7 +98,14 @@ const Drawer = () => {
       <Divider />
       <List sx={{ flexGrow: 1 }}>
         {routes.map(
-          ({ text, icon, path, requireInitialData, requireContextUid }) => (
+          ({
+            text,
+            hint,
+            icon,
+            path,
+            requireInitialData,
+            requireContextUid,
+          }) => (
             <ListItem key={text}>
               <ListItemButton
                 sx={{ borderRadius: 2 }}
@@ -95,7 +119,7 @@ const Drawer = () => {
                 }
               >
                 <ListItemIcon>{icon}</ListItemIcon>
-                <ListItemText primary={text} />
+                <ListItemText primary={text} secondary={hint} />
               </ListItemButton>
             </ListItem>
           )
