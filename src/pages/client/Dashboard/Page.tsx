@@ -12,9 +12,9 @@ const Page = () => {
   async function generateGeneralReport() {
     try {
       const { data: response } = await reportsGenerator.generateGeneralReport();
-      const data = (response as any).data;
+      const data = JSON.parse((response as any).data);
       pdfMake
-        .createPdf(data as any, undefined, undefined, pdfFonts.pdfMake.vfs)
+        .createPdf(data, undefined, undefined, pdfFonts.pdfMake.vfs)
         .download("general_report.pdf");
     } catch (e: any) {
       getError(e);
