@@ -6,3 +6,4 @@ export * from "./adminFunctions";
 export * from "./userFunctions";
 export * from "./aiFunctions";
 export * from "./cubeFunctions";
+export * from "./reportsFunctions";
