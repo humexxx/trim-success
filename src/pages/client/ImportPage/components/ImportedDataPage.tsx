@@ -16,7 +16,7 @@ import { getError } from "src/utils";
 
 import xls from "src/assets/images/xls.svg";
 import json from "src/assets/images/json.webp";
-import { EFileType } from "src/enums";
+import { EFileType } from "@shared/enums";
 
 const ImportedDataPage = () => {
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);

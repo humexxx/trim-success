@@ -2,7 +2,7 @@ import { PageHeader } from "src/components";
 import { useInventoryPerformance } from "./hooks";
 import { Alert } from "@mui/material";
 import { useEffect, useState } from "react";
-import { IInventoryPerformanceData } from "src/models";
+import { IInventoryPerformanceData } from "@shared/models";
 import { getError } from "src/utils";
 import { Table } from "./components";
 import { useCube } from "src/context/cube";

@@ -1,7 +1,7 @@
 import { Box } from "@mui/material";
 import { useDocumentMetadata } from "src/hooks";
 import { Columns, Drivers } from "./components";
-import { COLUMNS } from "src/consts";
+import { COLUMNS } from "@shared/consts";
 import { useCube } from "src/context/cube";
 
 const Page = () => {

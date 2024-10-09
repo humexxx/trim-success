@@ -2,7 +2,7 @@ import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
 
 import { generateGeneralReport as _generateGeneralReport } from "./utils/reports";
-import { IBaseData, IParamsData } from "./models";
+import { IBaseData, IParamsData } from "@shared/models";
 
 export const generateGeneralReport = functions.https.onCall(
   async (

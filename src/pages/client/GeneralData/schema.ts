@@ -1,4 +1,4 @@
-import { IParamsData, IParam } from "src/models";
+import { IParamsData, IParam } from "@shared/models";
 import * as yup from "yup";
 
 const paramSchema: yup.ObjectSchema<IParam> = yup.object({

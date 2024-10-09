@@ -7,12 +7,12 @@ import {
 } from "react";
 import { CubeContextType } from "./CubeContext.types";
 import { useAuth } from "../auth";
-import { ICubeData } from "src/models";
+import { ICubeData } from "@shared/models";
 import { functions, storage } from "src/firebase";
 import { httpsCallable } from "firebase/functions";
 import { GlobalLoader } from "src/components";
 import { listAll, getBlob, ref } from "firebase/storage";
-import { STORAGE_PATH } from "src/consts";
+import { STORAGE_PATH } from "@shared/consts";
 
 export const CubeContext = createContext<CubeContextType | undefined>(
   undefined

@@ -1,5 +1,5 @@
 import { Typography, Box, List, ListItem, ListItemText } from "@mui/material";
-import { IDriver } from "src/models";
+import { IDriver } from "@shared/models";
 
 interface Props {
   drivers?: IDriver[];

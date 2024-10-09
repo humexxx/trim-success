@@ -5,8 +5,8 @@ import {
   IGeneralParamsData,
   IInventoryParamsData,
   IStoringParamsData,
-} from "./models";
-import { getColumnIndex } from "./utils";
+} from "@shared/models";
+import { getColumnIndex } from "@shared/utils";
 
 export const STORAGE_PATH = "cubes/";
 export const JSON_FILE_NAME = "parsedData.json";

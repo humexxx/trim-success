@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
-import { IColumn } from "src/models";
+import { IColumn } from "@shared/models";
 import { firestore } from "src/firebase";
 import { useAuth } from "src/context/auth";
 

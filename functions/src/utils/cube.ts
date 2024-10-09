@@ -1,13 +1,12 @@
-import { COLUMNS } from "../consts";
-import { EColumnType } from "../consts/enums";
-import { EDriverType } from "../enums";
+import { COLUMNS } from "@shared/consts";
+import { EColumnType, EDriverType } from "@shared/enums";
 import {
-  IBaseData,
   IDriver,
-  IInventoryPerformanceData,
+  IBaseData,
   IParamsData,
-} from "../models";
-import { IScorecardData } from "../models/scorecardData";
+  IScorecardData,
+  IInventoryPerformanceData,
+} from "@shared/models";
 
 function getColumnIndex(column: EColumnType): number | undefined {
   const col = COLUMNS.find((col) => col.code === column);
@@ -41,10 +40,13 @@ export function calculateCategoriesDataRows(
     if (!response[categoryValue]) {
       response[categoryValue] = {
         category: categoryValue,
-        ...drivers.reduce((acc, driver) => {
-          acc[driver.key] = 0;
-          return acc;
-        }, {} as any),
+        ...drivers.reduce(
+          (acc, driver) => {
+            acc[driver.key] = 0;
+            return acc;
+          },
+          {} as Record<string, number>
+        ),
       };
     }
 
@@ -110,44 +112,53 @@ export function calculateScorecardData(
 ): IScorecardData {
   const storingCosts: IScorecardData["storingCosts"]["rows"] = [
     ...paramsData.storingParams.costs.map((cost) => {
-      const driver = paramsData.drivers[0]; // try to infer with ai
+      const driver = paramsData.drivers[0];
       const _row = {
         cost: cost.label,
         total: cost.value,
         driver: driver.key,
-        ...paramsData.categories.reduce((acc, category) => {
-          acc[category] =
-            cost.value *
-            Number(
-              baseData.driversData.rows.find(
-                (row) => row.driver === driver.label
-              )![category]
-            );
-          return acc;
-        }, {} as any),
+        totalPercentage: 0,
+        invest: "",
+        ...paramsData.categories.reduce(
+          (acc, category) => {
+            acc[category] =
+              cost.value *
+              Number(
+                baseData.driversData.rows.find(
+                  (row) => row.driver === driver.label
+                )![category]
+              );
+            return acc;
+          },
+          {} as Record<string, number>
+        ),
       };
       return _row;
     }),
     ...paramsData.storingParams.investments.map((investment) => {
       const driver = paramsData.drivers[0];
       const investmentsTypes = paramsData.generalParams.financial.slice(2);
-      const investType = investmentsTypes[0]; // try to infer with ai
+      const investType = investmentsTypes[0];
       const _row = {
         invest: investType.key,
         cost: investment.label,
         total: investment.value * (investType.value / 100),
         driver: driver.key,
-        ...paramsData.categories.reduce((acc, category) => {
-          acc[category] =
-            investment.value *
-            (investType.value / 100) *
-            Number(
-              baseData.driversData.rows.find(
-                (row) => row.driver === driver.label
-              )![category]
-            );
-          return acc;
-        }, {} as any),
+        totalPercentage: 0,
+        ...paramsData.categories.reduce(
+          (acc, category) => {
+            acc[category] =
+              investment.value *
+              (investType.value / 100) *
+              Number(
+                baseData.driversData.rows.find(
+                  (row) => row.driver === driver.label
+                )![category]
+              );
+            return acc;
+          },
+          {} as Record<string, number>
+        ),
       };
       return _row;
     }),
@@ -160,16 +171,21 @@ export function calculateScorecardData(
         cost: cost.label,
         total: cost.value,
         driver: driver.key,
-        ...paramsData.categories.reduce((acc, category) => {
-          acc[category] =
-            cost.value *
-            Number(
-              baseData.driversData.rows.find(
-                (row) => row.driver === driver.label
-              )![category]
-            );
-          return acc;
-        }, {} as any),
+        invest: "",
+        totalPercentage: 0,
+        ...paramsData.categories.reduce(
+          (acc, category) => {
+            acc[category] =
+              cost.value *
+              Number(
+                baseData.driversData.rows.find(
+                  (row) => row.driver === driver.label
+                )![category]
+              );
+            return acc;
+          },
+          {} as Record<string, number>
+        ),
       };
       return _row;
     }),
@@ -182,17 +198,21 @@ export function calculateScorecardData(
         cost: investment.label,
         total: investment.value * (investType.value / 100),
         driver: driver.key,
-        ...paramsData.categories.reduce((acc, category) => {
-          acc[category] =
-            investment.value *
-            (investType.value / 100) *
-            Number(
-              baseData.driversData.rows.find(
-                (row) => row.driver === driver.label
-              )![category]
-            );
-          return acc;
-        }, {} as any),
+        totalPercentage: 0,
+        ...paramsData.categories.reduce(
+          (acc, category) => {
+            acc[category] =
+              investment.value *
+              (investType.value / 100) *
+              Number(
+                baseData.driversData.rows.find(
+                  (row) => row.driver === driver.label
+                )![category]
+              );
+            return acc;
+          },
+          {} as Record<string, number>
+        ),
       };
       return _row;
     }),
@@ -222,13 +242,16 @@ export function calculateScorecardData(
       totals: {
         total: storingCosts.reduce((acc, row) => acc + Number(row.total), 0),
         totalPercentage: 1,
-        ...paramsData.categories.reduce((acc, category) => {
-          acc[category] = storingCosts.reduce(
-            (acc, row) => acc + Number(row[category]),
-            0
-          );
-          return acc;
-        }, {} as any),
+        ...paramsData.categories.reduce(
+          (acc, category) => {
+            acc[category] = storingCosts.reduce(
+              (acc, row) => acc + Number(row[category]),
+              0
+            );
+            return acc;
+          },
+          {} as Record<string, number>
+        ),
       },
     },
     inventoryCosts: {
@@ -236,13 +259,16 @@ export function calculateScorecardData(
       totals: {
         total: inventoryCosts.reduce((acc, row) => acc + Number(row.total), 0),
         totalPercentage: 1,
-        ...paramsData.categories.reduce((acc, category) => {
-          acc[category] = inventoryCosts.reduce(
-            (acc, row) => acc + Number(row[category]),
-            0
-          );
-          return acc;
-        }, {} as any),
+        ...paramsData.categories.reduce(
+          (acc, category) => {
+            acc[category] = inventoryCosts.reduce(
+              (acc, row) => acc + Number(row[category]),
+              0
+            );
+            return acc;
+          },
+          {} as Record<string, number>
+        ),
       },
     },
   };
@@ -265,17 +291,20 @@ export function calculateInventoryPerformance(
       return {
         label: value.label,
         description: value.description,
-        ...categories.reduce((acc, category) => {
-          acc[category] =
-            (Number(scorecard.inventoryCosts.totals[category]) +
-              Number(scorecard.storingCosts.totals[category])) /
-            Number(
-              baseData.categoriesData.rows.find(
-                (row) => row.category === category
-              )![EDriverType.INVENTORY_VALUE]
-            );
-          return acc;
-        }, {} as any),
+        ...categories.reduce(
+          (acc, category) => {
+            acc[category] =
+              (Number(scorecard.inventoryCosts.totals[category]) +
+                Number(scorecard.storingCosts.totals[category])) /
+              Number(
+                baseData.categoriesData.rows.find(
+                  (row) => row.category === category
+                )![EDriverType.INVENTORY_VALUE]
+              );
+            return acc;
+          },
+          {} as Record<string, number>
+        ),
         total:
           (Number(scorecard.inventoryCosts.totals.total) +
             Number(scorecard.storingCosts.totals.total)) /

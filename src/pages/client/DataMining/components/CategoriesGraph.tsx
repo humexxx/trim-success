@@ -8,8 +8,8 @@ import {
 } from "@mui/x-charts";
 import { MakeOptional } from "@mui/x-charts/internals";
 import { useMemo } from "react";
-import { IBaseData, IDriver } from "src/models";
-import { formatCurrency, formatPercentage } from "src/utils";
+import { IBaseData, IDriver } from "@shared/models";
+import { formatCurrency, formatPercentage } from "@shared/utils";
 
 interface Props {
   data: IBaseData["categoriesData"];

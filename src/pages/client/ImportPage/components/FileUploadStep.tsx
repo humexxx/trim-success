@@ -3,7 +3,7 @@ import { Alert, Box, Grid, Typography } from "@mui/material";
 import { storage } from "src/firebase";
 import { useAuth } from "src/context/auth";
 import { ref, uploadBytes, UploadResult } from "firebase/storage";
-import { JSON_FILE_NAME, STORAGE_PATH } from "src/consts";
+import { JSON_FILE_NAME, STORAGE_PATH } from "@shared/consts";
 import { useCube } from "src/context/cube";
 import DevicesIcon from "@mui/icons-material/Devices";
 import StorageIcon from "@mui/icons-material/Storage";
@@ -14,7 +14,7 @@ import {
   getCategoriesDataTotals,
   getDriversDataRows,
 } from "src/utils";
-import { IBaseData, ICubeData } from "src/models";
+import { IBaseData, ICubeData } from "@shared/models";
 import { useBaseData } from "../../DataMining/hooks";
 import { FileResolution } from "./ImportDataPage";
 import { useScorecard } from "../../Scorecard/hooks";

@@ -3,7 +3,7 @@ import { User, onAuthStateChanged } from "firebase/auth";
 import { auth } from "src/firebase";
 import AuthContext from "./AuthContext";
 import { AuthContextType, AuthProviderProps } from "./AuthContext.types";
-import { IUser } from "src/models";
+import { IUser } from "@shared/models";
 
 export default function AuthProvider({ children }: AuthProviderProps) {
   const [currentUser, setCurrentUser] = useState<User | null>(null);

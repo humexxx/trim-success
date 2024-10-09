@@ -3,7 +3,7 @@ import { httpsCallable, HttpsCallableResult } from "firebase/functions";
 import { useCallback, useState } from "react";
 import { useAuth } from "src/context/auth";
 import { firestore, functions } from "src/firebase";
-import { IScorecardData } from "src/models";
+import { IScorecardData } from "@shared/models";
 
 export interface UseScorecard {
   loading: boolean;

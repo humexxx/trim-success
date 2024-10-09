@@ -1,6 +1,5 @@
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
-import { IBaseData, ICubeData, IParamsData } from "./models";
 import {
   getUserCubeFile,
   processExcelFile,
@@ -13,7 +12,12 @@ import {
   calculateScorecardData as _calculateScorecardData,
   calculateInventoryPerformance as _calculateInventoryPerformance,
 } from "./utils/cube";
-import { IScorecardData } from "./models/scorecardData";
+import {
+  IBaseData,
+  ICubeData,
+  IParamsData,
+  IScorecardData,
+} from "@shared/models";
 
 export const getCubeData = functions.https.onCall(
   async (

@@ -7,7 +7,7 @@ import {
   TextField,
 } from "@mui/material";
 import { useAuth } from "src/context/auth";
-import { IUser } from "src/models";
+import { IUser } from "@shared/models";
 import { useNavigate } from "react-router-dom";
 import { useUsers } from "../hooks";
 

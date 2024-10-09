@@ -1,8 +1,8 @@
 import { GridCellParams, GridColDef, GridRowModel } from "@mui/x-data-grid";
 import { useEffect, useMemo, useState } from "react";
 import { StripedDataGrid } from "src/components";
-import { IDriver, IParam, IScorecardData } from "src/models";
-import { formatCurrency, formatPercentage } from "src/utils";
+import { IDriver, IParam, IScorecardData } from "@shared/models";
+import { formatCurrency, formatPercentage } from "@shared/utils";
 
 interface Props {
   data?: IScorecardData["inventoryCosts"];
