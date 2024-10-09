@@ -1,6 +1,11 @@
-import { COLUMNS } from "src/consts";
-import { EColumnType } from "src/enums";
-import { IBaseData, IDriver, IParamsData, IScorecardData } from "src/models";
+import { EColumnType } from "@shared/enums";
+import {
+  IBaseData,
+  IDriver,
+  IParamsData,
+  IScorecardData,
+} from "@shared/models";
+import { getColumnIndex } from "@shared/utils";
 import { WorkBook } from "xlsx";
 
 export async function getWorkbookFromFileAsync(file: Blob): Promise<WorkBook> {
@@ -297,25 +302,4 @@ export function updateInventoryScorecardDataRow(
       }, {} as any),
     },
   };
-}
-
-export function getColumnIndex(column: EColumnType): number | undefined {
-  const col = COLUMNS.find((col) => col.code === column);
-  return col?.index;
-}
-
-export function getColumnIndexRange(column: EColumnType): number[] | undefined {
-  const col = COLUMNS.find((col) => col.code === column);
-  return col?.indexRange;
-}
-
-export function getRowValue(
-  row: any[],
-  index: number | number[]
-): string | number | string[] | number[] {
-  const values = Object.values(row);
-  if (Array.isArray(index)) {
-    return index.map((i) => values[i + 1]);
-  }
-  return values[index + 1];
 }

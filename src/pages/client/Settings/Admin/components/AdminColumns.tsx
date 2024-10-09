@@ -18,7 +18,7 @@ import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { LoadingButton } from "@mui/lab";
 import { AdminContent } from "src/components";
-import { IColumn } from "src/models";
+import { IColumn } from "@shared/models";
 import { useRef } from "react";
 
 const schema = yup.object().shape({

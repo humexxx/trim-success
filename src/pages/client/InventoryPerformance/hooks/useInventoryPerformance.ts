@@ -3,7 +3,7 @@ import { httpsCallable, HttpsCallableResult } from "firebase/functions";
 import { useCallback, useState } from "react";
 import { useAuth } from "src/context/auth";
 import { firestore, functions } from "src/firebase";
-import { IInventoryPerformanceData } from "src/models";
+import { IInventoryPerformanceData } from "@shared/models";
 
 export interface UseInventoryPerformance {
   get: () => Promise<IInventoryPerformanceData>;

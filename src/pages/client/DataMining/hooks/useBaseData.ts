@@ -2,7 +2,7 @@ import { doc, setDoc } from "firebase/firestore";
 import { useCallback, useState } from "react";
 import { useAuth } from "src/context/auth";
 import { firestore } from "src/firebase";
-import { IBaseData } from "src/models";
+import { IBaseData } from "@shared/models";
 
 export interface UseBaseData {
   loading: boolean;

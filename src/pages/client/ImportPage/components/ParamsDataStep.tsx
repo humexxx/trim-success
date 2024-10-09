@@ -11,12 +11,12 @@ import {
 } from "../../GeneralData";
 import { getError, getGeneralDataAsync } from "src/utils";
 import { useParamsData } from "../../GeneralData/hooks";
-import { ICubeData, IParamsData } from "src/models";
+import { ICubeData, IParamsData } from "@shared/models";
 import {
   DEFAULT_GENERAL_PARAMS,
   DEFAULT_INVENTORY_PARAMS,
   DEFAULT_STORING_PARAMS,
-} from "src/consts";
+} from "@shared/consts";
 import { FileResolution } from "./ImportDataPage";
 
 interface Props {

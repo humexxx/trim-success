@@ -14,7 +14,7 @@ import {
   updateInventoryScorecardDataRow,
   getError,
 } from "src/utils";
-import { ICubeData, IScorecardData } from "src/models";
+import { ICubeData, IScorecardData } from "@shared/models";
 
 const Page = () => {
   useDocumentMetadata("Scorecard - Trim Success");

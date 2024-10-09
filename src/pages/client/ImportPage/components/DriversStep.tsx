@@ -9,8 +9,8 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import Checkbox from "@mui/material/Checkbox";
 import Button from "@mui/material/Button";
 import Divider from "@mui/material/Divider";
-import { ICubeData, IDriver, IParamsData } from "src/models";
-import { DEFAULT_DRIVERS } from "src/consts";
+import { ICubeData, IDriver, IParamsData } from "@shared/models";
+import { DEFAULT_DRIVERS } from "@shared/consts";
 import { useCube } from "src/context/cube";
 import { useEffect } from "react";
 

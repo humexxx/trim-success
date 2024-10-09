@@ -1,6 +1,6 @@
 import { User } from "firebase/auth";
 import { ReactNode } from "react";
-import { IUser } from "src/models";
+import { IUser } from "@shared/models";
 
 export interface AuthContextType {
   currentUser: User | null;

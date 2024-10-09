@@ -1,4 +1,4 @@
-import { ICubeData } from "src/models";
+import { ICubeData } from "@shared/models";
 
 export interface CubeContextType {
   hasInitialData: boolean;

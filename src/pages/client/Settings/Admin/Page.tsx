@@ -2,7 +2,7 @@ import { Box } from "@mui/material";
 import { useDocumentMetadata } from "src/hooks";
 import { AdminColumns } from "./components";
 import { AdminRoute } from "src/components";
-import { COLUMNS } from "src/consts";
+import { COLUMNS } from "@shared/consts";
 
 const Page = () => {
   useDocumentMetadata("Configuracion Admin - Trim Success");

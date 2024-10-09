@@ -7,14 +7,14 @@ import { paramsSchema } from "./schema";
 import { useEffect, useState } from "react";
 import { LoadingButton } from "@mui/lab";
 import { useCube } from "src/context/cube";
-import { IBaseData, IParamsData } from "src/models";
+import { IBaseData, IParamsData } from "@shared/models";
 import { useParamsData } from "./hooks";
 import {
   DEFAULT_GENERAL_PARAMS,
   DEFAULT_STORING_PARAMS,
   DEFAULT_INVENTORY_PARAMS,
   JSON_FILE_NAME,
-} from "src/consts";
+} from "@shared/consts";
 import {
   getCategoriesDataRowsAsync,
   getCategoriesDataTotals,

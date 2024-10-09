@@ -9,7 +9,6 @@ export interface IScorecardData {
       [category: string]: string | number;
     }[];
     totals: {
-      cost: string;
       total: number;
       totalPercentage: number;
       [category: string]: string | number;
@@ -25,7 +24,6 @@ export interface IScorecardData {
       [category: string]: string | number;
     }[];
     totals: {
-      cost: string;
       total: number;
       totalPercentage: number;
       [category: string]: string | number;

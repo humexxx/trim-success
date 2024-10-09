@@ -6,7 +6,7 @@ import {
 } from "react-hook-form";
 import { Grid, TextField, Typography } from "@mui/material";
 import { CurrencyField, PercentageField } from "src/components/form";
-import { IParamsData } from "src/models";
+import { IParamsData } from "@shared/models";
 
 interface Props {
   register: UseFormRegister<Omit<IParamsData, "drivers" | "categories">>;

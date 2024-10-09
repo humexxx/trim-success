@@ -26,7 +26,7 @@ module.exports = {
     "no-debugger": "warn",
     "@typescript-eslint/no-explicit-any": "warn",
     "no-constant-condition": "warn",
-    "import/no-unresolved": "warn",
+    "import/no-unresolved": "off",
     "require-jsdoc": "off",
     "@typescript-eslint/no-non-null-assertion": "off",
   },

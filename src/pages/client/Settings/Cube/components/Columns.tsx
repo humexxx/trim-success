@@ -1,5 +1,5 @@
 import { Typography, Box, List, ListItem, ListItemText } from "@mui/material";
-import { IColumn } from "src/models";
+import { IColumn } from "@shared/models";
 
 interface Props {
   columns?: IColumn[];

@@ -1,8 +1,8 @@
 import { GridColDef } from "@mui/x-data-grid";
 import { useMemo } from "react";
 import { StripedDataGrid } from "src/components";
-import { IInventoryPerformanceData } from "src/models";
-import { formatPercentage } from "src/utils";
+import { IInventoryPerformanceData } from "@shared/models";
+import { formatPercentage } from "@shared/utils";
 
 interface Props {
   data: IInventoryPerformanceData;
