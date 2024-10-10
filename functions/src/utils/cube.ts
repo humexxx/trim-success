@@ -7,21 +7,11 @@ import {
   IScorecardData,
   IInventoryPerformanceData,
 } from "@shared/models";
+import { getRowValue } from "@shared/utils";
 
 function getColumnIndex(column: EColumnType): number | undefined {
   const col = COLUMNS.find((col) => col.code === column);
   return col?.index;
-}
-
-function getRowValue(
-  row: any[],
-  index: number | number[]
-): string | number | string[] | number[] {
-  const values = Object.values(row);
-  if (Array.isArray(index)) {
-    return index.map((i) => values[i + 1]);
-  }
-  return values[index + 1];
 }
 
 export function calculateCategoriesDataRows(

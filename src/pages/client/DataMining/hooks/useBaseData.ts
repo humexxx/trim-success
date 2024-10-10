@@ -1,13 +1,16 @@
 import { doc, setDoc } from "firebase/firestore";
 import { useCallback, useState } from "react";
 import { useAuth } from "src/context/auth";
-import { firestore } from "src/firebase";
+import { firestore, functions } from "src/firebase";
 import { IBaseData } from "@shared/models";
+import { httpsCallable, HttpsCallableResult } from "firebase/functions";
+import { ICallableRequest, ICallableResponse } from "@shared/models/functions";
 
 export interface UseBaseData {
   loading: boolean;
   error: string | null;
   update: (data: IBaseData) => Promise<void>;
+  calculate: () => Promise<HttpsCallableResult<ICallableResponse>>;
 }
 
 function getDocumentPath(uid: string) {
@@ -37,7 +40,20 @@ function useBaseData(): UseBaseData {
     [currentUser, customUser, isAdmin]
   );
 
-  return { loading, error, update };
+  const calculate = useCallback(async () => {
+    setLoading(true);
+    const calculateDataMining = httpsCallable<
+      ICallableRequest,
+      ICallableResponse
+    >(functions, "calculateDataMining");
+    const response = await calculateDataMining({
+      uid: isAdmin ? customUser!.uid : currentUser!.uid,
+    });
+    setLoading(false);
+    return response;
+  }, [currentUser, customUser, isAdmin]);
+
+  return { loading, error, update, calculate };
 }
 
 export default useBaseData;

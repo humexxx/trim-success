@@ -1,17 +1,20 @@
 import { Grid } from "@mui/material";
 import { AdminRoute, CardButton, PageHeader } from "src/components";
+import Filter1OutlinedIcon from "@mui/icons-material/Filter1Outlined";
 import Filter2OutlinedIcon from "@mui/icons-material/Filter2Outlined";
 import Filter3OutlinedIcon from "@mui/icons-material/Filter3Outlined";
 import { useInventoryPerformance } from "src/pages/client/InventoryPerformance/hooks";
 import { useState } from "react";
 import { getError } from "src/utils";
 import { useScorecard } from "src/pages/client/Scorecard/hooks";
+import { useBaseData } from "src/pages/client/DataMining/hooks";
 
 const Page = () => {
   const [error, setError] = useState("");
 
   const scorecard = useScorecard();
   const inventoryPerformance = useInventoryPerformance();
+  const baseData = useBaseData();
 
   async function calculateInventoryPerformance() {
     setError("");
@@ -30,6 +33,15 @@ const Page = () => {
         description="Diferentes funcionalidades para testear."
       >
         <Grid container spacing={4}>
+          <Grid item xs={12} sm={12} md={6} lg={4}>
+            <CardButton
+              icon={<Filter1OutlinedIcon />}
+              label="Data Mining"
+              description={"Calcular las metricas de categoria y de drivers."}
+              onClick={baseData.calculate}
+              loading={baseData.loading}
+            />
+          </Grid>
           <Grid item xs={12} sm={12} md={6} lg={4}>
             <CardButton
               icon={<Filter2OutlinedIcon />}
