@@ -4,10 +4,12 @@ import { Box, Drawer, Toolbar, Container } from "@mui/material";
 import { useState } from "react";
 import { AppDrawer, Header } from "./components";
 import { DRAWER_WIDTH } from "./components/Drawer";
+import { useCube } from "src/context/cube";
 
 export default function BaseLayout() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
+  const cube = useCube();
 
   const handleDrawerClose = () => {
     setIsClosing(true);
@@ -77,7 +79,7 @@ export default function BaseLayout() {
         <Toolbar />
 
         <Container maxWidth="xl">
-          <Outlet />
+          {cube.isCubeLoading ? "Loading..." : <Outlet />}
         </Container>
       </Box>
     </Box>

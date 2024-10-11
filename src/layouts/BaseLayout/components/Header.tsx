@@ -9,6 +9,7 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import { useTheme } from "@mui/material/styles";
 import { DRAWER_WIDTH } from "./Drawer";
 import { useAuth } from "src/context/auth";
+import { logout } from "src/utils";
 
 interface Props {
   handleDrawerToggle: () => void;
@@ -22,15 +23,10 @@ const Header = ({ handleDrawerToggle }: Props) => {
   const { isAdmin, customUser, setCustomUser } = useAuth();
 
   function handleLogout() {
-    auth
-      .signOut()
-      .then(() => {
-        setCustomUser(null);
-        navigate("/login");
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+    logout(() => {
+      setCustomUser(null);
+      navigate("/login");
+    });
   }
 
   return (
