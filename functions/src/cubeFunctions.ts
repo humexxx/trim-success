@@ -53,6 +53,9 @@ export const getCubeData = functions.https.onCall<ICallableRequest>(
 );
 
 export const calculateDataMining = functions.https.onCall<ICallableRequest>(
+  {
+    memory: "1GiB",
+  },
   async (req): Promise<ICallableResponse> => {
     if (!req.auth) return { success: false, error: "Not authenticated." };
     const uid = req.auth.token.admin ? req.data.uid : req.auth?.uid;
@@ -65,7 +68,10 @@ export const calculateDataMining = functions.https.onCall<ICallableRequest>(
       return { success: false, error: "Params data not found." };
 
     try {
+      functions.logger.info("Generating JSON data");
       const jsonData = await getJsonData(uid);
+      functions.logger.info("JSON data generated");
+
       const { rows } = processJsonData(jsonData);
 
       const _paramsData = paramsData.data() as IParamsData;
@@ -74,10 +80,12 @@ export const calculateDataMining = functions.https.onCall<ICallableRequest>(
         rows,
         _paramsData.drivers
       );
+
       const categoriesDataTotals = calculateCategoriesTotalsData(
         categoriesDataRows,
         _paramsData.drivers
       );
+
       const driversDataRows = calculateDriversDataRows(
         categoriesDataRows,
         categoriesDataTotals,
