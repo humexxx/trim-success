@@ -1,11 +1,14 @@
 import * as functions from "firebase-functions";
 import axios from "axios";
+import { ICallableRequest } from "@shared/models/functions";
 
 const openaiApiKey = functions.config().openai.key;
 
 // 1 a 1 en lo que recibe el request
-export const aiGetMessage = functions.https.onCall(async (request) => {
-  const { question } = request;
+export const aiGetMessage = functions.https.onCall<
+  ICallableRequest<{ question: string }>
+>(async (req) => {
+  const { question } = req.data.data;
   if (!question) {
     throw new functions.https.HttpsError(
       "invalid-argument",
