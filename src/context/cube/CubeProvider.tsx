@@ -13,6 +13,7 @@ import { httpsCallable } from "firebase/functions";
 import { GlobalLoader } from "src/components";
 import { listAll, getBlob, ref } from "firebase/storage";
 import { STORAGE_PATH } from "@shared/consts";
+import { LOCAL_STORAGE_KEYS } from "src/consts";
 
 export const CubeContext = createContext<CubeContextType | undefined>(
   undefined
@@ -27,7 +28,7 @@ export default function CubeProvider({
   children,
   onCubeLoadError,
 }: CubeProviderProps) {
-  const { isAdmin, customUser, currentUser } = useAuth();
+  const { isAdmin, customUser, currentUser, setCustomUser } = useAuth();
   const [hasInitialData, setHasInitialData] = useState(false);
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<ICubeData | undefined>(undefined);
@@ -93,8 +94,24 @@ export default function CubeProvider({
 
   useEffect(() => {
     if (isAdmin ? customUser?.uid : true) loadCubeData();
-    else onCubeLoadError();
-  }, [currentUser, customUser?.uid, isAdmin, loadCubeData, onCubeLoadError]);
+    else {
+      const localStorageCustomUser = localStorage.getItem(
+        LOCAL_STORAGE_KEYS.CUSTOM_USER
+      );
+      if (localStorageCustomUser) {
+        setCustomUser(JSON.parse(localStorageCustomUser));
+      } else {
+        onCubeLoadError();
+      }
+    }
+  }, [
+    currentUser,
+    customUser?.uid,
+    isAdmin,
+    loadCubeData,
+    onCubeLoadError,
+    setCustomUser,
+  ]);
 
   const value: CubeContextType = {
     hasInitialData,

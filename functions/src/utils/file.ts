@@ -1,39 +1,21 @@
+import { JSON_FILE_NAME } from "@shared/consts";
 import * as admin from "firebase-admin";
-import * as XLSX from "xlsx";
 
 const storage = admin.storage();
 const STORAGE_PATH = "cubes";
 
-export async function getUserCubeFile(uid: string): Promise<Buffer> {
+export async function getJsonData(uid: string): Promise<any> {
   const folderRef = `${STORAGE_PATH}/${uid}/`;
 
   const [files] = await storage.bucket().getFiles({ prefix: folderRef });
   if (!files || files.length === 0) {
     throw new Error("No files found.");
   }
-  const firstFile = files[0];
-  const [fileBuffer] = await firstFile.download();
+  const jsonFile = files.find((file) => file.name.includes(JSON_FILE_NAME));
+  if (!jsonFile) throw new Error("JSON file not found.");
 
-  return fileBuffer;
-}
-
-export function processExcelFile(buffer: Buffer): any[][] {
-  const dataArray = new Uint8Array(buffer);
-  const workbook = XLSX.read(dataArray, { type: "array" });
-  const sheetName = workbook.SheetNames[0];
-  const worksheet = workbook.Sheets[sheetName];
-
-  // Convert sheet data to JSON
-  const jsonData = XLSX.utils.sheet_to_json(worksheet, {
-    header: 1,
-    raw: true,
-  });
-
-  if (jsonData.length > 0) {
-    return jsonData as any[][];
-  } else {
-    throw new Error("No data found in the file.");
-  }
+  const [fileContent] = await jsonFile.download();
+  return JSON.parse(fileContent.toString());
 }
 
 export function processJsonData(jsonData: any[][]): {

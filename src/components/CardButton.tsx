@@ -26,6 +26,8 @@ const CardButton = ({ icon, description, label, onClick, loading }: Props) => {
         justifyContent: "space-between",
         height: "100%",
         position: "relative",
+        width: "100%",
+        alignItems: "flex-start",
       }}
       component={Button}
       onClick={onClick}

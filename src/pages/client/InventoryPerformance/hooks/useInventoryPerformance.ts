@@ -4,10 +4,11 @@ import { useCallback, useState } from "react";
 import { useAuth } from "src/context/auth";
 import { firestore, functions } from "src/firebase";
 import { IInventoryPerformanceData } from "@shared/models";
+import { ICallableRequest, ICallableResponse } from "@shared/models/functions";
 
 export interface UseInventoryPerformance {
   get: () => Promise<IInventoryPerformanceData>;
-  calculate: () => Promise<HttpsCallableResult<unknown>>;
+  calculate: () => Promise<HttpsCallableResult<ICallableResponse>>;
   loading: boolean;
 }
 
@@ -37,10 +38,10 @@ function useInventoryPerformance(): UseInventoryPerformance {
 
   const calculate = useCallback(async () => {
     setLoading(true);
-    const calculateInventoryPerformance = httpsCallable(
-      functions,
-      "calculateInventoryPerformance"
-    );
+    const calculateInventoryPerformance = httpsCallable<
+      ICallableRequest,
+      ICallableResponse
+    >(functions, "calculateInventoryPerformance");
     const response = await calculateInventoryPerformance({
       uid: isAdmin ? customUser!.uid : currentUser!.uid,
     });

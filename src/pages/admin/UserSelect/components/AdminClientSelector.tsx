@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import {
   Autocomplete,
   Box,
@@ -10,12 +10,17 @@ import { useAuth } from "src/context/auth";
 import { IUser } from "@shared/models";
 import { useNavigate } from "react-router-dom";
 import { useUsers } from "../hooks";
+import { useLocalStorage } from "src/hooks";
+import { LOCAL_STORAGE_KEYS } from "src/consts";
 
 const AdminClientSelector = () => {
   const { users, loading } = useUsers();
   const { setCustomUser, customUser } = useAuth();
   const navigate = useNavigate();
-  const [selectedUser, setSelectedUser] = useState<IUser | null>(null);
+  const [selectedUser, setSelectedUser] = useLocalStorage<IUser | null>(
+    LOCAL_STORAGE_KEYS.CUSTOM_USER,
+    null
+  );
 
   useEffect(() => {
     if (customUser?.uid && users.length > 0) {
@@ -24,7 +29,7 @@ const AdminClientSelector = () => {
         setSelectedUser(user);
       }
     }
-  }, [customUser?.uid, users]);
+  }, [customUser?.uid, setSelectedUser, users]);
 
   async function handleOnClick() {
     if (selectedUser) {

@@ -4,12 +4,13 @@ import { useCallback, useState } from "react";
 import { useAuth } from "src/context/auth";
 import { firestore, functions } from "src/firebase";
 import { IScorecardData } from "@shared/models";
+import { ICallableRequest, ICallableResponse } from "@shared/models/functions";
 
 export interface UseScorecard {
   loading: boolean;
   get: () => Promise<IScorecardData>;
   update: (data: IScorecardData) => Promise<void>;
-  calculate: () => Promise<HttpsCallableResult<unknown>>;
+  calculate: () => Promise<HttpsCallableResult<ICallableResponse>>;
 }
 
 function getDocumentPath(uid: string) {
@@ -51,10 +52,10 @@ function useScorecard(): UseScorecard {
 
   const calculate = useCallback(async () => {
     setLoading(true);
-    const calculateScorecardData = httpsCallable(
-      functions,
-      "calculateScorecardData"
-    );
+    const calculateScorecardData = httpsCallable<
+      ICallableRequest,
+      ICallableResponse
+    >(functions, "calculateScorecardData");
     const response = await calculateScorecardData({
       uid: isAdmin ? customUser!.uid : currentUser!.uid,
     });
