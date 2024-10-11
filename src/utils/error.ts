@@ -1,4 +1,5 @@
 import { FirebaseError } from "firebase/app";
+
 import { handleAuthError } from "./auth";
 
 export function getError(error: unknown): string {

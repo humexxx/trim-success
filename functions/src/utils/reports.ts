@@ -1,6 +1,6 @@
-import { TableLayout, TDocumentDefinitions } from "pdfmake/interfaces";
-import { formatCurrency, formatPercentage } from "@shared/utils";
 import { IBaseData, IParamsData } from "@shared/models";
+import { formatCurrency, formatPercentage } from "@shared/utils";
+import { TableLayout, TDocumentDefinitions } from "pdfmake/interfaces";
 
 const COMMON_TABLE_LAYOUT: TableLayout = {
   fillColor: function (rowIndex, node, columnIndex) {

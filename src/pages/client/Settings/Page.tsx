@@ -1,11 +1,14 @@
-import { Box, Tab } from "@mui/material";
-import { useDocumentMetadata } from "src/hooks";
-import { TabContext, TabList, TabPanel } from "@mui/lab";
 import { useState } from "react";
+
+import { TabContext, TabList, TabPanel } from "@mui/lab";
+import { Box, Tab } from "@mui/material";
+import { useAuth } from "src/context/auth";
+import { useDocumentMetadata } from "src/hooks";
+
+import { AdminSettings } from "./Admin";
 import { UserSettings } from "./components";
 import { CubeSettings } from "./Cube";
-import { useAuth } from "src/context/auth";
-import { AdminSettings } from "./Admin";
+
 
 export interface DataSet {
   id?: number;

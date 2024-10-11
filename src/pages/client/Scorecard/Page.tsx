@@ -1,20 +1,22 @@
+import { useCallback, useMemo, useState } from "react";
+
 import { Alert, Grid } from "@mui/material";
+import { ICubeData, IScorecardData } from "@shared/models";
 import { PageHeader } from "src/components";
 import { useCube } from "src/context/cube";
 import { useDocumentMetadata } from "src/hooks";
+import {
+  updateStoringScorecardDataRow,
+  updateInventoryScorecardDataRow,
+  getError,
+} from "src/utils";
+
 import {
   GrandTotalGrid,
   ScorecardTableInventory,
   ScorecardTableWarehouse,
 } from "./components";
 import { useScorecard } from "./hooks";
-import { useCallback, useMemo, useState } from "react";
-import {
-  updateStoringScorecardDataRow,
-  updateInventoryScorecardDataRow,
-  getError,
-} from "src/utils";
-import { ICubeData, IScorecardData } from "@shared/models";
 
 const Page = () => {
   useDocumentMetadata("Scorecard - Trim Success");

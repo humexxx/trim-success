@@ -1,4 +1,15 @@
-import { NavLink, useLocation } from "react-router-dom";
+import { useMemo } from "react";
+
+import DashboardIcon from "@mui/icons-material/Dashboard";
+import DescriptionOutlinedIcon from "@mui/icons-material/DescriptionOutlined";
+import DownloadIcon from "@mui/icons-material/Download";
+import Filter1OutlinedIcon from "@mui/icons-material/Filter1Outlined";
+import Filter2OutlinedIcon from "@mui/icons-material/Filter2Outlined";
+import Filter3OutlinedIcon from "@mui/icons-material/Filter3Outlined";
+import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
+import SettingsIcon from "@mui/icons-material/Settings";
+import SmartToyIcon from "@mui/icons-material/SmartToy";
+import SpeedIcon from "@mui/icons-material/Speed";
 import {
   Toolbar,
   Divider,
@@ -9,19 +20,9 @@ import {
   ListItemText,
   Box,
 } from "@mui/material";
-import DashboardIcon from "@mui/icons-material/Dashboard";
-import DownloadIcon from "@mui/icons-material/Download";
-import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
-import SettingsIcon from "@mui/icons-material/Settings";
-import { useCube } from "src/context/cube";
+import { NavLink, useLocation } from "react-router-dom";
 import { useAuth } from "src/context/auth";
-import { useMemo } from "react";
-import SmartToyIcon from "@mui/icons-material/SmartToy";
-import DescriptionOutlinedIcon from "@mui/icons-material/DescriptionOutlined";
-import Filter1OutlinedIcon from "@mui/icons-material/Filter1Outlined";
-import Filter2OutlinedIcon from "@mui/icons-material/Filter2Outlined";
-import Filter3OutlinedIcon from "@mui/icons-material/Filter3Outlined";
-import SpeedIcon from "@mui/icons-material/Speed";
+import { useCube } from "src/context/cube";
 
 function getRoutes(isAdmin: boolean) {
   return [

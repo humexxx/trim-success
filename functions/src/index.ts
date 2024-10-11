@@ -1,4 +1,4 @@
-import "./fixTsPaths"; // This import is necessary to fix the paths for the typescript compiler
+import "./fixTsPaths";
 import * as admin from "firebase-admin";
 
 admin.initializeApp();

@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react";
+
 import {
   Alert,
   Box,
@@ -6,8 +8,8 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { useEffect, useState } from "react";
 import { getError, getWorkbookFromFileAsync } from "src/utils";
+
 import { FileResolution } from "./ImportDataPage";
 
 interface Props {

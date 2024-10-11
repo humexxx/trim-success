@@ -1,10 +1,11 @@
-import { Outlet } from "react-router-dom";
+import { useState } from "react";
 
 import { Box, Drawer, Toolbar, Container } from "@mui/material";
-import { useState } from "react";
+import { Outlet } from "react-router-dom";
+import { useCube } from "src/context/cube";
+
 import { AppDrawer, Header } from "./components";
 import { DRAWER_WIDTH } from "./components/Drawer";
-import { useCube } from "src/context/cube";
 
 export default function BaseLayout() {
   const [mobileOpen, setMobileOpen] = useState(false);

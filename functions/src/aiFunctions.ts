@@ -1,7 +1,7 @@
-import * as functionsV1 from "firebase-functions/v1";
-import * as functions from "firebase-functions";
-import axios from "axios";
 import { ICallableRequest } from "@shared/models/functions";
+import axios from "axios";
+import * as functions from "firebase-functions";
+import * as functionsV1 from "firebase-functions/v1";
 
 // 1 a 1 en lo que recibe el request
 export const aiGetMessage = functions.https.onCall<

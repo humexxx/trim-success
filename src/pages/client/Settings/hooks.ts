@@ -1,8 +1,9 @@
 import { useState, useEffect, useCallback } from "react";
-import { doc, getDoc, updateDoc } from "firebase/firestore";
+
 import { IColumn } from "@shared/models";
-import { firestore } from "src/firebase";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { useAuth } from "src/context/auth";
+import { firestore } from "src/firebase";
 
 interface ISettingsCube {
   columns: IColumn[];

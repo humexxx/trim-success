@@ -1,6 +1,6 @@
-import * as functions from "firebase-functions";
-import * as admin from "firebase-admin";
 import { ICallableRequest } from "@shared/models/functions";
+import * as admin from "firebase-admin";
+import * as functions from "firebase-functions";
 
 export const addAdminClaim = functions.https.onCall<ICallableRequest>(
   async (req) => {

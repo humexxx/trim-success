@@ -1,7 +1,8 @@
-import { getDocs, collection } from "firebase/firestore";
 import { useState, useEffect } from "react";
-import { firestore } from "src/firebase";
+
 import { IUser } from "@shared/models";
+import { getDocs, collection } from "firebase/firestore";
+import { firestore } from "src/firebase";
 
 const useUsers = () => {
   const [users, setUsers] = useState<IUser[]>([]);

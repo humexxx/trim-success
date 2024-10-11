@@ -1,6 +1,8 @@
-import * as functions from "firebase-functions";
+import { IBaseData, IParamsData, IScorecardData } from "@shared/models";
+import { ICallableRequest, ICallableResponse } from "@shared/models/functions";
 import * as admin from "firebase-admin";
-import { getJsonData, processJsonData } from "./utils/file";
+import * as functions from "firebase-functions";
+
 import {
   calculateCategoriesDataRows,
   calculateCategoriesTotalsData,
@@ -8,8 +10,8 @@ import {
   calculateScorecardData as _calculateScorecardData,
   calculateInventoryPerformance as _calculateInventoryPerformance,
 } from "./utils/cube";
-import { IBaseData, IParamsData, IScorecardData } from "@shared/models";
-import { ICallableRequest, ICallableResponse } from "@shared/models/functions";
+import { getJsonData, processJsonData } from "./utils/file";
+
 
 export const getCubeData = functions.https.onCall<ICallableRequest>(
   async (req): Promise<ICallableResponse> => {

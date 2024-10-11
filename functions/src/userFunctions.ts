@@ -1,5 +1,5 @@
-import { auth } from "firebase-functions/v1";
 import * as admin from "firebase-admin";
+import { auth } from "firebase-functions/v1";
 
 export const createUserDocument = auth.user().onCreate(async (user) => {
   const { uid, email } = user;

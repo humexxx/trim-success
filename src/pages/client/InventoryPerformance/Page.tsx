@@ -1,11 +1,13 @@
-import { PageHeader } from "src/components";
-import { useInventoryPerformance } from "./hooks";
-import { Alert } from "@mui/material";
 import { useEffect, useState } from "react";
+
+import { Alert } from "@mui/material";
 import { IInventoryPerformanceData } from "@shared/models";
-import { getError } from "src/utils";
-import { Table } from "./components";
+import { PageHeader } from "src/components";
 import { useCube } from "src/context/cube";
+import { getError } from "src/utils";
+
+import { Table } from "./components";
+import { useInventoryPerformance } from "./hooks";
 
 const Page = () => {
   const [data, setData] = useState<IInventoryPerformanceData>();

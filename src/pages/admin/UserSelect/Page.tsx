@@ -1,7 +1,9 @@
-import { useDocumentMetadata } from "src/hooks";
-import { AdminRoute, PageHeader } from "src/components";
-import { AdminClientSelector } from "./components";
 import { Box } from "@mui/material";
+import { AdminRoute, PageHeader } from "src/components";
+import { useDocumentMetadata } from "src/hooks";
+
+import { AdminClientSelector } from "./components";
+
 
 export default function Page() {
   useDocumentMetadata("Seleccionar Usuario - Trim Success");

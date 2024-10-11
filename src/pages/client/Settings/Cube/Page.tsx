@@ -1,8 +1,9 @@
 import { Box } from "@mui/material";
-import { useDocumentMetadata } from "src/hooks";
-import { Columns, Drivers } from "./components";
 import { COLUMNS } from "@shared/consts";
 import { useCube } from "src/context/cube";
+import { useDocumentMetadata } from "src/hooks";
+
+import { Columns, Drivers } from "./components";
 
 const Page = () => {
   useDocumentMetadata("Configuracion Cube - Trim Success");

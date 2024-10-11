@@ -29,5 +29,22 @@ module.exports = {
     "import/no-unresolved": "off",
     "require-jsdoc": "off",
     "@typescript-eslint/no-non-null-assertion": "off",
+
+    "import/order": [
+      "error",
+      {
+        groups: [["builtin", "external", "internal"]],
+        pathGroups: [
+          {
+            pattern: "react",
+            group: "builtin",
+            position: "before",
+          },
+        ],
+        pathGroupsExcludedImportTypes: ["builtin"],
+        alphabetize: { order: "asc", caseInsensitive: true },
+        "newlines-between": "always",
+      },
+    ],
   },
 };

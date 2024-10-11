@@ -1,5 +1,6 @@
-import { ThemeProvider } from "src/context/theme";
 import { AdminRoute } from "src/components";
+import { ThemeProvider } from "src/context/theme";
+
 import { BaseLayout } from "./BaseLayout";
 
 export default function AdminLayout() {

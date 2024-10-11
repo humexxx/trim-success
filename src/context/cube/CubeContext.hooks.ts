@@ -1,6 +1,7 @@
 import { useContext } from "react";
-import { CubeContext } from "./CubeProvider";
+
 import { CubeContextType } from "./CubeContext.types";
+import { CubeContext } from "./CubeProvider";
 
 export function useCube(): CubeContextType {
   const context = useContext(CubeContext);

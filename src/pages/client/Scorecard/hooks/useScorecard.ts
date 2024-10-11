@@ -1,10 +1,11 @@
-import { doc, getDoc, setDoc } from "firebase/firestore";
-import { httpsCallable, HttpsCallableResult } from "firebase/functions";
 import { useCallback, useState } from "react";
-import { useAuth } from "src/context/auth";
-import { firestore, functions } from "src/firebase";
+
 import { IScorecardData } from "@shared/models";
 import { ICallableRequest, ICallableResponse } from "@shared/models/functions";
+import { doc, getDoc, setDoc } from "firebase/firestore";
+import { httpsCallable, HttpsCallableResult } from "firebase/functions";
+import { useAuth } from "src/context/auth";
+import { firestore, functions } from "src/firebase";
 
 export interface UseScorecard {
   loading: boolean;

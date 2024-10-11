@@ -1,10 +1,11 @@
-import { doc, setDoc } from "firebase/firestore";
 import { useCallback, useState } from "react";
+
+import { IBaseData } from "@shared/models";
+import { ICallableRequest, ICallableResponse } from "@shared/models/functions";
+import { doc, setDoc } from "firebase/firestore";
+import { httpsCallable, HttpsCallableResult } from "firebase/functions";
 import { useAuth } from "src/context/auth";
 import { firestore, functions } from "src/firebase";
-import { IBaseData } from "@shared/models";
-import { httpsCallable, HttpsCallableResult } from "firebase/functions";
-import { ICallableRequest, ICallableResponse } from "@shared/models/functions";
 
 export interface UseBaseData {
   loading: boolean;

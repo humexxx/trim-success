@@ -1,12 +1,12 @@
+import { Grid, TextField, Typography } from "@mui/material";
+import { IParamsData } from "@shared/models";
 import {
   Control,
   FieldErrors,
   useFieldArray,
   UseFormRegister,
 } from "react-hook-form";
-import { Grid, TextField, Typography } from "@mui/material";
 import { CurrencyField, PercentageField } from "src/components/form";
-import { IParamsData } from "@shared/models";
 
 interface Props {
   register: UseFormRegister<Omit<IParamsData, "drivers" | "categories">>;

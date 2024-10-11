@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+
 import {
   Autocomplete,
   Box,
@@ -6,12 +7,13 @@ import {
   CircularProgress,
   TextField,
 } from "@mui/material";
-import { useAuth } from "src/context/auth";
 import { IUser } from "@shared/models";
 import { useNavigate } from "react-router-dom";
-import { useUsers } from "../hooks";
-import { useLocalStorage } from "src/hooks";
 import { LOCAL_STORAGE_KEYS } from "src/consts";
+import { useAuth } from "src/context/auth";
+import { useLocalStorage } from "src/hooks";
+
+import { useUsers } from "../hooks";
 
 const AdminClientSelector = () => {
   const { users, loading } = useUsers();

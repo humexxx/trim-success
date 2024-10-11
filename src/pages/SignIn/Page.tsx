@@ -4,13 +4,14 @@ import {
   browserLocalPersistence,
   browserSessionPersistence,
 } from "firebase/auth";
-import { AutoLogRoute } from "src/components";
 import { useNavigate } from "react-router-dom";
-import { useDocumentMetadata } from "src/hooks";
+import { AutoLogRoute } from "src/components";
 import { auth } from "src/firebase";
+import { useDocumentMetadata } from "src/hooks";
+import { getError } from "src/utils";
+
 import SignIn from "./components";
 import { SignInFormInputs } from "./components/SignIn";
-import { getError } from "src/utils";
 
 const SignInPage = () => {
   useDocumentMetadata("Sign In - Trim Success");

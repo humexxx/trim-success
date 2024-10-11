@@ -1,23 +1,27 @@
 import { forwardRef, useEffect, useImperativeHandle } from "react";
-import { useCube } from "src/context/cube";
-import { Alert, Box, CircularProgress, Grid, Typography } from "@mui/material";
+
 import { yupResolver } from "@hookform/resolvers/yup";
+import { Alert, Box, CircularProgress, Grid, Typography } from "@mui/material";
+import {
+  DEFAULT_GENERAL_PARAMS,
+  DEFAULT_INVENTORY_PARAMS,
+  DEFAULT_STORING_PARAMS,
+} from "@shared/consts";
+import { ICubeData, IParamsData } from "@shared/models";
 import { useForm } from "react-hook-form";
+import { useCube } from "src/context/cube";
+import { getError, getGeneralDataAsync } from "src/utils";
+
+import { FileResolution } from "./ImportDataPage";
 import {
   paramsSchema,
   GeneralParams,
   StoringParams,
   InventoryParams,
 } from "../../GeneralData";
-import { getError, getGeneralDataAsync } from "src/utils";
 import { useParamsData } from "../../GeneralData/hooks";
-import { ICubeData, IParamsData } from "@shared/models";
-import {
-  DEFAULT_GENERAL_PARAMS,
-  DEFAULT_INVENTORY_PARAMS,
-  DEFAULT_STORING_PARAMS,
-} from "@shared/consts";
-import { FileResolution } from "./ImportDataPage";
+
+
 
 interface Props {
   error: string;

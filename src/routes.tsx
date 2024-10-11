@@ -1,4 +1,6 @@
 import { createBrowserRouter, Navigate } from "react-router-dom";
+
+import { ClientLayout } from "./layouts";
 import {
   LandingPage,
   ErrorPage,
@@ -6,6 +8,7 @@ import {
   SignUpPage,
   ForgotPasswordPage,
 } from "./pages";
+import { TestPage, UserSelectPage } from "./pages/admin";
 import {
   AIPage,
   DashboardPage,
@@ -16,8 +19,6 @@ import {
   DataMiningPage,
   InventoryPerformancePage,
 } from "./pages/client";
-import { TestPage, UserSelectPage } from "./pages/admin";
-import { ClientLayout } from "./layouts";
 
 export const router = createBrowserRouter([
   {

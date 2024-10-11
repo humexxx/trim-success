@@ -1,8 +1,9 @@
-import { doc, setDoc } from "firebase/firestore";
 import { useCallback, useState } from "react";
+
+import { IParamsData } from "@shared/models";
+import { doc, setDoc } from "firebase/firestore";
 import { useAuth } from "src/context/auth";
 import { firestore } from "src/firebase";
-import { IParamsData } from "@shared/models";
 
 export interface UseParamsData {
   update: (data: IParamsData) => Promise<void>;

@@ -1,8 +1,9 @@
-import { Button, TextField } from "@mui/material";
-import { useDocumentMetadata } from "src/hooks";
 import { useState } from "react";
-import { functions } from "src/firebase";
+
+import { Button, TextField } from "@mui/material";
 import { httpsCallable } from "firebase/functions";
+import { functions } from "src/firebase";
+import { useDocumentMetadata } from "src/hooks";
 
 const Page = () => {
   useDocumentMetadata("AI - Trim Success");

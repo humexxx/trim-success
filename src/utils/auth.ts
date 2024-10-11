@@ -1,8 +1,9 @@
 import { FirebaseError } from "firebase/app";
 import { AuthErrorCodes } from "firebase/auth";
-import { auth } from "src/firebase";
-import { getError } from "./error";
 import { LOCAL_STORAGE_KEYS } from "src/consts";
+import { auth } from "src/firebase";
+
+import { getError } from "./error";
 
 export function handleAuthError(error: FirebaseError) {
   switch (error.code) {

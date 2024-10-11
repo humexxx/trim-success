@@ -1,9 +1,10 @@
+import { useEffect, useMemo, useState } from "react";
+
 import { Box } from "@mui/material";
 import { GridColDef } from "@mui/x-data-grid";
-import { useEffect, useMemo, useState } from "react";
-import { StripedDataGrid } from "src/components";
-import { formatCurrency } from "@shared/utils";
 import { IBaseData, IDriver } from "@shared/models";
+import { formatCurrency } from "@shared/utils";
+import { StripedDataGrid } from "src/components";
 
 interface Props {
   data?: IBaseData["categoriesData"];

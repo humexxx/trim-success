@@ -1,15 +1,16 @@
-import { AppBar, Toolbar, IconButton, Typography } from "@mui/material";
-import { useThemeContext } from "src/context/theme";
-import { auth } from "src/firebase";
-import { useNavigate } from "react-router-dom";
-import MenuIcon from "@mui/icons-material/Menu";
 import Brightness4Icon from "@mui/icons-material/Brightness4";
 import Brightness7Icon from "@mui/icons-material/Brightness7";
 import LogoutIcon from "@mui/icons-material/Logout";
+import MenuIcon from "@mui/icons-material/Menu";
+import { AppBar, Toolbar, IconButton, Typography } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
-import { DRAWER_WIDTH } from "./Drawer";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "src/context/auth";
+import { useThemeContext } from "src/context/theme";
+import { auth } from "src/firebase";
 import { logout } from "src/utils";
+
+import { DRAWER_WIDTH } from "./Drawer";
 
 interface Props {
   handleDrawerToggle: () => void;

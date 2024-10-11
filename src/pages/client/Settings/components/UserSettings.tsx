@@ -1,20 +1,21 @@
 import { useEffect, useState } from "react";
-import Avatar from "@mui/material/Avatar";
-import TextField from "@mui/material/TextField";
-import Box from "@mui/material/Box";
-import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-import Typography from "@mui/material/Typography";
-import { LoadingButton } from "@mui/lab";
-import { useForm, Controller, SubmitHandler } from "react-hook-form";
-import * as yup from "yup";
+
 import { yupResolver } from "@hookform/resolvers/yup";
-import { Container } from "@mui/material";
-import { PhoneField } from "src/components/form";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import SaveIcon from "@mui/icons-material/Save";
+import { LoadingButton } from "@mui/lab";
+import { Container } from "@mui/material";
+import Avatar from "@mui/material/Avatar";
+import Box from "@mui/material/Box";
+import TextField from "@mui/material/TextField";
+import Typography from "@mui/material/Typography";
 import { doc, getDoc, setDoc } from "firebase/firestore";
-import { firestore } from "src/firebase";
+import { useForm, Controller, SubmitHandler } from "react-hook-form";
+import { PhoneField } from "src/components/form";
 import { useAuth } from "src/context/auth";
+import { firestore } from "src/firebase";
 import { useDocumentMetadata } from "src/hooks";
+import * as yup from "yup";
 
 const schema = yup.object().shape({
   name: yup.string().required("Nombre requerido"),

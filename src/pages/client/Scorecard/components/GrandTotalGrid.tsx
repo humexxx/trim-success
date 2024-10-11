@@ -1,8 +1,9 @@
-import { GridColDef } from "@mui/x-data-grid";
 import { useMemo } from "react";
-import { TotalGrid } from "src/components";
+
+import { GridColDef } from "@mui/x-data-grid";
 import { IScorecardData } from "@shared/models";
 import { formatCurrency } from "@shared/utils";
+import { TotalGrid } from "src/components";
 
 interface Props {
   data?: IScorecardData;

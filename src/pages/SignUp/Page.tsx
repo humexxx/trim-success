@@ -6,11 +6,13 @@ import {
 } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import { AutoLogRoute } from "src/components";
-import { useDocumentMetadata } from "src/hooks";
 import { auth } from "src/firebase";
+import { useDocumentMetadata } from "src/hooks";
+import { getError } from "src/utils";
+
 import SignUp from "./components";
 import { SignUpFormInputs } from "./components/SignUp";
-import { getError } from "src/utils";
+
 
 const Page = () => {
   useDocumentMetadata("Sign Up - Trim Success");

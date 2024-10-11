@@ -1,10 +1,12 @@
-import { ThemeProvider } from "src/context/theme";
 import { useCallback } from "react";
+
 import { useNavigate } from "react-router-dom";
 import { PrivateRoute } from "src/components";
-import { CubeProvider } from "src/context/cube";
-import { BaseLayout } from "./BaseLayout";
 import { useAuth } from "src/context/auth";
+import { CubeProvider } from "src/context/cube";
+import { ThemeProvider } from "src/context/theme";
+
+import { BaseLayout } from "./BaseLayout";
 
 export default function ClientLayout() {
   const navigate = useNavigate();

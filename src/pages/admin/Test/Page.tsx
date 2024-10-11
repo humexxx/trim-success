@@ -1,13 +1,14 @@
-import { Grid } from "@mui/material";
-import { AdminRoute, CardButton, PageHeader } from "src/components";
+import { useState } from "react";
+
 import Filter1OutlinedIcon from "@mui/icons-material/Filter1Outlined";
 import Filter2OutlinedIcon from "@mui/icons-material/Filter2Outlined";
 import Filter3OutlinedIcon from "@mui/icons-material/Filter3Outlined";
-import { useInventoryPerformance } from "src/pages/client/InventoryPerformance/hooks";
-import { useState } from "react";
-import { getError } from "src/utils";
-import { useScorecard } from "src/pages/client/Scorecard/hooks";
+import { Grid } from "@mui/material";
+import { AdminRoute, CardButton, PageHeader } from "src/components";
 import { useBaseData } from "src/pages/client/DataMining/hooks";
+import { useInventoryPerformance } from "src/pages/client/InventoryPerformance/hooks";
+import { useScorecard } from "src/pages/client/Scorecard/hooks";
+import { getError } from "src/utils";
 
 const Page = () => {
   const [error, setError] = useState("");

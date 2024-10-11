@@ -1,3 +1,5 @@
+import { useEffect, useMemo, useState } from "react";
+
 import {
   Alert,
   Box,
@@ -5,10 +7,10 @@ import {
   Typography,
   useTheme,
 } from "@mui/material";
-import { useEffect, useMemo, useState } from "react";
-import { getColsAndRowsAsync } from "src/utils";
 import { StripedDataGrid } from "src/components";
 import { useCube } from "src/context/cube";
+import { getColsAndRowsAsync } from "src/utils";
+
 import { FileResolution } from "./ImportDataPage";
 
 const hexToRgb = (hex: string) => {

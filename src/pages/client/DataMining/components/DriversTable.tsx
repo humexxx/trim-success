@@ -1,7 +1,8 @@
-import { GridColDef } from "@mui/x-data-grid";
 import { useMemo } from "react";
-import { StripedDataGrid } from "src/components";
+
+import { GridColDef } from "@mui/x-data-grid";
 import { IBaseData } from "@shared/models";
+import { StripedDataGrid } from "src/components";
 
 interface Props {
   data?: IBaseData["driversData"];

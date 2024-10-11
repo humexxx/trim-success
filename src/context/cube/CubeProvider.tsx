@@ -5,15 +5,17 @@ import {
   useEffect,
   useState,
 } from "react";
-import { CubeContextType } from "./CubeContext.types";
-import { useAuth } from "../auth";
-import { ICubeData } from "@shared/models";
-import { functions, storage } from "src/firebase";
-import { httpsCallable } from "firebase/functions";
-import { GlobalLoader } from "src/components";
-import { listAll, getBlob, ref } from "firebase/storage";
+
 import { STORAGE_PATH } from "@shared/consts";
+import { ICubeData } from "@shared/models";
+import { httpsCallable } from "firebase/functions";
+import { listAll, getBlob, ref } from "firebase/storage";
+import { GlobalLoader } from "src/components";
 import { LOCAL_STORAGE_KEYS } from "src/consts";
+import { functions, storage } from "src/firebase";
+
+import { useAuth } from "../auth";
+import { CubeContextType } from "./CubeContext.types";
 
 export const CubeContext = createContext<CubeContextType | undefined>(
   undefined
