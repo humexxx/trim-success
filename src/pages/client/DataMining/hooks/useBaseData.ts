@@ -47,12 +47,10 @@ function useBaseData(): UseBaseData {
       ICallableRequest,
       ICallableResponse
     >(functions, "calculateDataMining");
-    const response = await calculateDataMining({
-      uid: isAdmin ? customUser!.uid : currentUser!.uid,
-    });
+    const response = await calculateDataMining();
     setLoading(false);
     return response;
-  }, [currentUser, customUser, isAdmin]);
+  }, []);
 
   return { loading, error, update, calculate };
 }

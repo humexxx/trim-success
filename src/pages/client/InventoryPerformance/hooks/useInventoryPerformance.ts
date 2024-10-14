@@ -43,12 +43,10 @@ function useInventoryPerformance(): UseInventoryPerformance {
       ICallableRequest,
       ICallableResponse
     >(functions, "calculateInventoryPerformance");
-    const response = await calculateInventoryPerformance({
-      uid: isAdmin ? customUser!.uid : currentUser!.uid,
-    });
+    const response = await calculateInventoryPerformance();
     setLoading(false);
     return response;
-  }, [currentUser, customUser, isAdmin]);
+  }, []);
 
   return { get, calculate, loading };
 }

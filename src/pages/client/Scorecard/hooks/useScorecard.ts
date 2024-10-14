@@ -57,12 +57,10 @@ function useScorecard(): UseScorecard {
       ICallableRequest,
       ICallableResponse
     >(functions, "calculateScorecardData");
-    const response = await calculateScorecardData({
-      uid: isAdmin ? customUser!.uid : currentUser!.uid,
-    });
+    const response = await calculateScorecardData();
     setLoading(false);
     return response;
-  }, [currentUser, customUser, isAdmin]);
+  }, []);
 
   return { loading, get, update, calculate };
 }

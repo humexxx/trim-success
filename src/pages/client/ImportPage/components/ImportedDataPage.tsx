@@ -100,7 +100,7 @@ const ImportedDataPage = () => {
             <Typography variant="body1" color="text.primary">
               {file.name}
             </Typography>
-            {isAdmin && (
+            {isAdmin && file.blob.type !== EFileType.JSON && (
               <Button
                 startIcon={<Delete />}
                 variant={"contained"}

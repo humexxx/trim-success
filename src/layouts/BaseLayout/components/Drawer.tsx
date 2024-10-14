@@ -69,6 +69,17 @@ function getRoutes(isAdmin: boolean) {
       path: "/client/inventory-performance",
       requireInitialData: true,
     },
+  ].filter((route) => (route.admin ? isAdmin : true));
+}
+
+function getSecondaryRoutes(isAdmin: boolean) {
+  return [
+    {
+      text: "IA",
+      icon: <SmartToyIcon />,
+      path: "/client/ai",
+      requireInitialData: true,
+    },
     {
       admin: true,
       text: "Testing",
@@ -76,12 +87,6 @@ function getRoutes(isAdmin: boolean) {
       icon: <SpeedIcon />,
       requireInitialData: true,
       path: "/client/testing",
-    },
-    {
-      text: "IA",
-      icon: <SmartToyIcon />,
-      path: "/client/ai",
-      requireInitialData: true,
     },
   ].filter((route) => (route.admin ? isAdmin : true));
 }
@@ -92,6 +97,7 @@ const Drawer = () => {
   const location = useLocation();
 
   const routes = useMemo(() => getRoutes(isAdmin), [isAdmin]);
+  const secondaryRoutes = useMemo(() => getSecondaryRoutes(isAdmin), [isAdmin]);
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
@@ -118,6 +124,25 @@ const Drawer = () => {
                   (requireInitialData && !hasInitialData) ||
                   (requireContextUid && isAdmin && !customUser?.uid)
                 }
+              >
+                <ListItemIcon>{icon}</ListItemIcon>
+                <ListItemText primary={text} secondary={hint} />
+              </ListItemButton>
+            </ListItem>
+          )
+        )}
+      </List>
+      <List>
+        {secondaryRoutes.map(
+          ({ text, hint, icon, path, requireInitialData }) => (
+            <ListItem key={text}>
+              <ListItemButton
+                sx={{ borderRadius: 2 }}
+                selected={location.pathname.includes(path)}
+                component={NavLink}
+                to={path}
+                unstable_viewTransition
+                disabled={requireInitialData && !hasInitialData}
               >
                 <ListItemIcon>{icon}</ListItemIcon>
                 <ListItemText primary={text} secondary={hint} />
