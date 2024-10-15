@@ -37,22 +37,17 @@ export const removeCubeData = functions.https.onCall<ICallableRequest>(
     }
 
     try {
-      console.log("Removing cube data for user", uid);
-
       const bucket = admin.storage().bucket();
       await bucket.deleteFiles({ prefix: `cubes/${uid}` });
-      console.log("Deleted files from storage");
 
       const collection = await admin
         .firestore()
         .collection(`settings/${uid}/data`)
         .get();
       collection.forEach((doc) => doc.ref.delete());
-      console.log("Deleted settings from firestore");
 
       return { success: true };
     } catch (error) {
-      console.log(error);
       return { error: "Something went wrong" };
     }
   }

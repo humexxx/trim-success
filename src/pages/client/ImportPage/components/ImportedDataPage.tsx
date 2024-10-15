@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 
 import { Delete } from "@mui/icons-material";
+import SubdirectoryArrowRightIcon from "@mui/icons-material/SubdirectoryArrowRight";
 import {
   Alert,
   Button,
@@ -93,9 +94,12 @@ const ImportedDataPage = () => {
             gap={2}
             alignItems={"center"}
           >
+            {file.blob.type === EFileType.JSON && (
+              <SubdirectoryArrowRightIcon sx={{ ml: 2 }} />
+            )}
             <img
               src={file.blob.type === EFileType.JSON ? json : xls}
-              width={40}
+              width={file.blob.type === EFileType.JSON ? 30 : 40}
             />
             <Typography variant="body1" color="text.primary">
               {file.name}
