@@ -93,7 +93,7 @@ export const calculateDataMining = functions.https.onCall<ICallableRequest>(
 
       await admin
         .firestore()
-        .doc(`settings/${uid}/data/base`)
+        .doc(FIRESTORE_PATHS.SETTINGS.BASE(uid))
         .set({
           categoriesData: {
             rows: categoriesDataRows,
@@ -117,14 +117,14 @@ export const calculateScorecardData = functions.https.onCall<ICallableRequest>(
 
     const paramsData = await admin
       .firestore()
-      .doc(`settings/${uid}/data/params`)
+      .doc(FIRESTORE_PATHS.SETTINGS.PARAMS(uid))
       .get();
     if (!paramsData.exists)
       return { success: false, error: "Params data not found." };
 
     const baseData = await admin
       .firestore()
-      .doc(`settings/${uid}/data/base`)
+      .doc(FIRESTORE_PATHS.SETTINGS.BASE(uid))
       .get();
     if (!baseData.exists)
       return { success: false, error: "Base data not found." };
@@ -137,7 +137,7 @@ export const calculateScorecardData = functions.https.onCall<ICallableRequest>(
 
       await admin
         .firestore()
-        .doc(`settings/${uid}/data/scorecard`)
+        .doc(FIRESTORE_PATHS.SETTINGS.SCORECARD(uid))
         .set({
           ...data,
         });
@@ -156,21 +156,21 @@ export const calculateInventoryPerformance =
 
       const paramsData = await admin
         .firestore()
-        .doc(`settings/${uid}/data/params`)
+        .doc(FIRESTORE_PATHS.SETTINGS.PARAMS(uid))
         .get();
       if (!paramsData.exists)
         return { success: false, error: "Params data not found." };
 
       const baseData = await admin
         .firestore()
-        .doc(`settings/${uid}/data/base`)
+        .doc(FIRESTORE_PATHS.SETTINGS.BASE(uid))
         .get();
       if (!baseData.exists)
         return { success: false, error: "Base data not found." };
 
       const scorecardData = await admin
         .firestore()
-        .doc(`settings/${uid}/data/scorecard`)
+        .doc(FIRESTORE_PATHS.SETTINGS.SCORECARD(uid))
         .get();
       if (!scorecardData.exists)
         return { success: false, error: "Scorecard data not found." };
@@ -184,7 +184,7 @@ export const calculateInventoryPerformance =
 
         await admin
           .firestore()
-          .doc(`settings/${uid}/data/inventoryPerformance`)
+          .doc(FIRESTORE_PATHS.SETTINGS.INVENTORY_PERFORMANCE(uid))
           .set({
             ...data,
           });

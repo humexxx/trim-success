@@ -1,10 +1,10 @@
+import { FIRESTORE_PATHS } from "@shared/consts";
 import { IBaseData, IParamsData } from "@shared/models";
 import { ICallableRequest, ICallableResponse } from "@shared/models/functions";
 import * as admin from "firebase-admin";
 import * as functions from "firebase-functions";
 
 import { generateGeneralReport as _generateGeneralReport } from "./utils/reports";
-
 
 export const generateGeneralReport = functions.https.onCall<ICallableRequest>(
   async (req): Promise<ICallableResponse<string>> => {
@@ -14,14 +14,14 @@ export const generateGeneralReport = functions.https.onCall<ICallableRequest>(
     try {
       const paramsData = await admin
         .firestore()
-        .doc(`settings/${uid}/data/params`)
+        .doc(FIRESTORE_PATHS.SETTINGS.PARAMS(uid))
         .get();
       if (!paramsData.exists)
         return { success: false, error: "Params data not found." };
 
       const baseData = await admin
         .firestore()
-        .doc(`settings/${uid}/data/base`)
+        .doc(FIRESTORE_PATHS.SETTINGS.BASE(uid))
         .get();
       if (!baseData.exists)
         return { success: false, error: "Base data not found." };

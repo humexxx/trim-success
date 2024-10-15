@@ -1,3 +1,4 @@
+import { FIRESTORE_PATHS, JSON_FILE_NAME, STORAGE_PATH } from "@shared/consts";
 import { ICallableRequest } from "@shared/models/functions";
 import * as admin from "firebase-admin";
 import * as functions from "firebase-functions";
@@ -38,11 +39,11 @@ export const removeCubeData = functions.https.onCall<ICallableRequest>(
 
     try {
       const bucket = admin.storage().bucket();
-      await bucket.deleteFiles({ prefix: `cubes/${uid}` });
+      await bucket.deleteFiles({ prefix: `${STORAGE_PATH}/${uid}` });
 
       const collection = await admin
         .firestore()
-        .collection(`settings/${uid}/data`)
+        .collection(FIRESTORE_PATHS.SETTINGS.INDEX(uid))
         .get();
       collection.forEach((doc) => doc.ref.delete());
 

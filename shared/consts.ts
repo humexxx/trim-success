@@ -9,11 +9,12 @@ import {
 import { EColumnType, EDriverType } from "./enums";
 import { getColumnIndex } from "./utils";
 
-export const STORAGE_PATH = "cubes/";
+export const STORAGE_PATH = "cubes";
 export const JSON_FILE_NAME = "parsedData.json";
 
 export const FIRESTORE_PATHS = {
   SETTINGS: {
+    INDEX: (uid: string) => `settings/${uid}/data`,
     BASE: (uid: string) => `settings/${uid}/data/base`,
     SCORECARD: (uid: string) => `settings/${uid}/data/scorecard`,
     INVENTORY_PERFORMANCE: (uid: string) =>

@@ -4,7 +4,7 @@ import { FIRESTORE_PATHS } from "@shared/consts";
 import { IScorecardData } from "@shared/models";
 import { ICallableRequest, ICallableResponse } from "@shared/models/functions";
 import { doc, getDoc, setDoc } from "firebase/firestore";
-import { httpsCallable, HttpsCallableResult } from "firebase/functions";
+import { httpsCallable } from "firebase/functions";
 import { useAuth } from "src/context/auth";
 import { firestore, functions } from "src/firebase";
 import { getError } from "src/utils";
@@ -13,7 +13,7 @@ export interface UseScorecard {
   loading: boolean;
   get: () => Promise<IScorecardData>;
   update: (data: IScorecardData) => Promise<void>;
-  calculate: () => Promise<HttpsCallableResult<ICallableResponse> | null>;
+  calculate: () => Promise<ICallableResponse>;
   error: string | null;
 }
 
@@ -68,11 +68,12 @@ function useScorecard(): UseScorecard {
         uid: isAdmin ? customUser!.uid! : currentUser!.uid,
       });
       setLoading(false);
-      return response;
-    } catch (error) {
-      setError(getError(error));
+      return response.data;
+    } catch (e) {
+      const error = getError(e);
+      setError(error);
       setLoading(false);
-      return null;
+      return { success: false, error };
     }
   }, [currentUser, customUser, isAdmin]);
 

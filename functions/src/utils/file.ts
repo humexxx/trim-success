@@ -1,8 +1,7 @@
-import { JSON_FILE_NAME } from "@shared/consts";
+import { JSON_FILE_NAME, STORAGE_PATH } from "@shared/consts";
 import * as admin from "firebase-admin";
 
 const storage = admin.storage();
-const STORAGE_PATH = "cubes";
 
 export async function getJsonData(uid: string): Promise<any> {
   const folderRef = `${STORAGE_PATH}/${uid}/`;

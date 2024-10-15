@@ -43,7 +43,7 @@ const FileUpload = ({ handleOnFinish, fileResolution }: Props) => {
     });
     const storageRef = ref(
       storage,
-      `${STORAGE_PATH}${uid}/${JSON_FILE_NAME}` // Puedes ajustar el nombre y la ruta según lo necesites
+      `${STORAGE_PATH}/${uid}/${JSON_FILE_NAME}` // Puedes ajustar el nombre y la ruta según lo necesites
     );
     const snapshot = await uploadBytes(storageRef, jsonBlob);
     return snapshot;
@@ -61,7 +61,7 @@ const FileUpload = ({ handleOnFinish, fileResolution }: Props) => {
       const uid = isAdmin ? customUser!.uid : currentUser!.uid;
       const storageRef = ref(
         storage,
-        `${STORAGE_PATH}${uid}/${fileResolution.file.name}`
+        `${STORAGE_PATH}/${uid}/${fileResolution.file.name}`
       );
       const snapshot = await uploadBytes(storageRef, fileResolution.file);
       // getDownloadURL(snapshot.ref).then((downloadURL) => {
@@ -101,9 +101,9 @@ const FileUpload = ({ handleOnFinish, fileResolution }: Props) => {
       }));
 
       const response = await scorecard.calculate();
-      const data = response.data as { error?: string };
-      if ("error" in data) {
-        throw new Error(data.error);
+
+      if (!response.success) {
+        throw new Error(response.error);
       }
 
       await cube.reloadCubeData();
