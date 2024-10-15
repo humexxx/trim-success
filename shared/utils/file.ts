@@ -17,7 +17,7 @@ export function getRowValue(
 ): string | number | string[] | number[] {
   const values = Object.values(row);
   if (Array.isArray(index)) {
-    return index.map((i) => values[i + 1]);
+    return index.map((i) => values[i]);
   }
-  return values[index + 1];
+  return values[index];
 }

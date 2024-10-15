@@ -1,21 +1,19 @@
 import { useCallback, useState } from "react";
 
+import { FIRESTORE_PATHS } from "@shared/consts";
 import { IBaseData } from "@shared/models";
 import { ICallableRequest, ICallableResponse } from "@shared/models/functions";
 import { doc, setDoc } from "firebase/firestore";
 import { httpsCallable, HttpsCallableResult } from "firebase/functions";
 import { useAuth } from "src/context/auth";
 import { firestore, functions } from "src/firebase";
+import { getError } from "src/utils";
 
 export interface UseBaseData {
   loading: boolean;
   error: string | null;
   update: (data: IBaseData) => Promise<void>;
-  calculate: () => Promise<HttpsCallableResult<ICallableResponse>>;
-}
-
-function getDocumentPath(uid: string) {
-  return `settings/${uid}/data/base`;
+  calculate: () => Promise<HttpsCallableResult<ICallableResponse> | null>;
 }
 
 function useBaseData(): UseBaseData {
@@ -25,11 +23,14 @@ function useBaseData(): UseBaseData {
 
   const update = useCallback(
     async (data: IBaseData) => {
+      setError(null);
       setLoading(true);
       try {
         const docRef = doc(
           firestore,
-          getDocumentPath(isAdmin ? customUser!.uid! : currentUser!.uid)
+          FIRESTORE_PATHS.SETTINGS.BASE(
+            isAdmin ? customUser!.uid! : currentUser!.uid
+          )
         );
         await setDoc(docRef, { ...data });
       } catch (error: any) {
@@ -42,15 +43,24 @@ function useBaseData(): UseBaseData {
   );
 
   const calculate = useCallback(async () => {
+    setError(null);
     setLoading(true);
-    const calculateDataMining = httpsCallable<
-      ICallableRequest,
-      ICallableResponse
-    >(functions, "calculateDataMining");
-    const response = await calculateDataMining();
-    setLoading(false);
-    return response;
-  }, []);
+    try {
+      const calculateDataMining = httpsCallable<
+        ICallableRequest,
+        ICallableResponse
+      >(functions, "calculateDataMining");
+      const response = await calculateDataMining({
+        uid: isAdmin ? customUser!.uid! : currentUser!.uid,
+      });
+      setLoading(false);
+      return response;
+    } catch (error) {
+      setLoading(false);
+      setError(getError(error));
+      return null;
+    }
+  }, [currentUser, customUser, isAdmin]);
 
   return { loading, error, update, calculate };
 }

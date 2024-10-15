@@ -1,4 +1,3 @@
-import { EColumnType, EDriverType } from "./enums";
 import {
   IColumn,
   IDriver,
@@ -6,10 +5,22 @@ import {
   IInventoryParamsData,
   IStoringParamsData,
 } from "@shared/models";
-import { getColumnIndex } from "@shared/utils";
+
+import { EColumnType, EDriverType } from "./enums";
+import { getColumnIndex } from "./utils";
 
 export const STORAGE_PATH = "cubes/";
 export const JSON_FILE_NAME = "parsedData.json";
+
+export const FIRESTORE_PATHS = {
+  SETTINGS: {
+    BASE: (uid: string) => `settings/${uid}/data/base`,
+    SCORECARD: (uid: string) => `settings/${uid}/data/scorecard`,
+    INVENTORY_PERFORMANCE: (uid: string) =>
+      `settings/${uid}/data/inventoryPerformance`,
+    PARAMS: (uid: string) => `settings/${uid}/data/params`,
+  },
+};
 
 export const COLUMNS: IColumn[] = [
   { code: EColumnType.SKU, name: "Codigo Producto", index: 0 },

@@ -1,31 +1,34 @@
 import { useCallback, useState } from "react";
 
+import { FIRESTORE_PATHS } from "@shared/consts";
 import { IInventoryPerformanceData } from "@shared/models";
 import { ICallableRequest, ICallableResponse } from "@shared/models/functions";
 import { doc, getDoc } from "firebase/firestore";
 import { httpsCallable, HttpsCallableResult } from "firebase/functions";
 import { useAuth } from "src/context/auth";
 import { firestore, functions } from "src/firebase";
+import { getError } from "src/utils";
 
 export interface UseInventoryPerformance {
   get: () => Promise<IInventoryPerformanceData>;
-  calculate: () => Promise<HttpsCallableResult<ICallableResponse>>;
+  calculate: () => Promise<HttpsCallableResult<ICallableResponse> | null>;
   loading: boolean;
-}
-
-function getDocumentPath(uid: string) {
-  return `settings/${uid}/data/inventoryPerformance`;
+  error: string | null;
 }
 
 function useInventoryPerformance(): UseInventoryPerformance {
   const { currentUser, isAdmin, customUser } = useAuth();
   const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
 
   const get = useCallback(async (): Promise<IInventoryPerformanceData> => {
     setLoading(true);
+
     const docRef = doc(
       firestore,
-      getDocumentPath(isAdmin ? customUser!.uid : currentUser!.uid)
+      FIRESTORE_PATHS.SETTINGS.INVENTORY_PERFORMANCE(
+        isAdmin ? customUser!.uid : currentUser!.uid
+      )
     );
     const snap = await getDoc(docRef);
     if (!snap.exists()) {
@@ -38,17 +41,27 @@ function useInventoryPerformance(): UseInventoryPerformance {
   }, [currentUser, customUser, isAdmin]);
 
   const calculate = useCallback(async () => {
+    setError(null);
     setLoading(true);
-    const calculateInventoryPerformance = httpsCallable<
-      ICallableRequest,
-      ICallableResponse
-    >(functions, "calculateInventoryPerformance");
-    const response = await calculateInventoryPerformance();
-    setLoading(false);
-    return response;
-  }, []);
 
-  return { get, calculate, loading };
+    try {
+      const calculateInventoryPerformance = httpsCallable<
+        ICallableRequest,
+        ICallableResponse
+      >(functions, "calculateInventoryPerformance");
+      const response = await calculateInventoryPerformance({
+        uid: isAdmin ? customUser!.uid! : currentUser!.uid,
+      });
+      setLoading(false);
+      return response;
+    } catch (error) {
+      setError(getError(error));
+      setLoading(false);
+      return null;
+    }
+  }, [currentUser, customUser, isAdmin]);
+
+  return { get, calculate, loading, error };
 }
 
 export default useInventoryPerformance;

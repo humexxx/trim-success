@@ -16,9 +16,17 @@ type Props = {
   icon: ReactNode;
   onClick: () => void;
   loading?: boolean;
+  error?: string | null;
 };
 
-const CardButton = ({ icon, description, label, onClick, loading }: Props) => {
+const CardButton = ({
+  icon,
+  description,
+  label,
+  onClick,
+  loading,
+  error,
+}: Props) => {
   return (
     <Card
       sx={{
@@ -39,6 +47,23 @@ const CardButton = ({ icon, description, label, onClick, loading }: Props) => {
           sx={{ position: "absolute", top: 16, right: 16 }}
           size={25}
         />
+      )}
+      {error && (
+        <Box
+          sx={{
+            position: "absolute",
+            top: 16,
+            right: 16,
+          }}
+        >
+          <Typography
+            variant="caption"
+            color="error"
+            sx={{ textTransform: "none" }}
+          >
+            {error}
+          </Typography>
+        </Box>
       )}
       <CardContent
         sx={{

@@ -1,5 +1,6 @@
 import { useCallback, useState } from "react";
 
+import { FIRESTORE_PATHS } from "@shared/consts";
 import { IParamsData } from "@shared/models";
 import { doc, setDoc } from "firebase/firestore";
 import { useAuth } from "src/context/auth";
@@ -9,10 +10,6 @@ export interface UseParamsData {
   update: (data: IParamsData) => Promise<void>;
   loading: boolean;
   error: string | null;
-}
-
-function getDocumentPath(uid: string) {
-  return `settings/${uid}/data/params`;
 }
 
 function useParamsData(): UseParamsData {
@@ -26,7 +23,9 @@ function useParamsData(): UseParamsData {
       try {
         const docRef = doc(
           firestore,
-          getDocumentPath(isAdmin ? customUser!.uid : currentUser!.uid)
+          FIRESTORE_PATHS.SETTINGS.PARAMS(
+            isAdmin ? customUser!.uid : currentUser!.uid
+          )
         );
         await setDoc(docRef, { ...data });
       } catch (error: any) {

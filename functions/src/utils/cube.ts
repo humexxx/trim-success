@@ -1,4 +1,3 @@
-import { COLUMNS } from "@shared/consts";
 import { EColumnType, EDriverType } from "@shared/enums";
 import {
   IDriver,
@@ -7,12 +6,7 @@ import {
   IScorecardData,
   IInventoryPerformanceData,
 } from "@shared/models";
-import { getRowValue } from "@shared/utils";
-
-function getColumnIndex(column: EColumnType): number | undefined {
-  const col = COLUMNS.find((col) => col.code === column);
-  return col?.index;
-}
+import { getColumnIndex, getRowValue } from "@shared/utils";
 
 export function calculateCategoriesDataRows(
   rows: any[],
@@ -27,6 +21,7 @@ export function calculateCategoriesDataRows(
 
   for (let i = 0; i < rows.length; i++) {
     const categoryValue = getRowValue(rows[i], category.index) as string;
+
     if (!response[categoryValue]) {
       response[categoryValue] = {
         category: categoryValue,

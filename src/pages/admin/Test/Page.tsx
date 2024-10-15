@@ -1,5 +1,3 @@
-import { useState } from "react";
-
 import Filter1OutlinedIcon from "@mui/icons-material/Filter1Outlined";
 import Filter2OutlinedIcon from "@mui/icons-material/Filter2Outlined";
 import Filter3OutlinedIcon from "@mui/icons-material/Filter3Outlined";
@@ -8,23 +6,15 @@ import { AdminRoute, CardButton, PageHeader } from "src/components";
 import { useBaseData } from "src/pages/client/DataMining/hooks";
 import { useInventoryPerformance } from "src/pages/client/InventoryPerformance/hooks";
 import { useScorecard } from "src/pages/client/Scorecard/hooks";
-import { getError } from "src/utils";
 
 const Page = () => {
-  const [error, setError] = useState("");
-
   const scorecard = useScorecard();
   const inventoryPerformance = useInventoryPerformance();
   const baseData = useBaseData();
 
   async function calculateInventoryPerformance() {
-    setError("");
-    try {
-      const response = await inventoryPerformance.calculate();
-      console.log(response);
-    } catch (error) {
-      setError(getError(error));
-    }
+    const response = await inventoryPerformance.calculate();
+    console.log(response);
   }
 
   return (
@@ -41,6 +31,7 @@ const Page = () => {
               description={"Calcular las metricas de categoria y de drivers."}
               onClick={baseData.calculate}
               loading={baseData.loading}
+              error={baseData.error}
             />
           </Grid>
           <Grid item xs={12} sm={12} md={6} lg={4}>
@@ -52,6 +43,7 @@ const Page = () => {
               }
               onClick={scorecard.calculate}
               loading={scorecard.loading}
+              error={scorecard.error}
             />
           </Grid>
           <Grid item xs={12} sm={12} md={6} lg={4}>
@@ -63,6 +55,7 @@ const Page = () => {
               }
               onClick={calculateInventoryPerformance}
               loading={inventoryPerformance.loading}
+              error={inventoryPerformance.error}
             />
           </Grid>
         </Grid>

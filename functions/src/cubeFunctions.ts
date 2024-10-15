@@ -1,3 +1,4 @@
+import { FIRESTORE_PATHS } from "@shared/consts";
 import { IBaseData, IParamsData, IScorecardData } from "@shared/models";
 import { ICallableRequest, ICallableResponse } from "@shared/models/functions";
 import * as admin from "firebase-admin";
@@ -12,7 +13,6 @@ import {
 } from "./utils/cube";
 import { getJsonData, processJsonData } from "./utils/file";
 
-
 export const getCubeData = functions.https.onCall<ICallableRequest>(
   async (req): Promise<ICallableResponse> => {
     if (!req.auth) return { success: false, error: "Not authenticated." };
@@ -20,14 +20,14 @@ export const getCubeData = functions.https.onCall<ICallableRequest>(
 
     const paramsData = await admin
       .firestore()
-      .doc(`settings/${uid}/data/params`)
+      .doc(FIRESTORE_PATHS.SETTINGS.PARAMS(uid))
       .get();
     if (!paramsData.exists)
       return { success: false, error: "Params data not found." };
 
     const baseData = await admin
       .firestore()
-      .doc(`settings/${uid}/data/base`)
+      .doc(FIRESTORE_PATHS.SETTINGS.BASE(uid))
       .get();
     if (!baseData.exists)
       return {
@@ -37,7 +37,7 @@ export const getCubeData = functions.https.onCall<ICallableRequest>(
 
     const scorecardData = await admin
       .firestore()
-      .doc(`settings/${uid}/data/scorecard`)
+      .doc(FIRESTORE_PATHS.SETTINGS.SCORECARD(uid))
       .get();
     if (!scorecardData.exists)
       return {
@@ -64,16 +64,13 @@ export const calculateDataMining = functions.https.onCall<ICallableRequest>(
 
     const paramsData = await admin
       .firestore()
-      .doc(`settings/${uid}/data/params`)
+      .doc(FIRESTORE_PATHS.SETTINGS.PARAMS(uid))
       .get();
     if (!paramsData.exists)
       return { success: false, error: "Params data not found." };
 
     try {
-      functions.logger.info("Generating JSON data");
       const jsonData = await getJsonData(uid);
-      functions.logger.info("JSON data generated");
-
       const { rows } = processJsonData(jsonData);
 
       const _paramsData = paramsData.data() as IParamsData;
