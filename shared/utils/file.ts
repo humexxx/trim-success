@@ -1,5 +1,7 @@
-import { COLUMNS } from "@shared/consts";
+import { COLUMNS, SYSTEM_COLUMNS } from "@shared/consts";
 import { EColumnType } from "@shared/enums";
+import { ESystemColumnType } from "@shared/enums/ESystemColumnType";
+import { IColumn } from "@shared/models";
 
 export function getColumnIndex(column: EColumnType): number | undefined {
   const col = COLUMNS.find((col) => col.code === column);
@@ -12,12 +14,27 @@ export function getColumnIndexRange(column: EColumnType): number[] | undefined {
 }
 
 export function getRowValue(
-  row: any[],
-  index: number | number[]
-): string | number | string[] | number[] {
+  row: Record<string, string | number>,
+  index: number
+): string | number {
   const values = Object.values(row);
-  if (Array.isArray(index)) {
-    return index.map((i) => values[i]);
-  }
   return values[index];
+}
+
+export function getRowValues(
+  row: Record<string, string | number>,
+  indexRange: number[]
+): (string | number)[] {
+  const values = Object.values(row);
+  return indexRange.map((i) => values[i]);
+}
+
+export function getColumn(
+  columnType: EColumnType | ESystemColumnType
+): IColumn {
+  if (Object.values(EColumnType).includes(columnType as EColumnType)) {
+    return COLUMNS.find((col) => col.code === columnType)!;
+  } else {
+    return SYSTEM_COLUMNS.find((col) => col.code === columnType)!;
+  }
 }

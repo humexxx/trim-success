@@ -150,6 +150,9 @@ export const calculateScorecardData = functions.https.onCall<ICallableRequest>(
 
 export const calculateInventoryPerformance =
   functions.https.onCall<ICallableRequest>(
+    {
+      memory: "1GiB",
+    },
     async (req): Promise<ICallableResponse> => {
       if (!req.auth) return { success: false, error: "Not authenticated." };
       const uid = req.auth.token.admin ? req.data.uid : req.auth?.uid;

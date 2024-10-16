@@ -6,8 +6,8 @@ import {
   IStoringParamsData,
 } from "@shared/models";
 
-import { EColumnType, EDriverType } from "./enums";
-import { getColumnIndex } from "./utils";
+import { EColumnType, EDriverType } from "../enums";
+import { getColumnIndex } from "../utils";
 
 export const STORAGE_PATH = "cubes";
 export const JSON_FILE_NAME = "parsedData.json";
@@ -304,3 +304,6 @@ export const DEFAULT_DRIVERS: IDriver[] = [
     miningLabel: "% Gross Margin",
   },
 ];
+
+export * from "./columns";
+export * from "./inventoryPerformance";

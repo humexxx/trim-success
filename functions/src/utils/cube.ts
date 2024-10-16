@@ -1,3 +1,4 @@
+import { DEFAULT_INVETORY_PERFORMANCE_METRICS } from "@shared/consts";
 import { EColumnType, EDriverType } from "@shared/enums";
 import {
   IDriver,
@@ -264,18 +265,10 @@ export function calculateInventoryPerformance(
   baseData: IBaseData,
   scorecard: IScorecardData
 ): IInventoryPerformanceData {
-  const DEFAULT_VALUES: { label: string; description: string }[] = [
-    {
-      label: "Tasa de Mantener el Inventario (ICR)",
-      description: "ICC / Inv Promedio",
-    },
-  ];
-
   const response: IInventoryPerformanceData = {
-    rows: DEFAULT_VALUES.map((value) => {
+    rows: DEFAULT_INVETORY_PERFORMANCE_METRICS.map((value) => {
       return {
-        label: value.label,
-        description: value.description,
+        ...value,
         ...categories.reduce(
           (acc, category) => {
             acc[category] =

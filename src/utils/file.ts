@@ -59,8 +59,8 @@ export async function getJsonDataFromWorkbookAsync(
   });
 }
 
-export function getColsAndRowsAsync(jsonData?: unknown[]): Promise<{
-  rows: string[];
+export function processJsonData(jsonData?: unknown[]): Promise<{
+  rows: { [key: string]: string | number }[];
   columns: string[];
 }> {
   if (!jsonData) throw new Error("No data found in the file.");

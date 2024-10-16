@@ -16,7 +16,7 @@ import { useCube } from "src/context/cube";
 import {
   getCategoriesDataRowsAsync,
   getCategoriesDataTotals,
-  getColsAndRowsAsync,
+  processJsonData,
   getDriversDataRows,
   getError,
 } from "src/utils";
@@ -74,7 +74,7 @@ const Page = () => {
       );
       const jsonData = await new Response(jsonFile!.blob).json();
 
-      const { rows: _rows, columns } = await getColsAndRowsAsync(jsonData);
+      const { rows: _rows, columns } = await processJsonData(jsonData);
       cube.setFileData({ rows: _rows, columns });
       rows = _rows;
     }

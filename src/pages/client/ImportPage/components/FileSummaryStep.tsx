@@ -9,7 +9,7 @@ import {
 } from "@mui/material";
 import { StripedDataGrid } from "src/components";
 import { useCube } from "src/context/cube";
-import { getColsAndRowsAsync } from "src/utils";
+import { processJsonData } from "src/utils";
 
 import { FileResolution } from "./ImportDataPage";
 
@@ -59,7 +59,7 @@ const FileSummary = ({
       setLoading(true);
       try {
         setProgressMessage("Obteniendo columnas y filas...");
-        const { columns, rows } = await getColsAndRowsAsync(
+        const { columns, rows } = await processJsonData(
           fileResolution.jsonData
         );
         cube.setFileData({ columns, rows });
