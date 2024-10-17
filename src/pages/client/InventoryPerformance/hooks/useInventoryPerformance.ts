@@ -11,7 +11,8 @@ import { getError } from "src/utils";
 
 export interface UseInventoryPerformance {
   get: () => Promise<IInventoryPerformanceData>;
-  calculate: () => Promise<HttpsCallableResult<ICallableResponse> | null>;
+  calculateInventoryPerformance: () => Promise<HttpsCallableResult<ICallableResponse> | null>;
+  calculateDataModelInventoryPerformance: () => Promise<HttpsCallableResult<ICallableResponse> | null>;
   loading: boolean;
   error: string | null;
 }
@@ -40,7 +41,7 @@ function useInventoryPerformance(): UseInventoryPerformance {
     return data;
   }, [currentUser, customUser, isAdmin]);
 
-  const calculate = useCallback(async () => {
+  const calculateInventoryPerformance = useCallback(async () => {
     setError(null);
     setLoading(true);
 
@@ -61,7 +62,34 @@ function useInventoryPerformance(): UseInventoryPerformance {
     }
   }, [currentUser, customUser, isAdmin]);
 
-  return { get, calculate, loading, error };
+  const calculateDataModelInventoryPerformance = useCallback(async () => {
+    setError(null);
+    setLoading(true);
+
+    try {
+      const calculateDataModelInventoryPerformance = httpsCallable<
+        ICallableRequest,
+        ICallableResponse
+      >(functions, "calculateDataModelInventoryPerformance");
+      const response = await calculateDataModelInventoryPerformance({
+        uid: isAdmin ? customUser!.uid! : currentUser!.uid,
+      });
+      setLoading(false);
+      return response;
+    } catch (error) {
+      setError(getError(error));
+      setLoading(false);
+      return null;
+    }
+  }, [currentUser, customUser, isAdmin]);
+
+  return {
+    get,
+    calculateInventoryPerformance,
+    calculateDataModelInventoryPerformance,
+    loading,
+    error,
+  };
 }
 
 export default useInventoryPerformance;

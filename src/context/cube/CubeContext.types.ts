@@ -1,4 +1,5 @@
-import { ICubeData } from "@shared/models";
+import { ICubeData, IParamsData } from "@shared/models";
+import { ICallableResponse } from "@shared/models/functions";
 
 export interface CubeContextType {
   hasInitialData: boolean;
@@ -15,4 +16,10 @@ export interface CubeContextType {
   setData: React.Dispatch<React.SetStateAction<ICubeData | undefined>>;
 
   reloadCubeData: () => Promise<void>;
+
+  initCube: (
+    fileUid: string,
+    cubeParameters: IParamsData
+  ) => Promise<ICallableResponse<ICubeData>>;
+  removeCube: () => Promise<ICallableResponse>;
 }

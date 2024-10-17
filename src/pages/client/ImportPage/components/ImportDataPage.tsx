@@ -13,12 +13,9 @@ import { useCube } from "src/context/cube";
 import {
   ParamsDataStep,
   DropzoneStep,
-  FileSummaryStep,
   FileUploadStep,
   DriversStep,
-  SelectSheetStep,
 } from "src/pages/client/ImportPage/components";
-import { getError, getJsonDataFromWorkbookAsync } from "src/utils";
 import * as XLSX from "xlsx";
 
 export interface FileResolution {
@@ -57,27 +54,6 @@ export default function ImportDataPage() {
     navigate("/client/dashboard");
   };
 
-  async function handleSelectSheetStepOnNext() {
-    if (!fileResolution) return;
-    setLoading(true);
-
-    try {
-      const jsonData = await getJsonDataFromWorkbookAsync(
-        fileResolution.workbook!,
-        fileResolution.sheetName!
-      );
-      setFileResolution({
-        ...fileResolution,
-        jsonData,
-      });
-      handleNext();
-    } catch (e) {
-      setStepError(getError(e));
-    } finally {
-      setLoading(false);
-    }
-  }
-
   return (
     <Stepper activeStep={activeStep} orientation="vertical">
       <Step>
@@ -96,52 +72,6 @@ export default function ImportDataPage() {
             handleNext={handleNext}
             isFirstStep
             disableNext={!fileResolution?.file || !fileResolution.jsonData}
-          />
-        </StepContent>
-      </Step>
-      <Step>
-        <StepLabel
-          optional={
-            <Typography variant="caption">
-              Formatear archivo y seleccionar la hoja de trabajo
-            </Typography>
-          }
-        >
-          Formatear Archivo
-        </StepLabel>
-        <StepContent>
-          <StepContentWrapper>
-            <SelectSheetStep
-              fileResolution={fileResolution!}
-              setFileResolution={setFileResolution}
-            />
-          </StepContentWrapper>
-          <StepperFooter
-            handleBack={handleBack}
-            handleNext={handleSelectSheetStepOnNext}
-            isFirstStep
-            loading={loading}
-            disableNext={!fileResolution?.sheetName}
-          />
-        </StepContent>
-      </Step>
-      <Step>
-        <StepLabel>Verificar Datos</StepLabel>
-        <StepContent>
-          <StepContentWrapper>
-            <FileSummaryStep
-              error={stepError}
-              setError={setStepError}
-              setLoading={setLoading}
-              fileResolution={fileResolution!}
-              setFileResolution={setFileResolution}
-              loading={loading}
-            />
-          </StepContentWrapper>
-          <StepperFooter
-            handleBack={handleBack}
-            handleNext={handleNext}
-            disableNext={Boolean(stepError) || loading}
           />
         </StepContent>
       </Step>
@@ -173,10 +103,7 @@ export default function ImportDataPage() {
             <ParamsDataStep
               ref={paramsDataComponentRef}
               error={stepError}
-              setError={setStepError}
-              setLoading={setLoading}
               loading={loading}
-              fileResolution={fileResolution!}
             />
           </StepContentWrapper>
           <StepperFooter

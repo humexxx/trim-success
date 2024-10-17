@@ -6,6 +6,7 @@ export interface IParam {
   value: number;
   hint?: string;
   type: "percentage" | "currency" | "number";
+  autoCalculated?: boolean;
 }
 
 export interface IStoringParamsData {

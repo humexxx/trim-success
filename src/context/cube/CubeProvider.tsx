@@ -7,7 +7,8 @@ import {
 } from "react";
 
 import { STORAGE_PATH } from "@shared/consts";
-import { ICubeData } from "@shared/models";
+import { ICubeData, IInitCube, IParamsData } from "@shared/models";
+import { ICallableRequest, ICallableResponse } from "@shared/models/functions";
 import { httpsCallable } from "firebase/functions";
 import { listAll, getBlob, ref } from "firebase/storage";
 import { GlobalLoader } from "src/components";
@@ -45,11 +46,11 @@ export default function CubeProvider({
   const getFiles = useCallback(async (): Promise<
     { name: string; blob: Blob }[] | undefined
   > => {
+    if (files) return files;
     const folderRef = ref(
       storage,
       `${STORAGE_PATH}/${isAdmin ? customUser?.uid : currentUser?.uid}/`
     );
-    if (files) return files;
     try {
       const result = await listAll(folderRef);
       if (result.items.length) {
@@ -74,19 +75,20 @@ export default function CubeProvider({
   const loadCubeData = useCallback(async () => {
     const _uid = isAdmin ? customUser!.uid : currentUser!.uid;
     setLoading(true);
-    const getCubeData = httpsCallable(functions, "getCubeData");
+    const getCubeData = httpsCallable<
+      ICallableRequest,
+      ICallableResponse<ICubeData>
+    >(functions, "getCubeData");
 
     try {
       const response = await getCubeData({ uid: _uid });
-      const data = response.data as ICubeData | { error: string };
-
-      if ("error" in data) {
-        throw new Error(data.error);
+      if (!response.data.success) {
+        throw new Error(response.data.error);
       }
-      setData(data);
+
+      setData(response.data.data);
       setHasInitialData(true);
     } catch (e) {
-      // console.error(e);
       onCubeLoadError();
       setHasInitialData(false);
     } finally {
@@ -115,6 +117,46 @@ export default function CubeProvider({
     setCustomUser,
   ]);
 
+  const initCube = useCallback(
+    async (fileUid: string, cubeParameters: IParamsData) => {
+      const initCube = httpsCallable<
+        ICallableRequest<IInitCube>,
+        ICallableResponse<ICubeData>
+      >(functions, "initCube");
+      const response = await initCube({
+        uid: isAdmin ? customUser!.uid! : currentUser!.uid,
+        data: {
+          fileUid,
+          cubeParameters,
+        },
+      });
+
+      if (!response.data.success) {
+        throw new Error(response.data.error);
+      }
+
+      setLoading(false);
+      return response.data;
+    },
+    [currentUser, customUser, isAdmin]
+  );
+
+  const removeCube = useCallback(async () => {
+    const removeCubeData = httpsCallable<ICallableRequest, ICallableResponse>(
+      functions,
+      "removeCubeData"
+    );
+    const response = await removeCubeData({
+      uid: isAdmin ? customUser!.uid! : currentUser!.uid,
+    });
+
+    if (!response.data.success) {
+      throw new Error(response.data.error);
+    }
+
+    return response.data;
+  }, [currentUser, customUser, isAdmin]);
+
   const value: CubeContextType = {
     hasInitialData,
     setHasInitialData,
@@ -128,6 +170,9 @@ export default function CubeProvider({
     setData,
 
     reloadCubeData: loadCubeData,
+
+    initCube,
+    removeCube,
   };
 
   return (

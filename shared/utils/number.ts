@@ -12,3 +12,7 @@ export function formatPercentage(value?: number): string {
     minimumFractionDigits: 2,
   }).format(value);
 }
+
+export function roundToDecimals(value: number, decimals: number): number {
+  return Number(value.toFixed(decimals));
+}

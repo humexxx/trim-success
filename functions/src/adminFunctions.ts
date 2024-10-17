@@ -1,4 +1,4 @@
-import { FIRESTORE_PATHS, JSON_FILE_NAME, STORAGE_PATH } from "@shared/consts";
+import { FIRESTORE_PATHS, STORAGE_PATH } from "@shared/consts";
 import { ICallableRequest } from "@shared/models/functions";
 import * as admin from "firebase-admin";
 import * as functions from "firebase-functions";
@@ -38,6 +38,7 @@ export const removeCubeData = functions.https.onCall<ICallableRequest>(
     }
 
     try {
+      functions.logger.info(`Removing cube data for user ${uid}`);
       const bucket = admin.storage().bucket();
       await bucket.deleteFiles({ prefix: `${STORAGE_PATH}/${uid}` });
 
@@ -45,11 +46,12 @@ export const removeCubeData = functions.https.onCall<ICallableRequest>(
         .firestore()
         .collection(FIRESTORE_PATHS.SETTINGS.INDEX(uid))
         .get();
+
       collection.forEach((doc) => doc.ref.delete());
 
       return { success: true };
     } catch (error) {
-      return { error: "Something went wrong" };
+      return { error };
     }
   }
 );

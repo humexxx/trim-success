@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-import { Delete } from "@mui/icons-material";
+import { CurrencyBitcoinRounded, Delete } from "@mui/icons-material";
 import SubdirectoryArrowRightIcon from "@mui/icons-material/SubdirectoryArrowRight";
 import {
   Alert,
@@ -57,8 +57,7 @@ const ImportedDataPage = () => {
 
   async function handleDeleteCube() {
     try {
-      const removeCubeData = httpsCallable(functions, "removeCubeData");
-      await removeCubeData({ uid: customUser?.uid });
+      await cube.removeCube();
     } catch (e) {
       throw new Error("Error deleting cube data");
     }

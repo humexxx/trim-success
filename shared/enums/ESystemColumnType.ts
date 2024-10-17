@@ -1,6 +1,9 @@
 import { EInventoryPerformaceMetricType } from "./EInventoryPerformaceMetricType";
 
-export enum ESystemColumnType {
-  ICR_PERCENTAGE = EInventoryPerformaceMetricType.ICR_PERCENTAGE,
-  ICC = "system_icc",
-}
+export const ESystemColumnType = {
+  ICR_PERCENTAGE: EInventoryPerformaceMetricType.ICR_PERCENTAGE,
+  ICC: "system_icc",
+} as const;
+
+export type ESystemColumnType =
+  (typeof ESystemColumnType)[keyof typeof ESystemColumnType];

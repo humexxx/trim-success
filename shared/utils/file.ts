@@ -1,5 +1,5 @@
-import { COLUMNS, SYSTEM_COLUMNS } from "@shared/consts";
-import { EColumnType } from "@shared/enums";
+import { COLUMNS, DEFAULT_DRIVERS, SYSTEM_COLUMNS } from "@shared/consts";
+import { EColumnType, EDriverType } from "@shared/enums";
 import { ESystemColumnType } from "@shared/enums/ESystemColumnType";
 import { IColumn } from "@shared/models";
 
@@ -37,4 +37,8 @@ export function getColumn(
   } else {
     return SYSTEM_COLUMNS.find((col) => col.code === columnType)!;
   }
+}
+
+export function getDriver(driverType: EDriverType) {
+  return DEFAULT_DRIVERS.find((driver) => driver.key === driverType)!;
 }
