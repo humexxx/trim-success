@@ -1,8 +1,35 @@
-import { DataGrid, DataGridProps } from "@mui/x-data-grid";
+import { useEffect } from "react";
 
-const TotalGrid = (props: DataGridProps) => {
+import {
+  DataGrid,
+  DataGridProps,
+  GridEventListener,
+  useGridApiRef,
+} from "@mui/x-data-grid";
+
+interface TotalGridProps extends DataGridProps {
+  onTotalGridScroll: (left: number) => void;
+}
+
+export default function TotalGrid({
+  onTotalGridScroll,
+  ...props
+}: TotalGridProps) {
+  const apiRef = useGridApiRef();
+
+  useEffect(() => {
+    const handleScroll: GridEventListener<"scrollPositionChange"> = (
+      params
+    ) => {
+      onTotalGridScroll?.(params.left);
+    };
+
+    return apiRef.current.subscribeEvent("scrollPositionChange", handleScroll);
+  }, [apiRef, onTotalGridScroll]);
+
   return (
     <DataGrid
+      apiRef={apiRef}
       {...props}
       hideFooter
       disableColumnMenu
@@ -15,6 +42,4 @@ const TotalGrid = (props: DataGridProps) => {
       }}
     />
   );
-};
-
-export default TotalGrid;
+}

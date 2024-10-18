@@ -1,4 +1,4 @@
-import { Grid } from "@mui/material";
+import { Alert, Grid } from "@mui/material";
 import { PageHeader } from "src/components";
 import { useCube } from "src/context/cube";
 import { useDocumentMetadata } from "src/hooks";
@@ -7,10 +7,14 @@ import { CategoriesGraph, CategoriesTable, DriversTable } from "./components";
 
 const Page = () => {
   useDocumentMetadata("Scorecard - Trim Success");
-  const { data } = useCube();
+  const { data, isCubeLoading } = useCube();
 
   const baseData = data?.baseData;
   const paramsData = data?.paramsData;
+
+  if (!paramsData || isCubeLoading) {
+    return <Alert severity="info">Loading...</Alert>;
+  }
 
   return (
     <>
