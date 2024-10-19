@@ -33,7 +33,7 @@ jobs:
         id: version
         run: |
           npx standard-version
-          git push --follow-tags origin main
+          echo "Version bumped to ${{ steps.version.outputs.version }}"
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
