@@ -35,8 +35,6 @@ jobs:
       - name: Push changes
         run: |
           git push --follow-tags origin HEAD
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
@@ -44,5 +42,3 @@ jobs:
           tag_name: ${{ env.version }}
           name: "Release ${{ env.version }}"
           body_path: ./CHANGELOG.md
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
