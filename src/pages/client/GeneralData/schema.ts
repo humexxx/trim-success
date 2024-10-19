@@ -7,6 +7,7 @@ const paramSchema: yup.ObjectSchema<IParam> = yup.object({
   value: yup.number().required(),
   hint: yup.string().optional(),
   type: yup.string().oneOf(["percentage", "currency", "number"]).required(),
+  autoCalculated: yup.boolean().optional(),
 });
 
 export const paramsSchema: yup.ObjectSchema<

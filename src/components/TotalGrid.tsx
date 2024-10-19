@@ -8,7 +8,7 @@ import {
 } from "@mui/x-data-grid";
 
 interface TotalGridProps extends DataGridProps {
-  onTotalGridScroll: (left: number) => void;
+  onTotalGridScroll?: (left: number) => void;
 }
 
 export default function TotalGrid({
@@ -18,6 +18,7 @@ export default function TotalGrid({
   const apiRef = useGridApiRef();
 
   useEffect(() => {
+    if (!onTotalGridScroll) return;
     const handleScroll: GridEventListener<"scrollPositionChange"> = (
       params
     ) => {
