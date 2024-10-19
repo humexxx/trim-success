@@ -14,27 +14,18 @@ permissions:
 jobs:
   versioning:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v2
 
       - name: Configure committer
         run: |
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
+          git config user.name "GitHub Actions Bot"
+          git config user.email "<>"
 
-      - name: create-standard-version
-        id: create-standard-version
-        uses: convention-change/action-standard-version@v1
-        with:
-          release-by-ref: ${{ github.head_ref }}
-          # dry-run: true
-          push-changes-and-tag: true
+      - name: Bump version
+        uses: qzb/standard-version-action@v1.0.5
 
-      - name: get-action-standard-version-out
-        run: |
-          echo "outputs.release-tag-name   ${{ steps.create-standard-version.outputs.release-tag-name }}"
-          echo "outputs.release-tag-short  ${{ steps.create-standard-version.outputs.release-tag-short }}"
-          # change by release-tag-name-env
-          echo "ACTION_STANDARD_VERSION_RELEASE_TAG_NAME ${{ env.ACTION_STANDARD_VERSION_RELEASE_TAG_NAME }}"
+      - run: |
+          echo "Released version: $VERSION"
+        env:
+          VERSION: ${{ steps.release.output.version }}
