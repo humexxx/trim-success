@@ -30,7 +30,7 @@ jobs:
       - name: Bump version based on commit messages
         id: version
         run: |
-          npx standard-version --dry-run --no-verify
+          npx standard-version --no-verify
           VERSION=$(node -p "require('./package.json').version")
           echo "version=${VERSION}" >> $GITHUB_ENV
 
