@@ -36,9 +36,13 @@ jobs:
           VERSION=$(node -p "require('./package.json').version")
           echo "version=${VERSION}" >> $GITHUB_ENV
 
+      - name: Push changes
+        run: |
+          git push --follow-tags origin main
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ steps.version.outputs.version }}
-          name: "Release ${{ steps.version.outputs.version }}"
+          tag_name: ${{ env.version }}
+          name: "Release ${{ env.version }}"
           body_path: ./CHANGELOG.md
