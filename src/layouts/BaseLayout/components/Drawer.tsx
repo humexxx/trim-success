@@ -19,8 +19,10 @@ import {
   ListItemIcon,
   ListItemText,
   Box,
+  Typography,
 } from "@mui/material";
 import { NavLink, useLocation } from "react-router-dom";
+import { VERSION } from "src/consts";
 import { useAuth } from "src/context/auth";
 import { useCube } from "src/context/cube";
 
@@ -101,7 +103,9 @@ const Drawer = () => {
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
-      <Toolbar />
+      <Toolbar>
+        <Typography variant="caption">{VERSION}</Typography>
+      </Toolbar>
       <Divider />
       <List sx={{ flexGrow: 1 }}>
         {routes.map(
