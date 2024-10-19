@@ -37,10 +37,3 @@ jobs:
       - name: Push changes
         run: |
           git push --follow-tags origin main
-
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: ${{ env.version }}
-          name: "Release ${{ env.version }}"
-          body_path: ./CHANGELOG.md
