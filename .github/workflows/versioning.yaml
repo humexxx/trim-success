@@ -30,17 +30,10 @@ jobs:
       - name: Bump version based on commit messages
         id: version
         run: |
-          npx standard-version --dry-run --no-verify
+          npx standard-version --no-verify
           VERSION=$(node -p "require('./package.json').version")
           echo "version=${VERSION}" >> $GITHUB_ENV
 
       - name: Push changes
         run: |
           git push --follow-tags origin main
-
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: ${{ env.version }}
-          name: "Release ${{ env.version }}"
-          body_path: ./CHANGELOG.md
