@@ -16,33 +16,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18
-
-      - name: Install dependencies
-        run: npm install
-
       - name: Configure Git identity
         run: |
           git config user.email "jahume92@gmail.com"
           git config user.name "Jason Hume"
 
-      - name: Bump version based on commit messages
-        id: version
-        run: |
-          npx standard-version
-          VERSION=$(node -p "require('./package.json').version")
-          echo "version=${VERSION}" >> $GITHUB_ENV
-
-      - name: Push changes
-        run: |
-          git push --follow-tags origin HEAD
-
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: ${{ env.version }}
-          name: "Release ${{ env.version }}"
-          body_path: ./CHANGELOG.md
+      - name: Bump version
+        uses: qzb/standard-version-action@v1.0.5
