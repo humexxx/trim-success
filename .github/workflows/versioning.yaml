@@ -9,23 +9,38 @@ on:
       - main
 
 permissions:
-  contents: write
+  contents: read
+  pull-requests: write
 
 jobs:
   versioning:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-      - name: Configure committer
+      - name: Configure Git identity
         run: |
-          git config user.name "GitHub Actions Bot"
-          git config user.email "<>"
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Bump version
-        uses: qzb/standard-version-action@v1.0.5
+      - name: Bump version based on commit messages
+        id: version
+        run: |
+          npx standard-version --dry-run --no-verify
+          VERSION=$(node -p "require('./package.json').version")
+          echo "version=${VERSION}" >> $GITHUB_ENV
 
-      - run: |
-          echo "Released version: $VERSION"
+      - name: Push changes
+        run: |
+          git push --follow-tags origin main
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ env.version }}
+          name: "Release ${{ env.version }}"
+          body_path: ./CHANGELOG.md
         env:
-          VERSION: ${{ steps.release.output.version }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
