@@ -33,7 +33,8 @@ jobs:
         id: version
         run: |
           npx standard-version
-          echo "Version bumped to ${{ steps.version.outputs.version }}"
+          VERSION=$(node -p "require('./package.json').version")
+          echo "version=${VERSION}" >> $GITHUB_ENV
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
