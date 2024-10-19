@@ -1,4 +1,4 @@
-name: Automated Versioning and Release
+name: Versioning and Release
 
 on:
   push:
@@ -27,13 +27,18 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Bump version based on commit messages
-        id: version
+      - name: Determine release type
+        id: release_type
         run: |
-          npx standard-version --no-verify
-          VERSION=$(node -p "require('./package.json').version")
-          echo "version=${VERSION}" >> $GITHUB_ENV
+          if [[ "${{ github.ref_name }}" == "main" ]]; then
+            echo "release_type=minor" >> $GITHUB_ENV
+          elif [[ "${{ github.head_ref }}" == bugfix/* || "${{ github.head_ref }}" == fix/* ]] || "${{ github.head_ref }}" == hotfix/* ]]; then
+            echo "release_type=patch" >> $GITHUB_ENV
+          else
+            echo "release_type=patch" >> $GITHUB_ENV
+          fi
 
-      - name: Push changes
+      - name: Bump version
         run: |
+          npx standard-version --release-as ${{ env.release_type }} --no-verify
           git push --follow-tags origin main
