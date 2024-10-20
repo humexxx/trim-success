@@ -159,10 +159,17 @@ export async function generateDataModelInventoryPerformance(
       getColumn(EColumnType.INVENTORY_VALUE).index!
     );
 
+    const grossMargin = getRowValue(
+      row,
+      getColumn(EColumnType.GROSS_MARGIN).index!
+    );
+
     const icrPercentage = Number(icrRow[category]);
+    const icc = icrPercentage * Number(inventoryValue);
 
     row[ESystemColumnType.ICR_PERCENTAGE] = icrPercentage;
-    row[ESystemColumnType.ICC] = icrPercentage * Number(inventoryValue);
+    row[ESystemColumnType.ICC] = icc;
+    row[ESystemColumnType.EV] = Number(grossMargin) - icc;
   }
 
   await uploadJsonFile(uid, fileUid, dataModel);
