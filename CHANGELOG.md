@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## 0.4.0 (2024-10-20)
+
+
+### Features
+
+* update workflows ([ab728a3](https://github.com/humexxx/trim-success/commit/ab728a35e01d1a670f4d3fc89f8b76ddf2d6858f))
+
 ## 0.3.0 (2024-10-20)
 
 ### 0.2.1 (2024-10-20)
