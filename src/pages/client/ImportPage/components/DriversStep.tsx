@@ -13,8 +13,7 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import { DEFAULT_DRIVERS } from "@shared/consts";
 import { ICubeData, IDriver, IParamsData } from "@shared/models";
-import { useCube } from "src/context/cube";
-
+import { useCube } from "src/context/hooks";
 
 function not(a: readonly IDriver[], b: readonly IDriver[]) {
   return a.filter((value) => !b.includes(value));

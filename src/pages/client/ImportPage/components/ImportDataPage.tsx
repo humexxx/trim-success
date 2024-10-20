@@ -9,7 +9,7 @@ import StepLabel from "@mui/material/StepLabel";
 import Stepper from "@mui/material/Stepper";
 import Typography from "@mui/material/Typography";
 import { useNavigate } from "react-router-dom";
-import { useCube } from "src/context/cube";
+import { useCube } from "src/context/hooks";
 import {
   ParamsDataStep,
   DropzoneStep,

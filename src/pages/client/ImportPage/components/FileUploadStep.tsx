@@ -9,7 +9,7 @@ import { STORAGE_PATH } from "@shared/consts";
 import { collection, doc } from "firebase/firestore";
 import { ref, uploadBytes } from "firebase/storage";
 import { useAuth } from "src/context/hooks";
-import { useCube } from "src/context/cube";
+import { useCube } from "src/context/hooks";
 import { firestore, storage } from "src/firebase";
 
 import { FileResolution } from "./ImportDataPage";

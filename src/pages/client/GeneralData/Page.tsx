@@ -12,7 +12,7 @@ import {
 import { IParamsData } from "@shared/models";
 import { useForm } from "react-hook-form";
 import { GlobalLoader, PageHeader } from "src/components";
-import { useCube } from "src/context/cube";
+import { useCube } from "src/context/hooks";
 import { getError } from "src/utils";
 
 import { GeneralParams, InventoryParams, StoringParams } from "./components";

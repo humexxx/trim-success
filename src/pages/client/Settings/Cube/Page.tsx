@@ -1,6 +1,6 @@
 import { Box } from "@mui/material";
 import { COLUMNS } from "@shared/consts";
-import { useCube } from "src/context/cube";
+import { useCube } from "src/context/hooks";
 import { useDocumentMetadata } from "src/hooks";
 
 import { Columns, Drivers } from "./components";

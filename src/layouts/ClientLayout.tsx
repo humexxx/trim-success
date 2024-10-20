@@ -2,8 +2,8 @@ import { useCallback } from "react";
 
 import { useNavigate } from "react-router-dom";
 import { PrivateRoute } from "src/components";
+import { CubeProvider } from "src/context";
 import { useAuth } from "src/context/hooks";
-import { CubeProvider } from "src/context/cube";
 import { ThemeProvider } from "src/context/theme";
 
 import { BaseLayout } from "./BaseLayout";
