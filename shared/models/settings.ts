@@ -1,3 +1,6 @@
+import { EColumnType } from "@shared/enums";
+import { ESystemColumnType } from "@shared/enums/ESystemColumnType";
+
 export interface IDriver {
   label: string;
   miningLabel: string;
@@ -6,7 +9,7 @@ export interface IDriver {
 }
 
 export interface IColumn {
-  code: string;
+  code: EColumnType | ESystemColumnType;
   index?: number;
   indexRange?: number[];
   name: string;
