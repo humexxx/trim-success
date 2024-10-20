@@ -148,6 +148,11 @@ export default function StripedGrid({ totalColumns, ...props }: Props) {
     <>
       <Grid item>
         <StripedDataGrid
+          density="compact"
+          hideFooter
+          ref={ref}
+          disableColumnResize
+          onStateChange={handleStateChange}
           {...props}
           sx={{
             "& .MuiDataGrid-columnHeader *": { fontWeight: "bold" },
@@ -160,11 +165,6 @@ export default function StripedGrid({ totalColumns, ...props }: Props) {
           getRowClassName={(params) =>
             params.indexRelativeToCurrentPage % 2 === 0 ? "even" : "odd"
           }
-          density="compact"
-          hideFooter
-          ref={ref}
-          disableColumnResize
-          onStateChange={handleStateChange}
         />
       </Grid>
       {totalColumns && (
