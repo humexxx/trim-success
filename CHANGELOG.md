@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## 0.6.0 (2024-10-20)
+
+
+### Features
+
+* add main grid with basic filters ([#31](https://github.com/humexxx/trim-success/issues/31)) ([8bb8cc3](https://github.com/humexxx/trim-success/commit/8bb8cc3bd7e3f45bed3b4deee8857df4aca76f55))
+
 ### 0.5.1 (2024-10-20)
 
 ## 0.5.0 (2024-10-20)
