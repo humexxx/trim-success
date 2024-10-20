@@ -6,7 +6,7 @@ import { AppBar, Toolbar, IconButton, Typography } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "src/context/hooks";
-import { useThemeContext } from "src/context/theme";
+import { useLocalTheme } from "src/context/hooks";
 import { logout } from "src/utils";
 
 import { DRAWER_WIDTH } from "./Drawer";
@@ -17,7 +17,7 @@ interface Props {
 
 const Header = ({ handleDrawerToggle }: Props) => {
   const theme = useTheme();
-  const themeContext = useThemeContext();
+  const themeContext = useLocalTheme();
   const navigate = useNavigate();
 
   const { isAdmin, customUser, setCustomUser } = useAuth();

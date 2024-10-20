@@ -1,14 +1,14 @@
 import { AdminRoute } from "src/components";
-import { ThemeProvider } from "src/context/theme";
+import { LocalThemeProvider } from "src/context";
 
 import { BaseLayout } from "./BaseLayout";
 
 export default function AdminLayout() {
   return (
     <AdminRoute>
-      <ThemeProvider>
+      <LocalThemeProvider>
         <BaseLayout />
-      </ThemeProvider>
+      </LocalThemeProvider>
     </AdminRoute>
   );
 }

@@ -16,7 +16,6 @@ import {
   FileUploadStep,
   DriversStep,
 } from "src/pages/client/ImportPage/components";
-import * as XLSX from "xlsx";
 
 export interface FileResolution {
   jsonData?: unknown[];
@@ -24,7 +23,6 @@ export interface FileResolution {
   columns?: string[];
   file?: File;
   sheetName?: string;
-  workbook?: XLSX.WorkBook;
 }
 
 export default function ImportDataPage() {

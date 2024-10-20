@@ -3,8 +3,8 @@ import { useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { PrivateRoute } from "src/components";
 import { CubeProvider } from "src/context";
+import { LocalThemeProvider } from "src/context";
 import { useAuth } from "src/context/hooks";
-import { ThemeProvider } from "src/context/theme";
 
 import { BaseLayout } from "./BaseLayout";
 
@@ -20,11 +20,11 @@ export default function ClientLayout() {
 
   return (
     <PrivateRoute>
-      <ThemeProvider>
+      <LocalThemeProvider>
         <CubeProvider onCubeLoadError={onCubeLoadError}>
           <BaseLayout />
         </CubeProvider>
-      </ThemeProvider>
+      </LocalThemeProvider>
     </PrivateRoute>
   );
 }
