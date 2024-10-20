@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 
 import { IColumn } from "@shared/models";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
-import { useAuth } from "src/context/auth";
+import { useAuth } from "src/context/hooks";
 import { firestore } from "src/firebase";
 
 interface ISettingsCube {

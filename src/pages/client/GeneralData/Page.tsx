@@ -9,29 +9,19 @@ import {
   DEFAULT_INVENTORY_PARAMS,
   JSON_FILE_NAME,
 } from "@shared/consts";
-import { IBaseData, IParamsData } from "@shared/models";
+import { IParamsData } from "@shared/models";
 import { useForm } from "react-hook-form";
 import { GlobalLoader, PageHeader } from "src/components";
 import { useCube } from "src/context/cube";
-import {
-  getCategoriesDataRowsAsync,
-  getCategoriesDataTotals,
-  processJsonData,
-  getDriversDataRows,
-  getError,
-} from "src/utils";
+import { getError } from "src/utils";
 
 import { GeneralParams, InventoryParams, StoringParams } from "./components";
 import { useParamsData } from "./hooks";
 import { paramsSchema } from "./schema";
-import { useBaseData } from "../DataMining/hooks";
-import { useScorecard } from "../Scorecard/hooks";
 
 const Page = () => {
   const cube = useCube();
-  const { error, loading, update } = useParamsData();
-  const baseData = useBaseData();
-  const scorecard = useScorecard();
+  const { error, loading } = useParamsData();
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -64,48 +54,16 @@ const Page = () => {
     _data: Omit<IParamsData, "categories" | "drivers">
   ) {
     setIsSubmitting(true);
-    const paramsData = { ...cube.data!.paramsData, ..._data };
-
-    let rows = cube.fileData?.rows;
-    if (!rows) {
+    try {
       const files = await cube.getFiles();
       const jsonFile = files?.find((file) =>
         file.name.includes(JSON_FILE_NAME)
       );
-      const jsonData = await new Response(jsonFile!.blob).json();
+      if (!jsonFile) throw new Error("No se encontro el archivo JSON");
 
-      const { rows: _rows, columns } = await processJsonData(jsonData);
-      cube.setFileData({ rows: _rows, columns });
-      rows = _rows;
-    }
-
-    try {
-      const categoriesDataRows = await getCategoriesDataRowsAsync(
-        rows,
-        cube.data!.paramsData.drivers!
-      );
-      const categoriesDataTotals = getCategoriesDataTotals(
-        categoriesDataRows,
-        cube.data!.paramsData.drivers!
-      );
-
-      const driversFirstData = getDriversDataRows(
-        cube.data!.paramsData.drivers!,
-        categoriesDataRows,
-        categoriesDataTotals
-      );
-
-      const _baseData: IBaseData = {
-        categoriesData: {
-          rows: categoriesDataRows,
-          totals: categoriesDataTotals,
-        },
-        driversData: { rows: driversFirstData },
-      };
-
-      await baseData.update(_baseData);
-      await update(paramsData);
-      await scorecard.calculate();
+      const generatedUID = jsonFile.name.split("-")[0].split("/")[2];
+      const paramsData = { ...cube.data!.paramsData, ..._data };
+      await cube.initCube(generatedUID, paramsData);
       await cube.reloadCubeData();
     } catch (error) {
       console.error(getError(error));

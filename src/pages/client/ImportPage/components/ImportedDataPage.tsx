@@ -14,7 +14,7 @@ import { httpsCallable } from "firebase/functions";
 import json from "src/assets/images/json.webp";
 import xls from "src/assets/images/xls.svg";
 import { ConfirmDialog } from "src/components";
-import { useAuth } from "src/context/auth";
+import { useAuth } from "src/context/hooks";
 import { useCube } from "src/context/cube";
 import { functions } from "src/firebase";
 import { getError } from "src/utils";

@@ -1,7 +1,7 @@
 import { useCallback, useState } from "react";
 
 import { httpsCallable } from "firebase/functions";
-import { useAuth } from "src/context/auth";
+import { useAuth } from "src/context/hooks";
 import { functions } from "src/firebase";
 
 export interface UseReportsGenerator {

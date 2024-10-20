@@ -5,7 +5,7 @@ import { IInventoryPerformanceData } from "@shared/models";
 import { ICallableRequest, ICallableResponse } from "@shared/models/functions";
 import { doc, getDoc } from "firebase/firestore";
 import { httpsCallable, HttpsCallableResult } from "firebase/functions";
-import { useAuth } from "src/context/auth";
+import { useAuth } from "src/context/hooks";
 import { firestore, functions } from "src/firebase";
 import { getError } from "src/utils";
 

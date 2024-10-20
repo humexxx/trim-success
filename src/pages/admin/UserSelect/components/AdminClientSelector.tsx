@@ -10,7 +10,7 @@ import {
 import { IUser } from "@shared/models";
 import { useNavigate } from "react-router-dom";
 import { LOCAL_STORAGE_KEYS } from "src/consts";
-import { useAuth } from "src/context/auth";
+import { useAuth } from "src/context/hooks";
 import { useLocalStorage } from "src/hooks";
 
 import { useUsers } from "../hooks";

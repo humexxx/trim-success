@@ -3,7 +3,7 @@ import { useCallback, useState } from "react";
 import { FIRESTORE_PATHS } from "@shared/consts";
 import { IParamsData } from "@shared/models";
 import { doc, setDoc } from "firebase/firestore";
-import { useAuth } from "src/context/auth";
+import { useAuth } from "src/context/hooks";
 import { firestore } from "src/firebase";
 
 export interface UseParamsData {

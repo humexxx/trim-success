@@ -5,7 +5,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import { AppBar, Toolbar, IconButton, Typography } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "src/context/auth";
+import { useAuth } from "src/context/hooks";
 import { useThemeContext } from "src/context/theme";
 import { logout } from "src/utils";
 
