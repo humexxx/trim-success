@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## 0.2.0 (2024-10-20)
+
+
+### Features
+
+* add ev ([#29](https://github.com/humexxx/trim-success/issues/29)) ([a6bd93d](https://github.com/humexxx/trim-success/commit/a6bd93dc34deb05bbcedcc263c14736d86d6bbd6))
+
 ### 0.1.1 (2024-10-20)
 
 ## 0.1.0 (2024-10-19)
