@@ -1,6 +1,6 @@
 import React from "react";
 
-import { useAuth } from "src/context/auth";
+import { useAuth } from "src/context/hooks";
 
 interface AdminContentProps {
   children: React.ReactNode;

@@ -23,8 +23,8 @@ import {
 } from "@mui/material";
 import { NavLink, useLocation } from "react-router-dom";
 import { VERSION } from "src/consts";
-import { useAuth } from "src/context/auth";
-import { useCube } from "src/context/cube";
+import { useAuth } from "src/context/hooks";
+import { useCube } from "src/context/hooks";
 
 function getRoutes(isAdmin: boolean) {
   return [

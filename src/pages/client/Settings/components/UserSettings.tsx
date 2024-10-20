@@ -12,7 +12,7 @@ import Typography from "@mui/material/Typography";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { useForm, Controller, SubmitHandler } from "react-hook-form";
 import { PhoneField } from "src/components/form";
-import { useAuth } from "src/context/auth";
+import { useAuth } from "src/context/hooks";
 import { firestore } from "src/firebase";
 import { useDocumentMetadata } from "src/hooks";
 import * as yup from "yup";

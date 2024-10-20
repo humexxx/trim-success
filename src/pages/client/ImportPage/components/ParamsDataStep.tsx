@@ -9,7 +9,7 @@ import {
 } from "@shared/consts";
 import { ICubeData, IParamsData } from "@shared/models";
 import { useForm } from "react-hook-form";
-import { useCube } from "src/context/cube";
+import { useCube } from "src/context/hooks";
 
 import {
   paramsSchema,

@@ -1,6 +1,6 @@
 import { Alert, Grid } from "@mui/material";
 import { PageHeader } from "src/components";
-import { useCube } from "src/context/cube";
+import { useCube } from "src/context/hooks";
 import { useDocumentMetadata } from "src/hooks";
 
 import { CategoriesGraph, CategoriesTable, DriversTable } from "./components";

@@ -2,7 +2,7 @@ import { useState } from "react";
 
 import { Box, Drawer, Toolbar, Container } from "@mui/material";
 import { Outlet } from "react-router-dom";
-import { useCube } from "src/context/cube";
+import { useCube } from "src/context/hooks";
 
 import { AppDrawer, Header } from "./components";
 import { DRAWER_WIDTH } from "./components/Drawer";

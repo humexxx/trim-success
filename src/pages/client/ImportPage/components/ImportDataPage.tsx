@@ -9,14 +9,13 @@ import StepLabel from "@mui/material/StepLabel";
 import Stepper from "@mui/material/Stepper";
 import Typography from "@mui/material/Typography";
 import { useNavigate } from "react-router-dom";
-import { useCube } from "src/context/cube";
+import { useCube } from "src/context/hooks";
 import {
   ParamsDataStep,
   DropzoneStep,
   FileUploadStep,
   DriversStep,
 } from "src/pages/client/ImportPage/components";
-import * as XLSX from "xlsx";
 
 export interface FileResolution {
   jsonData?: unknown[];
@@ -24,7 +23,6 @@ export interface FileResolution {
   columns?: string[];
   file?: File;
   sheetName?: string;
-  workbook?: XLSX.WorkBook;
 }
 
 export default function ImportDataPage() {

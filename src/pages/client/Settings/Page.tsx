@@ -2,13 +2,12 @@ import { useState } from "react";
 
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import { Box, Tab } from "@mui/material";
-import { useAuth } from "src/context/auth";
+import { useAuth } from "src/context/hooks";
 import { useDocumentMetadata } from "src/hooks";
 
 import { AdminSettings } from "./Admin";
 import { UserSettings } from "./components";
 import { CubeSettings } from "./Cube";
-
 
 export interface DataSet {
   id?: number;
@@ -47,15 +46,15 @@ const Page = () => {
             )}
           </TabList>
         </Box>
-          <TabPanel value={"0"} sx={{ p: 2 }}>
-            <UserSettings />
-          </TabPanel>
-          <TabPanel value={"1"} sx={{ p: 2 }}>
-            <CubeSettings />
-          </TabPanel>
-          <TabPanel value={"2"} sx={{ p: 2 }}>
-            <AdminSettings />
-          </TabPanel>
+        <TabPanel value={"0"} sx={{ p: 2 }}>
+          <UserSettings />
+        </TabPanel>
+        <TabPanel value={"1"} sx={{ p: 2 }}>
+          <CubeSettings />
+        </TabPanel>
+        <TabPanel value={"2"} sx={{ p: 2 }}>
+          <AdminSettings />
+        </TabPanel>
       </TabContext>
     </Box>
   );

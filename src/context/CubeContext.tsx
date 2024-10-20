@@ -15,22 +15,41 @@ import { GlobalLoader } from "src/components";
 import { LOCAL_STORAGE_KEYS } from "src/consts";
 import { functions, storage } from "src/firebase";
 
-import { useAuth } from "../auth";
-import { CubeContextType } from "./CubeContext.types";
+import { useAuth } from "./hooks";
 
-export const CubeContext = createContext<CubeContextType | undefined>(
-  undefined
-);
+export interface CubeContextType {
+  hasInitialData: boolean;
+  setHasInitialData: (hasInitialData: boolean) => void;
+  isCubeLoading: boolean;
 
-interface CubeProviderProps {
+  getFiles: () => Promise<{ name: string; blob: Blob }[] | undefined>;
+  fileData?: { columns: string[]; rows: any[] };
+  setFileData: React.Dispatch<
+    React.SetStateAction<{ columns: string[]; rows: any[] } | undefined>
+  >;
+
+  data: ICubeData | undefined;
+  setData: React.Dispatch<React.SetStateAction<ICubeData | undefined>>;
+
+  reloadCubeData: () => Promise<void>;
+
+  initCube: (
+    fileUid: string,
+    cubeParameters: IParamsData
+  ) => Promise<ICallableResponse<ICubeData>>;
+  removeCube: () => Promise<ICallableResponse>;
+}
+
+const CubeContext = createContext<CubeContextType | undefined>(undefined);
+
+export default CubeContext;
+
+interface Props {
   onCubeLoadError: () => void;
   children: ReactNode;
 }
 
-export default function CubeProvider({
-  children,
-  onCubeLoadError,
-}: CubeProviderProps) {
+export function CubeProvider({ children, onCubeLoadError }: Props) {
   const { isAdmin, customUser, currentUser, setCustomUser } = useAuth();
   const [hasInitialData, setHasInitialData] = useState(false);
   const [loading, setLoading] = useState(false);

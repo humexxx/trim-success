@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { Alert } from "@mui/material";
 import { IInventoryPerformanceData } from "@shared/models";
 import { PageHeader } from "src/components";
-import { useCube } from "src/context/cube";
+import { useCube } from "src/context/hooks";
 import { getError } from "src/utils";
 
 import { Table } from "./components";

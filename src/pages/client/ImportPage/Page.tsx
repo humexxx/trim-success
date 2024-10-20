@@ -1,5 +1,5 @@
 import { PageHeader } from "src/components";
-import { useCube } from "src/context/cube";
+import { useCube } from "src/context/hooks";
 import {
   ImportedDataPage,
   ImportDataPage,

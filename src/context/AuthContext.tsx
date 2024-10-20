@@ -1,13 +1,26 @@
-import { useEffect, useState } from "react";
+import { createContext, ReactNode, useEffect, useState } from "react";
 
 import { IUser } from "@shared/models";
 import { User, onAuthStateChanged } from "firebase/auth";
 import { auth } from "src/firebase";
 
-import AuthContext from "./AuthContext";
-import { AuthContextType, AuthProviderProps } from "./AuthContext.types";
+export interface AuthContextType {
+  currentUser: User | null;
+  isAdmin: boolean;
 
-export default function AuthProvider({ children }: AuthProviderProps) {
+  setCustomUser: (user: IUser | null) => void;
+  customUser: IUser | null;
+}
+
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+export default AuthContext;
+
+interface Props {
+  children: ReactNode;
+}
+
+export function AuthProvider({ children }: Props) {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [customUser, setCustomUser] = useState<IUser | null>(null);

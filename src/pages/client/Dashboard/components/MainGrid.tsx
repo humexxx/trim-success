@@ -1,5 +1,5 @@
 import StripedGrid from "src/components/StripedDataGrid";
-import { useCube } from "src/context/cube";
+import { useCube } from "src/context/hooks";
 
 const MainGrid = () => {
   const cube = useCube();

@@ -8,8 +8,8 @@ import { Alert, Box, Grid, Typography } from "@mui/material";
 import { STORAGE_PATH } from "@shared/consts";
 import { collection, doc } from "firebase/firestore";
 import { ref, uploadBytes } from "firebase/storage";
-import { useAuth } from "src/context/auth";
-import { useCube } from "src/context/cube";
+import { useAuth } from "src/context/hooks";
+import { useCube } from "src/context/hooks";
 import { firestore, storage } from "src/firebase";
 
 import { FileResolution } from "./ImportDataPage";
@@ -45,8 +45,7 @@ const FileUpload = ({ handleOnFinish, fileResolution }: Props) => {
       handleOnFinish();
     } catch (error) {
       setError(`Error al subir el archivo: ${error}`);
-      debugger;
-      // await cube.removeCube(); // TODO: pass which cube
+      await cube.removeCube();
     } finally {
       setLoading(false);
     }
