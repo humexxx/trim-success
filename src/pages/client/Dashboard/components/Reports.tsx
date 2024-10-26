@@ -1,4 +1,5 @@
 import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
+import { Box } from "@mui/material";
 import pdfMake from "pdfmake/build/pdfmake";
 import * as pdfFonts from "pdfmake/build/vfs_fonts";
 import { CardButton } from "src/components";
@@ -22,7 +23,7 @@ const Reports = () => {
   }
 
   return (
-    <>
+    <Box mt={7}>
       <CardButton
         icon={<PictureAsPdfIcon />}
         label="Reporte General"
@@ -30,7 +31,7 @@ const Reports = () => {
         onClick={generateGeneralReport}
         loading={reportsGenerator.loading}
       />
-    </>
+    </Box>
   );
 };
 
