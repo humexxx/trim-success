@@ -4,6 +4,7 @@ on: pull_request
 permissions:
   contents: write
   pull-requests: write
+  checks: read # Permite leer el estado de los checks
 
 jobs:
   dependabot:
@@ -15,6 +16,16 @@ jobs:
         uses: dependabot/fetch-metadata@v1
         with:
           github-token: "${{ secrets.GITHUB_TOKEN }}"
+
+      - name: Esperar a que todos los checks pasen
+        run: |
+          until gh pr checks "$PR_URL" --required --summary | grep -q 'State: success'; do
+            echo "Esperando que todos los checks pasen..."
+            sleep 10  # Esperar 10 segundos antes de volver a verificar
+          done
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Enable auto-merge for Dependabot PRs
         run: gh pr merge --auto --squash "$PR_URL"
