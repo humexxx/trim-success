@@ -123,7 +123,6 @@ const Drawer = () => {
                 selected={location.pathname.includes(path)}
                 component={NavLink}
                 to={path}
-                unstable_viewTransition
                 disabled={
                   (requireInitialData && !hasInitialData) ||
                   (requireContextUid && isAdmin && !customUser?.uid)
@@ -145,7 +144,6 @@ const Drawer = () => {
                 selected={location.pathname.includes(path)}
                 component={NavLink}
                 to={path}
-                unstable_viewTransition
                 disabled={requireInitialData && !hasInitialData}
               >
                 <ListItemIcon>{icon}</ListItemIcon>
@@ -163,7 +161,6 @@ const Drawer = () => {
             selected={location.pathname.includes("/client/settings")}
             component={NavLink}
             to="/client/settings"
-            unstable_viewTransition
             disabled={isCubeLoading}
           >
             <ListItemIcon>
