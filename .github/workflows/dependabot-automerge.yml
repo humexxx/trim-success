@@ -19,7 +19,7 @@ jobs:
 
       - name: Esperar a que todos los checks pasen
         run: |
-          until gh pr checks "$PR_URL" --required --summary | grep -q 'State: success'; do
+          until gh pr checks "$PR_URL" --required | grep -q 'State: success'; do
             echo "Esperando que todos los checks pasen..."
             sleep 10  # Esperar 10 segundos antes de volver a verificar
           done
