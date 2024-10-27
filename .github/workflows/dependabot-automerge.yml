@@ -1,0 +1,48 @@
+name: Dependabot auto-merge
+on:
+  pull_request:
+
+permissions:
+  contents: write
+  pull-requests: write
+  checks: read # Allows reading the status of the checks
+
+jobs:
+  dependabot:
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.user.login == 'dependabot[bot]'
+    steps:
+      - name: Dependabot metadata
+        id: metadata
+        uses: dependabot/fetch-metadata@v1
+        with:
+          github-token: "${{ secrets.GITHUB_TOKEN }}"
+
+      - name: Wait for checks to pass
+        run: |
+          echo "Waiting for all required checks to pass..."
+          while true; do
+            # Get the status of required checks
+            checks_output=$(gh pr checks "$PR_URL" --required)
+
+            # Log the output for debugging
+            echo "Checks output: $checks_output"
+
+            # Check if all checks are successful
+            if echo "$checks_output" | grep -q 'State: success'; then
+              echo "All required checks have passed."
+              break
+            fi
+
+            echo "Waiting for all checks..."
+            sleep 10  # Wait for 10 seconds before checking again
+          done
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Enable auto-merge for Dependabot PRs
+        run: gh pr merge --auto --squash "$PR_URL"
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
