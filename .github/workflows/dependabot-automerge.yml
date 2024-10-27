@@ -1,10 +1,11 @@
 name: Dependabot auto-merge
-on: pull_request
+on:
+  pull_request:
 
 permissions:
   contents: write
   pull-requests: write
-  checks: read # Permite leer el estado de los checks
+  checks: read # Allows reading the status of the checks
 
 jobs:
   dependabot:
@@ -17,11 +18,24 @@ jobs:
         with:
           github-token: "${{ secrets.GITHUB_TOKEN }}"
 
-      - name: Esperar a que todos los checks pasen
+      - name: Wait for checks to pass
         run: |
-          until gh pr checks "$PR_URL" --required | grep -q 'State: success'; do
-            echo "Esperando que todos los checks pasen..."
-            sleep 10  # Esperar 10 segundos antes de volver a verificar
+          echo "Waiting for all required checks to pass..."
+          while true; do
+            # Get the status of required checks
+            checks_output=$(gh pr checks "$PR_URL" --required)
+
+            # Log the output for debugging
+            echo "Checks output: $checks_output"
+
+            # Check if all checks are successful
+            if echo "$checks_output" | grep -q 'State: success'; then
+              echo "All required checks have passed."
+              break
+            fi
+
+            echo "Waiting for all checks..."
+            sleep 10  # Wait for 10 seconds before checking again
           done
         env:
           PR_URL: ${{ github.event.pull_request.html_url }}
