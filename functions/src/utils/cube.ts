@@ -1,6 +1,7 @@
 import { DEFAULT_INVETORY_PERFORMANCE_METRICS } from "@shared/consts";
 import { EColumnType, EDriverType } from "@shared/enums";
 import { EAutoCompleteParamameterType } from "@shared/enums/EAutoCompleteParamameterType";
+import { EInventoryPerformaceMetricType } from "@shared/enums/EInventoryPerformaceMetricType";
 import {
   IDriver,
   IBaseData,
@@ -116,19 +117,21 @@ export function calculateDriversDataRows(
   totals: IBaseData["categoriesData"]["totals"],
   drivers: IDriver[]
 ): IBaseData["driversData"]["rows"] {
-  return drivers.map((driver) => {
-    const _row = {
-      driver: driver.label,
-    } as IBaseData["driversData"]["rows"][number];
+  return drivers
+    .filter((x) => !x.xdriverHidden)
+    .map((driver) => {
+      const _row = {
+        driver: driver.label,
+      } as IBaseData["driversData"]["rows"][number];
 
-    categoriesDataRows.forEach((row) => {
-      _row[row.category] = Number(totals[driver.key])
-        ? Number(row[driver.key]) / Number(totals[driver.key])
-        : 0;
+      categoriesDataRows.forEach((row) => {
+        _row[row.category] = Number(totals[driver.key])
+          ? Number(row[driver.key]) / Number(totals[driver.key])
+          : 0;
+      });
+
+      return _row;
     });
-
-    return _row;
-  });
 }
 
 export function calculateScorecardData(
@@ -305,32 +308,200 @@ export function calculateInventoryPerformance(
   scorecard: IScorecardData
 ): IInventoryPerformanceData {
   const response: IInventoryPerformanceData = {
-    rows: DEFAULT_INVETORY_PERFORMANCE_METRICS.map((value) => {
-      return {
-        ...value,
-        ...categories.reduce(
-          (acc, category) => {
-            acc[category] =
-              (Number(scorecard.inventoryCosts.totals[category]) +
-                Number(scorecard.storingCosts.totals[category])) /
-              Number(
-                baseData.categoriesData.rows.find(
-                  (row) => row.category === category
-                )![EDriverType.INVENTORY_VALUE]
+    rows: DEFAULT_INVETORY_PERFORMANCE_METRICS.reduce(
+      (acc, value, index) => {
+        const previousElements = acc.slice(0, index);
+
+        const row = {
+          ...value,
+          ...categories.reduce(
+            (acc, category) => {
+              acc[category] = calculateInventoryPerformanceByKey(
+                value.key,
+                category,
+                scorecard,
+                baseData,
+                previousElements
               );
-            return acc;
-          },
-          {} as Record<string, number>
-        ),
-        total:
-          (Number(scorecard.inventoryCosts.totals.total) +
-            Number(scorecard.storingCosts.totals.total)) /
-          Number(baseData.categoriesData.totals[EDriverType.INVENTORY_VALUE]),
-      };
-    }),
+              return acc;
+            },
+            {} as Record<string, number>
+          ),
+          total: calculateInventoryPerformanceTotalByKey(
+            value.key,
+            scorecard,
+            baseData,
+            previousElements
+          ),
+        };
+
+        acc.push(row);
+        return acc;
+      },
+      [] as IInventoryPerformanceData["rows"]
+    ),
   };
 
   return response;
+}
+
+function calculateInventoryPerformanceByKey(
+  key: EInventoryPerformaceMetricType,
+  category: string,
+  scorecard: IScorecardData,
+  baseData: IBaseData,
+  data: IInventoryPerformanceData["rows"]
+): number {
+  switch (key) {
+    case EInventoryPerformaceMetricType.ICR_PERCENTAGE:
+      return (
+        (Number(scorecard.inventoryCosts.totals[category]) +
+          Number(scorecard.storingCosts.totals[category])) /
+        Number(
+          baseData.categoriesData.rows.find(
+            (row) => row.category === category
+          )![EDriverType.INVENTORY_VALUE]
+        )
+      );
+    case EInventoryPerformaceMetricType.ROTACION:
+      return (
+        Number(
+          baseData.categoriesData.rows.find(
+            (row) => row.category === category
+          )![EDriverType.COST_SALES]
+        ) /
+        Number(
+          baseData.categoriesData.rows.find(
+            (row) => row.category === category
+          )![EDriverType.INVENTORY_VALUE]
+        )
+      );
+    case EInventoryPerformaceMetricType.INVENTORY_360: {
+      const rotacion = Number(
+        data.find((x) => x.key === EInventoryPerformaceMetricType.ROTACION)![
+          category
+        ]
+      );
+      return 360 / rotacion;
+    }
+    case EInventoryPerformaceMetricType.INVENTORY_MONTHLY: {
+      const rotacion = Number(
+        data.find((x) => x.key === EInventoryPerformaceMetricType.ROTACION)![
+          category
+        ]
+      );
+      return 12 / rotacion;
+    }
+    case EInventoryPerformaceMetricType.ICC_SALES:
+      return (
+        (Number(scorecard.inventoryCosts.totals[category]) +
+          Number(scorecard.storingCosts.totals[category])) /
+        Number(
+          baseData.categoriesData.rows.find(
+            (row) => row.category === category
+          )![EDriverType.SALES]
+        )
+      );
+    case EInventoryPerformaceMetricType.INVENTORY_COST_OVER_AVG_SALES:
+      return (
+        Number(
+          baseData.categoriesData.rows.find(
+            (row) => row.category === category
+          )![EDriverType.AVERAGE_INVENTORY]
+        ) /
+        Number(
+          baseData.categoriesData.rows.find(
+            (row) => row.category === category
+          )![EDriverType.SALES]
+        )
+      );
+    case EInventoryPerformaceMetricType.INVENTORY_MARGIN_OVER_AVG_SALES:
+      return (
+        Number(
+          baseData.categoriesData.rows.find(
+            (row) => row.category === category
+          )![EDriverType.GROSS_MARGIN]
+        ) /
+        Number(
+          baseData.categoriesData.rows.find(
+            (row) => row.category === category
+          )![EDriverType.INVENTORY_VALUE]
+        )
+      );
+    case EInventoryPerformaceMetricType.INVENTORY_EXPECTED_VALUE:
+      return (
+        Number(
+          baseData.categoriesData.rows.find(
+            (row) => row.category === category
+          )![EDriverType.GROSS_MARGIN]
+        ) -
+        (Number(scorecard.inventoryCosts.totals[category]) +
+          Number(scorecard.storingCosts.totals[category]))
+      );
+
+    default:
+      return 0;
+  }
+}
+
+function calculateInventoryPerformanceTotalByKey(
+  key: EInventoryPerformaceMetricType,
+  scorecard: IScorecardData,
+  baseData: IBaseData,
+  data: IInventoryPerformanceData["rows"]
+): number {
+  switch (key) {
+    case EInventoryPerformaceMetricType.ICR_PERCENTAGE:
+      return (
+        (Number(scorecard.inventoryCosts.totals.total) +
+          Number(scorecard.storingCosts.totals.total)) /
+        Number(baseData.categoriesData.totals[EDriverType.INVENTORY_VALUE])
+      );
+    case EInventoryPerformaceMetricType.ROTACION:
+      return (
+        Number(baseData.categoriesData.totals[EDriverType.COST_SALES]) /
+        Number(baseData.categoriesData.totals[EDriverType.INVENTORY_VALUE])
+      );
+    case EInventoryPerformaceMetricType.INVENTORY_360: {
+      const rotacionTotal = Number(
+        data.find((x) => x.key === EInventoryPerformaceMetricType.ROTACION)!
+          .total
+      );
+      return 360 / rotacionTotal;
+    }
+    case EInventoryPerformaceMetricType.INVENTORY_MONTHLY: {
+      const rotacionTotal = Number(
+        data.find((x) => x.key === EInventoryPerformaceMetricType.ROTACION)!
+          .total
+      );
+      return 12 / rotacionTotal;
+    }
+    case EInventoryPerformaceMetricType.ICC_SALES:
+      return (
+        (Number(scorecard.inventoryCosts.totals.total) +
+          Number(scorecard.storingCosts.totals.total)) /
+        Number(baseData.categoriesData.totals[EDriverType.SALES])
+      );
+    case EInventoryPerformaceMetricType.INVENTORY_COST_OVER_AVG_SALES:
+      return (
+        Number(baseData.categoriesData.totals[EDriverType.AVERAGE_INVENTORY]) /
+        Number(baseData.categoriesData.totals[EDriverType.SALES])
+      );
+    case EInventoryPerformaceMetricType.INVENTORY_MARGIN_OVER_AVG_SALES:
+      return (
+        Number(baseData.categoriesData.totals[EDriverType.GROSS_MARGIN]) /
+        Number(baseData.categoriesData.totals[EDriverType.INVENTORY_VALUE])
+      );
+    case EInventoryPerformaceMetricType.INVENTORY_EXPECTED_VALUE:
+      return (
+        Number(baseData.categoriesData.totals[EDriverType.GROSS_MARGIN]) -
+        (Number(scorecard.inventoryCosts.totals.total) +
+          Number(scorecard.storingCosts.totals.total))
+      );
+
+    default:
+      return 0;
+  }
 }
 
 export function getCubeParametersWithAutoGeneratedValues(

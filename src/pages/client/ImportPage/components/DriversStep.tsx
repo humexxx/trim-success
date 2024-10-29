@@ -12,6 +12,7 @@ import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import { DEFAULT_DRIVERS } from "@shared/consts";
+import { EDriverType } from "@shared/enums";
 import { ICubeData, IDriver, IParamsData } from "@shared/models";
 import { useCube } from "src/context/hooks";
 
@@ -137,6 +138,7 @@ export default function DriversStep() {
             >
               <ListItemIcon>
                 <Checkbox
+                  disabled={value.required}
                   checked={checked.includes(value)}
                   tabIndex={-1}
                   disableRipple
