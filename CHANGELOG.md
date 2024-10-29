@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## 0.37.0 (2024-10-29)
+
+
+### Features
+
+* **calculate:** add more inventory parameters ([#65](https://github.com/humexxx/trim-success/issues/65)) ([f54dd06](https://github.com/humexxx/trim-success/commit/f54dd06630ec6e3e31609fbf32523afc80cc2095))
+
 ## 0.36.0 (2024-10-27)
 
 ## 0.35.0 (2024-10-27)
