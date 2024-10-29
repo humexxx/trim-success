@@ -22,7 +22,7 @@ const CategoriesTable = ({ data, drivers }: Props) => {
         flex: 1,
       },
       ...drivers
-        .filter((x) => -1 !== x.columnIndexReference)
+        .filter((x) => !x.xcatHidden)
         .map(
           (driver, index) =>
             ({

@@ -8,4 +8,5 @@ export enum EDriverType {
   PLANNERS = "PLANNERS",
   ORDERS = "ORDERS",
   GROSS_MARGIN = "GROSS_MARGIN",
+  COST_SALES = "COST_SALES",
 }

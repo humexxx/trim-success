@@ -120,13 +120,6 @@ export const calculateDataMining = functions.https.onCall<ICallableRequest>(
     if (!req.auth) return { success: false, error: "Not authenticated." };
     const uid = req.auth.token.admin ? req.data.uid : req.auth?.uid;
 
-    const paramsData = await admin
-      .firestore()
-      .doc(FIRESTORE_PATHS.SETTINGS.PARAMS(uid))
-      .get();
-    if (!paramsData.exists)
-      return { success: false, error: "Params data not found." };
-
     try {
       const { dataModel } = await getDataModel(uid);
       const cubeParameters = await getCubeParamteres(uid);
