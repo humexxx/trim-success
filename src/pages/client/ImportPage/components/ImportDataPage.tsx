@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useState } from "react";
 
 import { LoadingButton } from "@mui/lab";
 import Box from "@mui/material/Box";
@@ -11,7 +11,6 @@ import Typography from "@mui/material/Typography";
 import { useNavigate } from "react-router-dom";
 import { useCube } from "src/context/hooks";
 import {
-  ParamsDataStep,
   DropzoneStep,
   FileUploadStep,
   DriversStep,
@@ -28,7 +27,6 @@ export interface FileResolution {
 export default function ImportDataPage() {
   const [activeStep, setActiveStep] = useState(0);
   const [stepError, setStepError] = useState("");
-  const [loading, setLoading] = useState(false);
 
   const [fileResolution, setFileResolution] = useState<
     FileResolution | undefined
@@ -36,7 +34,6 @@ export default function ImportDataPage() {
 
   const navigate = useNavigate();
   const cube = useCube();
-  const paramsDataComponentRef = useRef<{ saveData: () => void }>(null);
 
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -82,35 +79,7 @@ export default function ImportDataPage() {
           <StepperFooter
             handleBack={handleBack}
             handleNext={handleNext}
-            disableNext={Boolean(stepError) || loading}
-          />
-        </StepContent>
-      </Step>
-      <Step>
-        <StepLabel
-          optional={
-            <Typography variant="caption">
-              Parametros para la generación de reportes
-            </Typography>
-          }
-        >
-          Verificar Parametros
-        </StepLabel>
-        <StepContent>
-          <StepContentWrapper>
-            <ParamsDataStep
-              ref={paramsDataComponentRef}
-              error={stepError}
-              loading={loading}
-            />
-          </StepContentWrapper>
-          <StepperFooter
-            handleBack={handleBack}
-            handleNext={() => {
-              paramsDataComponentRef.current?.saveData();
-              handleNext();
-            }}
-            disableNext={Boolean(stepError) || loading}
+            disableNext={Boolean(stepError)}
           />
         </StepContent>
       </Step>

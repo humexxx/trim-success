@@ -1,16 +1,17 @@
-import { FIRESTORE_PATHS } from "@shared/consts";
+import { FIRESTORE_PATHS, JSON_FILE_NAME, STORAGE_PATH } from "@shared/consts";
 import { EColumnType } from "@shared/enums";
 import { EInventoryPerformaceMetricType } from "@shared/enums/EInventoryPerformaceMetricType";
 import { ESystemColumnType } from "@shared/enums/ESystemColumnType";
 import {
   IBaseData,
+  ICubeParameters,
   IDataModel,
+  IDataModelCubeRow,
   IInventoryPerformanceData,
-  IParamsData,
   IScorecardData,
 } from "@shared/models";
 import { getColumn, getRowValue } from "@shared/utils";
-import { firestore } from "firebase-admin";
+import { firestore, storage } from "firebase-admin";
 import { logger } from "firebase-functions";
 
 import {
@@ -22,13 +23,13 @@ import {
 } from "./cube";
 import { uploadJsonFile } from "./file";
 
-export async function getCubeParamteres(uid: string): Promise<IParamsData> {
+export async function getCubeParamteres(uid: string): Promise<ICubeParameters> {
   const paramsData = await firestore()
     .doc(FIRESTORE_PATHS.SETTINGS.PARAMS(uid))
     .get();
-  if (!paramsData.exists) throw new Error("Params data not found.");
+  if (!paramsData.exists) throw new Error("Cube parameters data not found.");
 
-  return paramsData.data() as IParamsData;
+  return paramsData.data() as ICubeParameters;
 }
 
 export async function getDataMining(uid: string): Promise<IBaseData> {
@@ -63,8 +64,8 @@ export async function getInventoryPerformanceData(
 
 export async function generateDataMining(
   uid: string,
-  rows: IDataModel["rows"],
-  cubeParameters: IParamsData
+  rows: IDataModel<IDataModelCubeRow>["rows"],
+  cubeParameters: ICubeParameters
 ): Promise<IBaseData> {
   logger.info("Generating data mining...");
 
@@ -102,7 +103,7 @@ export async function generateDataMining(
 
 export async function generateScorecard(
   uid: string,
-  cubeParameters: IParamsData,
+  cubeParameters: ICubeParameters,
   dataMining: IBaseData
 ): Promise<IScorecardData> {
   logger.info("Generating scorecard...");
@@ -141,9 +142,9 @@ export async function generateInventoryPerformance(
 export async function generateDataModelInventoryPerformance(
   uid: string,
   fileUid: string,
-  dataModel: IDataModel,
+  dataModel: IDataModel<IDataModelCubeRow>,
   inventoryPerformance: IInventoryPerformanceData
-): Promise<IDataModel> {
+): Promise<IDataModel<IDataModelCubeRow>> {
   logger.info("Generating data model inventory performance...");
 
   const icrRow = inventoryPerformance.rows.find(
@@ -176,4 +177,26 @@ export async function generateDataModelInventoryPerformance(
 
   logger.info("Data model inventory performance generated and saved.");
   return dataModel;
+}
+
+// TODO: make it dynamic (multiple files)
+export async function getCubeDataModel(
+  uid: string
+): Promise<{ dataModel: IDataModel<IDataModelCubeRow>; fileUid: string }> {
+  const folderRef = `${STORAGE_PATH}/${uid}/`;
+
+  const [files] = await storage().bucket().getFiles({ prefix: folderRef });
+  if (!files || files.length === 0) {
+    throw new Error("No files found.");
+  }
+  const jsonFile = files.find((file) => file.name.includes(JSON_FILE_NAME));
+  if (!jsonFile) throw new Error("JSON file not found.");
+
+  const [fileContent] = await jsonFile.download();
+  return {
+    dataModel: JSON.parse(
+      fileContent.toString()
+    ) as IDataModel<IDataModelCubeRow>,
+    fileUid: jsonFile.name.split("-")[0].split("/")[2],
+  };
 }

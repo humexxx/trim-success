@@ -1,4 +1,5 @@
 export * from "./EColumnType";
 export * from "./EFileType";
 export * from "./EDriverType";
-export * from "./ENumberType";
+export * from "./EValueType";
+export * from "./EDataModel";

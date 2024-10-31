@@ -40,7 +40,7 @@ const FileUpload = ({ handleOnFinish, fileResolution }: Props) => {
 
       const storageRef = ref(storage, `${STORAGE_PATH}/${uid}/${generateUID}`);
       await uploadBytes(storageRef, fileResolution.file);
-      await cube.initCube(generateUID, cube.data!.paramsData);
+      await cube.initCube(generateUID, cube.data!.cubeParameters.drivers);
       await cube.reloadCubeData();
       handleOnFinish();
     } catch (error) {

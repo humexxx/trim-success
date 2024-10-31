@@ -1,5 +1,8 @@
 import { Grid, TextField, Typography } from "@mui/material";
-import { IParamsData } from "@shared/models";
+import {
+  EDataModelParameterType,
+  EDataModelParameterSubType,
+} from "@shared/enums";
 import {
   Control,
   FieldErrors,
@@ -7,22 +10,20 @@ import {
   UseFormRegister,
 } from "react-hook-form";
 import { CurrencyField, PercentageField } from "src/components/form";
+import { InferType } from "yup";
+
+import { parametersScheme } from "../schema";
 
 interface Props {
-  register: UseFormRegister<Omit<IParamsData, "drivers" | "categories">>;
-  errors: FieldErrors<Omit<IParamsData, "drivers" | "categories">>;
-  control: Control<Omit<IParamsData, "drivers" | "categories">>;
+  register: UseFormRegister<InferType<typeof parametersScheme>>;
+  errors: FieldErrors<InferType<typeof parametersScheme>>;
+  control: Control<InferType<typeof parametersScheme>>;
 }
 
 const StoringParams = ({ register, errors, control }: Props) => {
-  const costsFieldArray = useFieldArray({
+  const parametersFieldArray = useFieldArray({
     control,
-    name: "storingParams.costs",
-  });
-
-  const investmentsFieldArray = useFieldArray({
-    control,
-    name: "storingParams.investments",
+    name: "parameters",
   });
 
   const inputField = ({ type, ...props }: any) => {
@@ -48,42 +49,47 @@ const StoringParams = ({ register, errors, control }: Props) => {
           Costos
         </Typography>
       </Grid>
-      {costsFieldArray.fields.map((field, index) => (
-        <Grid item xs={12} key={field.id}>
-          {inputField({
-            type: field.type,
-            ...register(`storingParams.costs.${index}.value` as const, {
-              valueAsNumber: true,
-            }),
-            label: field.label,
-            error: !!errors.storingParams?.costs?.[index]?.value,
-            helperText: errors.storingParams?.costs?.[index]?.value?.message,
-
-            fullWidth: true,
-          })}
-        </Grid>
-      ))}
+      {parametersFieldArray.fields.map((field, index) =>
+        field.type === EDataModelParameterType.STORING &&
+        field.subType === EDataModelParameterSubType.COSTS ? (
+          <Grid item xs={12} key={field.id}>
+            {inputField({
+              type: field.type,
+              ...register(`parameters.${index}.value` as const, {
+                valueAsNumber: true,
+              }),
+              label: field.name,
+              error: !!errors.parameters?.[index]?.value,
+              helperText: errors.parameters?.[index]?.value?.message,
+              fullWidth: true,
+              disabled: field.autoCalculated,
+            })}
+          </Grid>
+        ) : null
+      )}
       <Grid item xs={12} mt={2}>
         <Typography color="text.secondary" variant="body1">
           Inversiones
         </Typography>
       </Grid>
-      {investmentsFieldArray.fields.map((field, index) => (
-        <Grid item xs={12} key={field.id}>
-          {inputField({
-            type: field.type,
-            ...register(`storingParams.investments.${index}.value` as const, {
-              valueAsNumber: true,
-            }),
-            label: field.label,
-            error: !!errors.storingParams?.investments?.[index]?.value,
-            helperText:
-              errors.storingParams?.investments?.[index]?.value?.message,
-
-            fullWidth: true,
-          })}
-        </Grid>
-      ))}
+      {parametersFieldArray.fields.map((field, index) =>
+        field.type === EDataModelParameterType.STORING &&
+        field.subType === EDataModelParameterSubType.INVESTMENTS ? (
+          <Grid item xs={12} key={field.id}>
+            {inputField({
+              type: field.type,
+              ...register(`parameters.${index}.value` as const, {
+                valueAsNumber: true,
+              }),
+              label: field.name,
+              error: !!errors.parameters?.[index]?.value,
+              helperText: errors.parameters?.[index]?.value?.message,
+              fullWidth: true,
+              disabled: field.autoCalculated,
+            })}
+          </Grid>
+        ) : null
+      )}
     </Grid>
   );
 };

@@ -10,9 +10,9 @@ const Page = () => {
   const { data, isCubeLoading } = useCube();
 
   const baseData = data?.baseData;
-  const paramsData = data?.paramsData;
+  const cubeParameters = data?.cubeParameters;
 
-  if (!paramsData || isCubeLoading) {
+  if (!cubeParameters || isCubeLoading) {
     return <Alert severity="info">Loading...</Alert>;
   }
 
@@ -26,19 +26,19 @@ const Page = () => {
         <Grid item xs={12}>
           <CategoriesTable
             data={baseData?.categoriesData}
-            drivers={paramsData!.drivers}
+            drivers={cubeParameters!.drivers}
           />
         </Grid>
         <Grid item container xs={12}>
           <CategoriesGraph
             data={baseData!.categoriesData}
-            drivers={paramsData!.drivers}
+            drivers={cubeParameters!.drivers}
           />
         </Grid>
         <Grid item xs={12}>
           <DriversTable
             data={baseData?.driversData}
-            categories={paramsData?.categories ?? []}
+            categories={cubeParameters?.categories ?? []}
           />
         </Grid>
       </Grid>

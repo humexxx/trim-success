@@ -46,7 +46,7 @@ const Page = () => {
           {Boolean(data) && (
             <Table
               data={data!}
-              categories={cube.data?.paramsData.categories ?? []}
+              categories={cube.data?.cubeParameters.categories ?? []}
             />
           )}
         </>

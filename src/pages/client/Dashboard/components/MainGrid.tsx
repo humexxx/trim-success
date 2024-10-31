@@ -5,7 +5,7 @@ import { GridColDef, useGridApiRef } from "@mui/x-data-grid";
 import { STORAGE_PATH } from "@shared/consts";
 import { EColumnType } from "@shared/enums";
 import { ESystemColumnType } from "@shared/enums/ESystemColumnType";
-import { IColumn, IDataModel } from "@shared/models";
+import { IColumn, IDataModel, IDataModelCubeRow } from "@shared/models";
 import { formatCurrency, formatPercentage, getColumn } from "@shared/utils";
 import { listAll, getMetadata, getDownloadURL, ref } from "firebase/storage";
 import StripedGrid from "src/components/StripedDataGrid";
@@ -76,8 +76,9 @@ const MainGrid = () => {
   const [filters, setFilters] = useState<IFilterCriteria>({
     category: "",
   });
-  const [dataModel, setDataModel] = useState<IDataModel | null>(null);
-  const originalDataModel = useRef<IDataModel | null>(null);
+  const [dataModel, setDataModel] =
+    useState<IDataModel<IDataModelCubeRow> | null>(null);
+  const originalDataModel = useRef<IDataModel<IDataModelCubeRow> | null>(null);
 
   useEffect(() => {
     const fetchJsonFile = async () => {
@@ -96,7 +97,8 @@ const MainGrid = () => {
             const downloadURL = await getDownloadURL(itemRef);
 
             const response = await fetch(downloadURL);
-            const dataModel = (await response.json()) as IDataModel;
+            const dataModel =
+              (await response.json()) as IDataModel<IDataModelCubeRow>;
 
             setDataModel(dataModel);
             originalDataModel.current = dataModel;

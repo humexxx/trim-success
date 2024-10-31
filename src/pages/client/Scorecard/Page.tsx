@@ -1,6 +1,10 @@
 import { useCallback, useMemo, useState } from "react";
 
 import { Alert, Grid } from "@mui/material";
+import {
+  EDataModelParameterSubType,
+  EDataModelParameterType,
+} from "@shared/enums";
 import { ICubeData, IScorecardData } from "@shared/models";
 import { PageHeader } from "src/components";
 import { useCube } from "src/context/hooks";
@@ -29,13 +33,16 @@ const Page = () => {
   const [isInventoryCostsLoading, setIsInventoryCostsLoading] = useState(false);
 
   const scorecardData = data?.scorecardData;
-  const paramsData = data?.paramsData;
+  const paramsData = data?.cubeParameters;
   const baseData = data?.baseData;
 
   const investmentTypes = useMemo(
     () =>
-      paramsData?.generalParams.financial.filter(
-        (x) => x.key !== "sales" && x.key !== "salesCost"
+      paramsData?.parameters.filter(
+        (x) =>
+          x.type === EDataModelParameterType.GENERAL &&
+          x.subType === EDataModelParameterSubType.FINACIAL &&
+          !x.autoCalculated
       ),
     [paramsData]
   );
