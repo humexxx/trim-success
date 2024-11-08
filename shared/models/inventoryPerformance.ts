@@ -5,7 +5,7 @@ export interface IIventoryPerformanceMetric {
   key: EInventoryPerformaceMetricType;
   label: string;
   description: string;
-  type: EValueType;
+  valueType: EValueType;
 }
 
 export interface IInventoryPerformanceData {

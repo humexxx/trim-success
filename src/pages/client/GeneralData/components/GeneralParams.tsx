@@ -1,4 +1,4 @@
-import { Grid, TextField, Typography } from "@mui/material";
+import { Grid, Typography } from "@mui/material";
 import {
   EDataModelParameterType,
   EDataModelParameterSubType,
@@ -9,7 +9,7 @@ import {
   useFieldArray,
   UseFormRegister,
 } from "react-hook-form";
-import { CurrencyField, PercentageField } from "src/components/form";
+import { inputField } from "src/utils";
 import { InferType } from "yup";
 
 import { parametersScheme } from "../schema";
@@ -32,23 +32,6 @@ const GeneralParams = ({
     name: "parameters",
   });
 
-  const inputField = ({ type, ...props }: any) => {
-    switch (type) {
-      case "currency":
-        return <CurrencyField {...props} />;
-      case "percentage":
-        return <PercentageField {...props} />;
-      default:
-        return (
-          <TextField
-            type="number"
-            InputLabelProps={{ shrink: true }}
-            {...props}
-          />
-        );
-    }
-  };
-
   return (
     <Grid container spacing={2}>
       <Grid item xs={12}>
@@ -62,7 +45,7 @@ const GeneralParams = ({
         field.subType === EDataModelParameterSubType.FINACIAL ? (
           <Grid item xs={12} key={field.id}>
             {inputField({
-              type: field.type,
+              valueType: field.valueType,
               ...register(`parameters.${index}.value` as const, {
                 valueAsNumber: true,
               }),
@@ -87,7 +70,7 @@ const GeneralParams = ({
         field.subType === EDataModelParameterSubType.OPERATIVE ? (
           <Grid item xs={12} key={field.id}>
             {inputField({
-              type: field.type,
+              valueType: field.valueType,
               ...register(`parameters.${index}.value` as const, {
                 valueAsNumber: true,
               }),

@@ -118,7 +118,7 @@ export default function DriversStep() {
       <List
         sx={{
           width: 250,
-          height: 230,
+          height: 450,
           bgcolor: "background.paper",
           overflow: "auto",
         }}
@@ -134,10 +134,10 @@ export default function DriversStep() {
               key={value.key}
               role="listitem"
               onClick={handleToggle(value)}
+              disabled={value.required}
             >
               <ListItemIcon>
                 <Checkbox
-                  disabled={value.required}
                   checked={checked.includes(value)}
                   tabIndex={-1}
                   disableRipple

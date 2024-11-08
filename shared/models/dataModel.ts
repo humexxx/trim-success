@@ -14,6 +14,7 @@ export interface IDataModelParametersRow {
 }
 
 export interface IDataModelCubeRow {
+  id: number;
   [key: string]: string | number;
 }
 

@@ -10,21 +10,30 @@ import * as XLSX from "xlsx";
 
 const storage = admin.storage();
 
-function parseJsonData<T>(jsonData: any): IDataModel<T> {
+function parseJsonData<T>(
+  jsonData: [string[], ...(string | number)[][]],
+  options: { applyId: boolean } = { applyId: false }
+): IDataModel<T> {
   const header = jsonData[0];
   const rowsData: Array<T> = [];
 
   for (let i = 1; i < jsonData.length; i++) {
     const row = jsonData[i];
     const rowObj = row.reduce(
-      (acc: { [x: string]: any }, cell: any, index: string | number) => {
-        acc[header[index]] = cell;
+      (
+        acc: { [x: string]: string | number },
+        cell: string | number,
+        index: number
+      ) => {
+        if (header[index] || cell) acc[header[index]] = cell;
         return acc;
       },
-      {} as T
+      {}
     );
 
-    if (rowObj[header[0]]) rowsData.push(rowObj);
+    if (options.applyId) rowObj.id = i - 1;
+
+    rowsData.push(rowObj as T);
   }
 
   return {
@@ -38,19 +47,19 @@ export function uploadJsonFile(
   fileUid: string,
   dataModel: IDataModel<IDataModelCubeRow>
 ): Promise<void> {
-  const folderRef = `${STORAGE_PATH}/${uid}/`;
+  const folderPath = `${STORAGE_PATH}/${uid}/`;
 
   return storage
     .bucket()
-    .file(`${folderRef}${fileUid}-${JSON_FILE_NAME}.json`)
+    .file(`${folderPath}${fileUid}-${JSON_FILE_NAME}.json`)
     .save(JSON.stringify(dataModel), {
       contentType: "application/json",
     });
 }
 
 function getDataFromXLSX(data: Uint8Array): {
-  cubeRaw: unknown[];
-  parametersRaw: unknown[];
+  cubeRaw: [string[], ...(string | number)[][]];
+  parametersRaw: [string[], ...(string | number)[][]];
 } {
   const workbook = XLSX.read(data, { type: "array" });
 
@@ -60,7 +69,7 @@ function getDataFromXLSX(data: Uint8Array): {
   const cubeData = XLSX.utils.sheet_to_json(workbook.Sheets[cubeSheet], {
     header: 1,
     raw: true,
-  });
+  }) as [string[], ...(string | number)[][]];
 
   const parametersData = XLSX.utils.sheet_to_json(
     workbook.Sheets[parametersSheet],
@@ -68,7 +77,7 @@ function getDataFromXLSX(data: Uint8Array): {
       header: 1,
       raw: true,
     }
-  );
+  ) as [string[], ...(string | number)[][]];
 
   return {
     cubeRaw: cubeData,
@@ -85,8 +94,8 @@ export async function generateDataModels(
 }> {
   logger.info(`Generating data models for file: ${fileUid}`);
 
-  const folderRef = `${STORAGE_PATH}/${uid}/`;
-  const response = await storage.bucket().getFiles({ prefix: folderRef });
+  const folderPath = `${STORAGE_PATH}/${uid}/`;
+  const response = await storage.bucket().getFiles({ prefix: folderPath });
 
   const files = response[0];
   if (!files || files.length === 0) {
@@ -102,12 +111,14 @@ export async function generateDataModels(
   const data = new Uint8Array(fileContent);
 
   const { cubeRaw, parametersRaw } = getDataFromXLSX(data);
-  const cubeDataModel = parseJsonData<IDataModelCubeRow>(cubeRaw);
+  const cubeDataModel = parseJsonData<IDataModelCubeRow>(cubeRaw, {
+    applyId: true,
+  });
   const parametersDataModel =
     parseJsonData<IDataModelParametersRow>(parametersRaw);
 
   await uploadJsonFile(uid, fileUid, cubeDataModel);
 
-  logger.info("Data models generated and saved.");
+  logger.info(`Data models generated and saved for file: ${fileUid}`);
   return { cubeDataModel, parametersDataModel };
 }

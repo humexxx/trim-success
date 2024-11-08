@@ -157,9 +157,6 @@ const MainGrid = () => {
     <Stack spacing={2}>
       <Filters filters={filters} setFilters={setFilters} />
       <StripedGrid
-        getRowId={(x) =>
-          x[dataModel.columns[getColumn(EColumnType.SKU)!.index!]]
-        }
         apiRef={apiRef}
         rows={dataModel.rows}
         columns={columns}
