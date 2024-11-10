@@ -1,10 +1,22 @@
 import { Grid } from "@mui/material";
+import { EInventoryPerformaceMetricType } from "@shared/enums/EInventoryPerformaceMetricType";
+import { PageContent, PageHeader } from "src/components/layout";
+import { useCube } from "src/context/hooks";
 
 import { MainGrid, Reports } from "./components";
-import { PageContent, PageHeader } from "src/components/layout";
-import { BarChart } from "@mui/x-charts";
+import {
+  ICCGraph,
+  ICCvsSalesGraph,
+  ICRGraph,
+} from "../InventoryPerformance/components";
 
 const Page = () => {
+  const cube = useCube();
+
+  if (cube.isCubeLoading || !cube.data) return null;
+
+  console.log(cube.data.inventoryPerformanceData.rows);
+
   return (
     <>
       <PageHeader
@@ -13,33 +25,30 @@ const Page = () => {
       />
       <PageContent>
         <Grid container spacing={4}>
-          <Grid item xs={12} lg={12}>
-            <BarChart
-              xAxis={[
-                { scaleType: "band", data: ["group A", "group B", "group C"] },
-              ]}
-              series={[
-                { data: [4, 3, 5] },
-                { data: [1, 6, 3] },
-                { data: [2, 5, 6] },
-              ]}
-              width={500}
-              height={300}
-              bottomAxis={{
-                labelStyle: {
-                  fontSize: 14,
-                  transform: `translateY(${
-                    // Hack that should be added in the lib latter.
-                    5 * Math.abs(Math.sin((Math.PI * 45) / 180))
-                  }px)`,
-                },
-                tickLabelStyle: {
-                  angle: 90,
-                  textAnchor: "start",
-                  fontSize: 12,
-                },
-              }}
-              margin={{ bottom: 80 }}
+          <Grid item xs={12} lg={4}>
+            <ICRGraph
+              data={
+                cube.data.inventoryPerformanceData.rows.find(
+                  (x) => x.key === EInventoryPerformaceMetricType.ICR_PERCENTAGE
+                )!
+              }
+              categories={cube.data.cubeParameters.categories}
+            />
+          </Grid>
+          <Grid item xs={12} lg={4}>
+            <ICCGraph
+              scorecard={cube.data.scorecardData}
+              categories={cube.data.cubeParameters.categories}
+            />
+          </Grid>
+          <Grid item xs={12} lg={4}>
+            <ICCvsSalesGraph
+              data={
+                cube.data.inventoryPerformanceData.rows.find(
+                  (x) => x.key === EInventoryPerformaceMetricType.ICC_OVER_SALES
+                )!
+              }
+              categories={cube.data.cubeParameters.categories}
             />
           </Grid>
           <Grid item xs={12} lg={9}>

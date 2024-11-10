@@ -6,6 +6,7 @@ import {
   EDataModelParameterType,
 } from "@shared/enums";
 import { ICubeData, IScorecardData } from "@shared/models";
+import { PageContent, PageHeader } from "src/components/layout";
 import { useCube } from "src/context/hooks";
 import { useDocumentMetadata } from "src/hooks";
 import {
@@ -20,7 +21,6 @@ import {
   ScorecardTableWarehouse,
 } from "./components";
 import { useScorecard } from "./hooks";
-import { PageContent, PageHeader } from "src/components/layout";
 
 const Page = () => {
   useDocumentMetadata("Scorecard - Trim Success");

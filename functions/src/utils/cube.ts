@@ -429,7 +429,7 @@ function calculateInventoryPerformanceByKey(
       );
       return 12 / rotacion;
     }
-    case EInventoryPerformaceMetricType.ICC_SALES:
+    case EInventoryPerformaceMetricType.ICC_OVER_SALES:
       return (
         (Number(scorecard.inventoryCosts.totals[category]) +
           Number(scorecard.storingCosts.totals[category])) /
@@ -513,7 +513,7 @@ function calculateInventoryPerformanceTotalByKey(
       );
       return 12 / rotacionTotal;
     }
-    case EInventoryPerformaceMetricType.ICC_SALES:
+    case EInventoryPerformaceMetricType.ICC_OVER_SALES:
       return (
         (Number(scorecard.inventoryCosts.totals.total) +
           Number(scorecard.storingCosts.totals.total)) /

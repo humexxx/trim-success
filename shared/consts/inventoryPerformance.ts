@@ -29,7 +29,7 @@ export const DEFAULT_INVETORY_PERFORMANCE_METRICS: IIventoryPerformanceMetric[] 
       valueType: EValueType.OTHER,
     },
     {
-      key: EInventoryPerformaceMetricType.ICC_SALES,
+      key: EInventoryPerformaceMetricType.ICC_OVER_SALES,
       label: "Costo de Mantener Inventarios sobre Ventas",
       description: "ICC / Ventas",
       valueType: EValueType.PERCENTAGE,
