@@ -1,8 +1,11 @@
 import { useMemo } from "react";
 
 import { GridColDef } from "@mui/x-data-grid";
-import { IInventoryPerformanceData } from "@shared/models";
-import { formatPercentage } from "@shared/utils";
+import {
+  IInventoryPerformanceData,
+  IIventoryPerformanceMetric,
+} from "@shared/models";
+import { formatValue } from "@shared/utils";
 import { StripedDataGrid } from "src/components";
 
 interface Props {
@@ -21,14 +24,16 @@ const Table = ({ data, categories }: Props) => {
             field: category,
             headerName: category,
             width: 200,
-            valueFormatter: (value) => formatPercentage(value as number),
+            valueFormatter: (value, row: IIventoryPerformanceMetric) =>
+              formatValue(value, row.valueType),
           }) as GridColDef
       ),
       {
         field: "total",
         headerName: "Costo Totales",
         width: 150,
-        valueFormatter: (value) => formatPercentage(value as number),
+        valueFormatter: (value, row: IIventoryPerformanceMetric) =>
+          formatValue(value, row.valueType),
       },
     ],
     [categories]

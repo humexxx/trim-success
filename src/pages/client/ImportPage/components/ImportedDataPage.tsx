@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-import { CurrencyBitcoinRounded, Delete } from "@mui/icons-material";
+import { Delete } from "@mui/icons-material";
 import SubdirectoryArrowRightIcon from "@mui/icons-material/SubdirectoryArrowRight";
 import {
   Alert,
@@ -10,13 +10,11 @@ import {
   Typography,
 } from "@mui/material";
 import { EFileType } from "@shared/enums";
-import { httpsCallable } from "firebase/functions";
 import json from "src/assets/images/json.webp";
 import xls from "src/assets/images/xls.svg";
 import { ConfirmDialog } from "src/components";
 import { useAuth } from "src/context/hooks";
 import { useCube } from "src/context/hooks";
-import { functions } from "src/firebase";
 import { getError } from "src/utils";
 
 const ImportedDataPage = () => {

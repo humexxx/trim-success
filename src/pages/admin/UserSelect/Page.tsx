@@ -1,9 +1,9 @@
 import { Box } from "@mui/material";
-import { AdminRoute, PageHeader } from "src/components";
+import { AdminRoute } from "src/components";
 import { useDocumentMetadata } from "src/hooks";
 
 import { AdminClientSelector } from "./components";
-
+import { PageHeader, PageContent } from "src/components/layout";
 
 export default function Page() {
   useDocumentMetadata("Seleccionar Usuario - Trim Success");
@@ -14,9 +14,11 @@ export default function Page() {
         title="Cargar Archivo de Usuario"
         description="Como eres administrador, puedes cargar un archivo de usuario"
       />
-      <Box maxWidth={450}>
-        <AdminClientSelector />
-      </Box>
+      <PageContent>
+        <Box maxWidth={450}>
+          <AdminClientSelector />
+        </Box>
+      </PageContent>
     </AdminRoute>
   );
 }

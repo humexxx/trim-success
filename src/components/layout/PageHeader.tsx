@@ -4,15 +4,14 @@ import { Box, Typography } from "@mui/material";
 import { useDocumentMetadata } from "src/hooks";
 
 type Props = {
-  children?: React.ReactNode;
   title?: string;
   description?: string;
 };
 
-const PageHeader = ({ children, title, description }: Props) => {
+const PageHeader = ({ title, description }: Props) => {
   useDocumentMetadata(`${title} | Trim Success`);
   return (
-    <Box mb={4}>
+    <Box component={"header"}>
       {Boolean(title) && (
         <Typography
           color="text.primary"
@@ -28,7 +27,6 @@ const PageHeader = ({ children, title, description }: Props) => {
           {description}
         </Typography>
       )}
-      <Box mt={4}>{children}</Box>
     </Box>
   );
 };

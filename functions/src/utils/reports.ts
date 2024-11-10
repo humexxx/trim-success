@@ -1,4 +1,4 @@
-import { IBaseData, IParamsData } from "@shared/models";
+import { IBaseData, ICubeParameters } from "@shared/models";
 import { formatCurrency, formatPercentage } from "@shared/utils";
 import { TableLayout, TDocumentDefinitions } from "pdfmake/interfaces";
 
@@ -9,7 +9,7 @@ const COMMON_TABLE_LAYOUT: TableLayout = {
 };
 
 export function generateCategoriesReport(
-  paramsData: IParamsData,
+  cubeParameters: ICubeParameters,
   baseData: IBaseData
 ): TDocumentDefinitions {
   return {
@@ -28,7 +28,7 @@ export function generateCategoriesReport(
                 text: "Rotulos de fila",
                 style: "tableHeader",
               },
-              ...paramsData.drivers
+              ...cubeParameters.drivers
                 .filter((x) => -1 !== x.columnIndexReference)
                 .map((driver, index) => ({
                   text: `${index === 0 ? "Count of" : "Sum of"} ${driver.label}`,
@@ -41,7 +41,7 @@ export function generateCategoriesReport(
                 text: row.category,
                 margin: [0, 5, 0, 5],
               },
-              ...paramsData.drivers.map((driver, index) => ({
+              ...cubeParameters.drivers.map((driver, index) => ({
                 text:
                   index === 0
                     ? row[driver.key]
@@ -58,7 +58,7 @@ export function generateCategoriesReport(
                 fillColor: "#f5a623",
                 color: "white",
               },
-              ...paramsData.drivers
+              ...cubeParameters.drivers
                 .filter((x) => -1 !== x.columnIndexReference)
                 .map((driver, index) => ({
                   text:
@@ -82,7 +82,7 @@ export function generateCategoriesReport(
 }
 
 export function generateDriversReport(
-  paramsData: IParamsData,
+  cubeParameters: ICubeParameters,
   baseData: IBaseData
 ): TDocumentDefinitions {
   return {
@@ -101,7 +101,7 @@ export function generateDriversReport(
                 text: "Driver",
                 style: "tableHeader",
               },
-              ...paramsData.categories.map((category) => ({
+              ...cubeParameters.categories.map((category) => ({
                 text: category,
                 style: "tableHeader",
                 alignment: "right",
@@ -112,7 +112,7 @@ export function generateDriversReport(
                 text: row.driver,
                 margin: [0, 5, 0, 5],
               },
-              ...paramsData.categories.map((category) => ({
+              ...cubeParameters.categories.map((category) => ({
                 text: formatPercentage(row[category] as number),
                 margin: [0, 5, 0, 5],
                 alignment: "right",
@@ -127,13 +127,13 @@ export function generateDriversReport(
 }
 
 export function generateGeneralReport(
-  paramsData: IParamsData,
+  cubeParameters: ICubeParameters,
   baseData: IBaseData
 ): TDocumentDefinitions {
   return {
     content: [
-      ...(generateCategoriesReport(paramsData, baseData).content as any),
-      ...(generateDriversReport(paramsData, baseData).content as any),
+      ...(generateCategoriesReport(cubeParameters, baseData).content as any),
+      ...(generateDriversReport(cubeParameters, baseData).content as any),
     ],
     styles: {
       header: {

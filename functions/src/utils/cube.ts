@@ -1,20 +1,28 @@
 import { DEFAULT_INVETORY_PERFORMANCE_METRICS } from "@shared/consts";
-import { EColumnType, EDriverType } from "@shared/enums";
-import { EAutoCompleteParamameterType } from "@shared/enums/EAutoCompleteParamameterType";
+import {
+  ECalculatedParamameterType,
+  EColumnType,
+  EDataModelParameterSubType,
+  EDataModelParameterType,
+  EDriverType,
+  EValueType,
+} from "@shared/enums";
 import { EInventoryPerformaceMetricType } from "@shared/enums/EInventoryPerformaceMetricType";
 import {
   IDriver,
   IBaseData,
-  IParamsData,
   IScorecardData,
   IInventoryPerformanceData,
   IDataModel,
   IInitialCubeData,
+  IDataModelCubeRow,
+  IDataModelParametersRow,
+  ICubeParameters,
 } from "@shared/models";
 import { getColumn, getColumnIndex, getRowValue } from "@shared/utils";
 
 export function calculateInitialData(
-  rows: IDataModel["rows"]
+  rows: IDataModel<IDataModelCubeRow>["rows"]
 ): IInitialCubeData {
   const categoriesSet = new Set();
   let sumSales = 0;
@@ -135,115 +143,144 @@ export function calculateDriversDataRows(
 }
 
 export function calculateScorecardData(
-  paramsData: IParamsData,
+  cubeParameters: ICubeParameters,
   baseData: IBaseData
 ): IScorecardData {
+  const investmentsTypes = cubeParameters.parameters.filter(
+    (x) =>
+      x.type === EDataModelParameterType.GENERAL &&
+      x.subType === EDataModelParameterSubType.FINACIAL &&
+      !x.autoCalculated
+  );
+
   const storingCosts: IScorecardData["storingCosts"]["rows"] = [
-    ...paramsData.storingParams.costs.map((cost) => {
-      const driver = paramsData.drivers[0];
-      const _row = {
-        cost: cost.label,
-        total: cost.value,
-        driver: driver.key,
-        totalPercentage: 0,
-        invest: "",
-        ...paramsData.categories.reduce(
-          (acc, category) => {
-            acc[category] =
-              cost.value *
-              Number(
-                baseData.driversData.rows.find(
-                  (row) => row.driver === driver.label
-                )![category]
-              );
-            return acc;
-          },
-          {} as Record<string, number>
-        ),
-      };
-      return _row;
-    }),
-    ...paramsData.storingParams.investments.map((investment) => {
-      const driver = paramsData.drivers[0];
-      const investmentsTypes = paramsData.generalParams.financial.slice(2);
-      const investType = investmentsTypes[0];
-      const _row = {
-        invest: investType.key,
-        cost: investment.label,
-        total: investment.value * (investType.value / 100),
-        driver: driver.key,
-        totalPercentage: 0,
-        ...paramsData.categories.reduce(
-          (acc, category) => {
-            acc[category] =
-              investment.value *
-              (investType.value / 100) *
-              Number(
-                baseData.driversData.rows.find(
-                  (row) => row.driver === driver.label
-                )![category]
-              );
-            return acc;
-          },
-          {} as Record<string, number>
-        ),
-      };
-      return _row;
-    }),
+    ...cubeParameters.parameters
+      .filter(
+        (x) =>
+          x.type === EDataModelParameterType.STORING &&
+          x.subType === EDataModelParameterSubType.COSTS
+      )
+      .map((cost) => {
+        const driver = cubeParameters.drivers[0];
+        const _row = {
+          cost: cost.name,
+          total: cost.value,
+          driver: driver.key,
+          totalPercentage: 0,
+          invest: "",
+          ...cubeParameters.categories.reduce(
+            (acc, category) => {
+              acc[category] =
+                cost.value *
+                Number(
+                  baseData.driversData.rows.find(
+                    (row) => row.driver === driver.label
+                  )![category]
+                );
+              return acc;
+            },
+            {} as Record<string, number>
+          ),
+        };
+        return _row;
+      }),
+    ...cubeParameters.parameters
+      .filter(
+        (x) =>
+          x.type === EDataModelParameterType.STORING &&
+          x.subType === EDataModelParameterSubType.INVESTMENTS
+      )
+      .map((investment) => {
+        const driver = cubeParameters.drivers[0];
+        const investType = investmentsTypes[0];
+        const _row = {
+          invest: investType.name,
+          cost: investment.name,
+          total: investment.value * (investType.value / 100),
+          driver: driver.key,
+          totalPercentage: 0,
+          ...cubeParameters.categories.reduce(
+            (acc, category) => {
+              acc[category] =
+                investment.value *
+                (investType.value / 100) *
+                Number(
+                  baseData.driversData.rows.find(
+                    (row) => row.driver === driver.label
+                  )![category]
+                );
+              return acc;
+            },
+            {} as Record<string, number>
+          ),
+        };
+        return _row;
+      }),
   ];
 
   const inventoryCosts: IScorecardData["inventoryCosts"]["rows"] = [
-    ...paramsData.inventoryParams.costs.map((cost) => {
-      const driver = paramsData.drivers[0];
-      const _row = {
-        cost: cost.label,
-        total: cost.value,
-        driver: driver.key,
-        invest: "",
-        totalPercentage: 0,
-        ...paramsData.categories.reduce(
-          (acc, category) => {
-            acc[category] =
-              cost.value *
-              Number(
-                baseData.driversData.rows.find(
-                  (row) => row.driver === driver.label
-                )![category]
-              );
-            return acc;
-          },
-          {} as Record<string, number>
-        ),
-      };
-      return _row;
-    }),
-    ...paramsData.inventoryParams.investments.map((investment) => {
-      const driver = paramsData.drivers[0];
-      const investmentsTypes = paramsData.generalParams.financial.slice(2);
-      const investType = investmentsTypes[0];
-      const _row = {
-        invest: investType.key,
-        cost: investment.label,
-        total: investment.value * (investType.value / 100),
-        driver: driver.key,
-        totalPercentage: 0,
-        ...paramsData.categories.reduce(
-          (acc, category) => {
-            acc[category] =
-              investment.value *
-              (investType.value / 100) *
-              Number(
-                baseData.driversData.rows.find(
-                  (row) => row.driver === driver.label
-                )![category]
-              );
-            return acc;
-          },
-          {} as Record<string, number>
-        ),
-      };
-      return _row;
-    }),
+    ...cubeParameters.parameters
+      .filter(
+        (x) =>
+          x.type === EDataModelParameterType.INVENTORY &&
+          x.subType === EDataModelParameterSubType.COSTS
+      )
+      .map((cost) => {
+        const driver = cubeParameters.drivers[0];
+        const _row = {
+          cost: cost.name,
+          total: cost.value,
+          driver: driver.key,
+          invest: "",
+          totalPercentage: 0,
+          ...cubeParameters.categories.reduce(
+            (acc, category) => {
+              acc[category] =
+                cost.value *
+                Number(
+                  baseData.driversData.rows.find(
+                    (row) => row.driver === driver.label
+                  )![category]
+                );
+              return acc;
+            },
+            {} as Record<string, number>
+          ),
+        };
+        return _row;
+      }),
+    ...cubeParameters.parameters
+      .filter(
+        (x) =>
+          x.type === EDataModelParameterType.INVENTORY &&
+          x.subType === EDataModelParameterSubType.INVESTMENTS
+      )
+      .map((investment) => {
+        const driver = cubeParameters.drivers[0];
+        const investType = investmentsTypes[0];
+        const _row = {
+          invest: investType.name,
+          cost: investment.name,
+          total: investment.value * (investType.value / 100),
+          driver: driver.key,
+          totalPercentage: 0,
+          ...cubeParameters.categories.reduce(
+            (acc, category) => {
+              acc[category] =
+                investment.value *
+                (investType.value / 100) *
+                Number(
+                  baseData.driversData.rows.find(
+                    (row) => row.driver === driver.label
+                  )![category]
+                );
+              return acc;
+            },
+            {} as Record<string, number>
+          ),
+        };
+        return _row;
+      }),
   ];
 
   const totalStoringCost = storingCosts.reduce((acc, row) => {
@@ -270,7 +307,7 @@ export function calculateScorecardData(
       totals: {
         total: storingCosts.reduce((acc, row) => acc + Number(row.total), 0),
         totalPercentage: 1,
-        ...paramsData.categories.reduce(
+        ...cubeParameters.categories.reduce(
           (acc, category) => {
             acc[category] = storingCosts.reduce(
               (acc, row) => acc + Number(row[category]),
@@ -287,7 +324,7 @@ export function calculateScorecardData(
       totals: {
         total: inventoryCosts.reduce((acc, row) => acc + Number(row.total), 0),
         totalPercentage: 1,
-        ...paramsData.categories.reduce(
+        ...cubeParameters.categories.reduce(
           (acc, category) => {
             acc[category] = inventoryCosts.reduce(
               (acc, row) => acc + Number(row[category]),
@@ -504,28 +541,46 @@ function calculateInventoryPerformanceTotalByKey(
   }
 }
 
-export function getCubeParametersWithAutoGeneratedValues(
-  cubeParameters: IParamsData,
-  initialData: IInitialCubeData
-): IParamsData {
-  const _cubeParameters = structuredClone(cubeParameters);
-  _cubeParameters.generalParams.financial.map((financial, i) => {
-    if (financial.key === EAutoCompleteParamameterType.SALES) {
-      _cubeParameters.generalParams.financial[i].value = initialData.sumSales;
-    }
-    if (financial.key === EAutoCompleteParamameterType.SALES_COST) {
-      _cubeParameters.generalParams.financial[i].value =
-        initialData.sumCostSales;
-    }
-  });
-  _cubeParameters.inventoryParams.investments.map((investment, i) => {
-    if (investment.key === EAutoCompleteParamameterType.INVENTORY_INVESTMENT) {
-      _cubeParameters.inventoryParams.investments[i].value =
-        initialData.sumCostInventory;
-    }
-  });
+export function generateCubeParameters(
+  parametersDataModel: IDataModel<IDataModelParametersRow>,
+  initialData: IInitialCubeData,
+  drivers: IDriver[]
+): ICubeParameters {
+  const cubeParameters: ICubeParameters = {
+    categories: initialData.categories,
+    drivers,
+    parameters: [
+      ...parametersDataModel.rows.map((row) => ({
+        ...row,
+        value: row.value as number,
+        autoCalculated: false,
+      })),
+      {
+        type: EDataModelParameterType.GENERAL,
+        subType: EDataModelParameterSubType.FINACIAL,
+        name: ECalculatedParamameterType.SALES,
+        value: initialData.sumSales,
+        valueType: EValueType.AMOUNT,
+        autoCalculated: true,
+      },
+      {
+        type: EDataModelParameterType.GENERAL,
+        subType: EDataModelParameterSubType.FINACIAL,
+        name: ECalculatedParamameterType.SALES_COST,
+        value: initialData.sumCostSales,
+        valueType: EValueType.AMOUNT,
+        autoCalculated: true,
+      },
+      {
+        type: EDataModelParameterType.INVENTORY,
+        subType: EDataModelParameterSubType.INVESTMENTS,
+        name: ECalculatedParamameterType.INVENTORY_INVESTMENT,
+        value: initialData.sumCostInventory,
+        valueType: EValueType.AMOUNT,
+        autoCalculated: true,
+      },
+    ],
+  };
 
-  _cubeParameters.categories = initialData.categories;
-
-  return _cubeParameters;
+  return cubeParameters;
 }
