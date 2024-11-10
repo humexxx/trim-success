@@ -439,7 +439,7 @@ function calculateInventoryPerformanceByKey(
           )![EDriverType.SALES]
         )
       );
-    case EInventoryPerformaceMetricType.INVENTORY_COST_OVER_AVG_SALES:
+    case EInventoryPerformaceMetricType.INVENTORY_VALUE_OVER_AVG_SALES:
       return (
         Number(
           baseData.categoriesData.rows.find(
@@ -465,7 +465,7 @@ function calculateInventoryPerformanceByKey(
           )![EDriverType.INVENTORY_VALUE]
         )
       );
-    case EInventoryPerformaceMetricType.INVENTORY_EXPECTED_VALUE:
+    case EInventoryPerformaceMetricType.INVENTORY_VALUE_ADDED:
       return (
         Number(
           baseData.categoriesData.rows.find(
@@ -519,7 +519,7 @@ function calculateInventoryPerformanceTotalByKey(
           Number(scorecard.storingCosts.totals.total)) /
         Number(baseData.categoriesData.totals[EDriverType.SALES])
       );
-    case EInventoryPerformaceMetricType.INVENTORY_COST_OVER_AVG_SALES:
+    case EInventoryPerformaceMetricType.INVENTORY_VALUE_OVER_AVG_SALES:
       return (
         Number(baseData.categoriesData.totals[EDriverType.AVERAGE_INVENTORY]) /
         Number(baseData.categoriesData.totals[EDriverType.SALES])
@@ -529,7 +529,7 @@ function calculateInventoryPerformanceTotalByKey(
         Number(baseData.categoriesData.totals[EDriverType.GROSS_MARGIN]) /
         Number(baseData.categoriesData.totals[EDriverType.INVENTORY_VALUE])
       );
-    case EInventoryPerformaceMetricType.INVENTORY_EXPECTED_VALUE:
+    case EInventoryPerformaceMetricType.INVENTORY_VALUE_ADDED:
       return (
         Number(baseData.categoriesData.totals[EDriverType.GROSS_MARGIN]) -
         (Number(scorecard.inventoryCosts.totals.total) +

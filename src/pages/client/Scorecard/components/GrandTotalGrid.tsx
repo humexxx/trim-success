@@ -2,7 +2,7 @@ import { useMemo } from "react";
 
 import { GridColDef } from "@mui/x-data-grid";
 import { IScorecardData } from "@shared/models";
-import { formatCurrency } from "@shared/utils";
+import { formatAmount } from "@shared/utils";
 import { TotalGrid } from "src/components";
 
 interface Props {
@@ -30,7 +30,7 @@ const GrandTotalGrid = ({ data, categories, loading }: Props) => {
         (category) =>
           ({
             field: category,
-            headerName: formatCurrency(
+            headerName: formatAmount(
               Number(data?.inventoryCosts.totals[category]) +
                 Number(data?.storingCosts.totals[category])
             ),
@@ -40,7 +40,7 @@ const GrandTotalGrid = ({ data, categories, loading }: Props) => {
       ),
       {
         field: "total",
-        headerName: formatCurrency(
+        headerName: formatAmount(
           Number(data?.inventoryCosts.totals.total) +
             Number(data?.storingCosts.totals.total)
         ),

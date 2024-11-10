@@ -5,7 +5,7 @@ import { BarChart } from "@mui/x-charts";
 import { IInventoryPerformanceData } from "@shared/models";
 import { formatPercentage } from "@shared/utils";
 
-const ICRGraph = ({
+const InventoryValueOverSalesGraph = ({
   data,
   categories,
 }: {
@@ -46,8 +46,8 @@ const ICRGraph = ({
         {
           dataKey: "value",
           valueFormatter: (value) => formatPercentage(value as number),
-          color: theme.palette.grey[400],
-          label: "Inventory Carry Rate (ICR)",
+          color: theme.palette.secondary.dark,
+          label: "Inventory Value vs. Sales",
         },
       ]}
       height={350}
@@ -71,4 +71,4 @@ const ICRGraph = ({
   );
 };
 
-export default ICRGraph;
+export default InventoryValueOverSalesGraph;

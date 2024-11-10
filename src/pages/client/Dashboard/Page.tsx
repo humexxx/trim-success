@@ -8,6 +8,8 @@ import {
   ICCGraph,
   ICCvsSalesGraph,
   ICRGraph,
+  InventoryValueAddedGraph,
+  InventoryValueOverSalesGraph,
 } from "../InventoryPerformance/components";
 
 const Page = () => {
@@ -25,7 +27,7 @@ const Page = () => {
       />
       <PageContent>
         <Grid container spacing={4}>
-          <Grid item xs={12} lg={4}>
+          <Grid item xs={12} md={6} xl={4}>
             <ICRGraph
               data={
                 cube.data.inventoryPerformanceData.rows.find(
@@ -35,13 +37,13 @@ const Page = () => {
               categories={cube.data.cubeParameters.categories}
             />
           </Grid>
-          <Grid item xs={12} lg={4}>
+          <Grid item xs={12} md={6} xl={4}>
             <ICCGraph
               scorecard={cube.data.scorecardData}
               categories={cube.data.cubeParameters.categories}
             />
           </Grid>
-          <Grid item xs={12} lg={4}>
+          <Grid item xs={12} md={6} xl={4}>
             <ICCvsSalesGraph
               data={
                 cube.data.inventoryPerformanceData.rows.find(
@@ -50,6 +52,42 @@ const Page = () => {
               }
               categories={cube.data.cubeParameters.categories}
             />
+          </Grid>
+          <Grid item xs={12} md={6} xl={4}>
+            <InventoryValueOverSalesGraph
+              data={
+                cube.data.inventoryPerformanceData.rows.find(
+                  (x) =>
+                    x.key ===
+                    EInventoryPerformaceMetricType.INVENTORY_VALUE_OVER_AVG_SALES
+                )!
+              }
+              categories={cube.data.cubeParameters.categories}
+            />
+          </Grid>
+          <Grid item xs={12} md={6} xl={4}>
+            <InventoryValueAddedGraph
+              data={
+                cube.data.inventoryPerformanceData.rows.find(
+                  (x) =>
+                    x.key ===
+                    EInventoryPerformaceMetricType.INVENTORY_VALUE_ADDED
+                )!
+              }
+              categories={cube.data.cubeParameters.categories}
+            />
+          </Grid>
+          <Grid item xs={12} md={6} xl={4}>
+            TODO: Inventory Value Added Return on Inventory™ (IVAROI)
+          </Grid>
+          <Grid item xs={12} md={6} xl={4}>
+            TODO: Duplicate of Inventory Carrying Cost?
+          </Grid>
+          <Grid item xs={12} md={6} xl={4}>
+            TODO: Lost Sales
+          </Grid>
+          <Grid item xs={12} md={6} xl={4}>
+            TODO: Inventory Carrying Cost per SKU
           </Grid>
           <Grid item xs={12} lg={9}>
             <MainGrid />

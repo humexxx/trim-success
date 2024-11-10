@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Box } from "@mui/material";
 import { GridColDef } from "@mui/x-data-grid";
 import { IBaseData, IDriver } from "@shared/models";
-import { formatCurrency } from "@shared/utils";
+import { formatAmount } from "@shared/utils";
 import { StripedDataGrid } from "src/components";
 
 interface Props {
@@ -29,7 +29,7 @@ const CategoriesTable = ({ data, drivers }: Props) => {
               field: driver.key,
               headerName: `${index === 0 ? "Count of" : "Sum of"} ${driver.label}`,
               valueFormatter: (value) =>
-                index === 0 ? value : formatCurrency(value as number),
+                index === 0 ? value : formatAmount(value as number),
               type: "number",
               minWidth: 175,
             }) as GridColDef
@@ -52,7 +52,7 @@ const CategoriesTable = ({ data, drivers }: Props) => {
           (driver) =>
             ({
               field: driver.key,
-              headerName: formatCurrency(
+              headerName: formatAmount(
                 (data?.rows ?? []).reduce(
                   (acc, row) => acc + (row[driver.key] as number),
                   0

@@ -1,8 +1,8 @@
 import { Alert } from "@mui/material";
+import { PageContent, PageHeader } from "src/components/layout";
 import { useCube } from "src/context/hooks";
 
 import { Table } from "./components";
-import { PageContent, PageHeader } from "src/components/layout";
 
 const Page = () => {
   const cube = useCube();

@@ -1,8 +1,10 @@
 import { useMemo } from "react";
 
+import { useTheme } from "@mui/material";
 import { BarChart } from "@mui/x-charts";
+import { EAmountType } from "@shared/enums";
 import { IScorecardData } from "@shared/models";
-import { formatCurrency } from "@shared/utils";
+import { formatAmount } from "@shared/utils";
 
 const ICCGraph = ({
   scorecard,
@@ -11,6 +13,7 @@ const ICCGraph = ({
   scorecard: IScorecardData;
   categories: string[];
 }) => {
+  const theme = useTheme();
   const dataset = useMemo(() => {
     return [
       {
@@ -37,19 +40,38 @@ const ICCGraph = ({
   return (
     <BarChart
       dataset={dataset}
-      yAxis={[{ scaleType: "band", dataKey: "category" }]}
-      xAxis={[{ valueFormatter: (value) => formatCurrency(value as number) }]}
+      yAxis={[
+        {
+          scaleType: "band",
+          dataKey: "category",
+          valueFormatter: (value, context) => {
+            if (context.location === "tooltip") return value;
+            return value.length > 15 ? value.slice(0, 15) + "..." : value;
+          },
+        },
+      ]}
+      xAxis={[
+        {
+          valueFormatter: (value) =>
+            formatAmount(value as number, EAmountType.MILLIS),
+        },
+      ]}
       series={[
         {
           dataKey: "value",
-          valueFormatter: (value) => formatCurrency(value as number),
-          color: "#F44336",
+          valueFormatter: (value) => formatAmount(value as number),
+          color: theme.palette.error.dark,
           label: "Inventory Carry Cost (ICC)",
         },
       ]}
       layout="horizontal"
-      width={500}
-      height={300}
+      height={350}
+      leftAxis={{
+        tickLabelStyle: {
+          fontSize: 11,
+          letterSpacing: 0.2,
+        },
+      }}
       bottomAxis={{
         labelStyle: {
           fontSize: 14,
@@ -65,7 +87,7 @@ const ICCGraph = ({
           letterSpacing: 0.3,
         },
       }}
-      margin={{ bottom: 80, left: 60 }}
+      margin={{ bottom: 85, left: 110 }}
     />
   );
 };

@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 
+import { useTheme } from "@mui/material";
 import { BarChart } from "@mui/x-charts";
 import { IInventoryPerformanceData } from "@shared/models";
 import { formatPercentage } from "@shared/utils";
@@ -11,6 +12,7 @@ const ICCvsSalesGraph = ({
   data: IInventoryPerformanceData["rows"][0];
   categories: string[];
 }) => {
+  const theme = useTheme();
   const dataset = useMemo(() => {
     return [
       ...categories.map((category) => {
@@ -29,18 +31,26 @@ const ICCvsSalesGraph = ({
   return (
     <BarChart
       dataset={dataset}
-      xAxis={[{ scaleType: "band", dataKey: "category" }]}
+      xAxis={[
+        {
+          scaleType: "band",
+          dataKey: "category",
+          valueFormatter: (value, context) => {
+            if (context.location === "tooltip") return value;
+            return value.length > 15 ? value.slice(0, 15) + "..." : value;
+          },
+        },
+      ]}
       yAxis={[{ valueFormatter: (value) => formatPercentage(value as number) }]}
       series={[
         {
           dataKey: "value",
           valueFormatter: (value) => formatPercentage(value as number),
-          color: "#777",
-          label: "Inventory Carrying Cost vs Sales",
+          color: theme.palette.grey[800],
+          label: "Inventory Carrying Cost vs. Sales",
         },
       ]}
-      width={500}
-      height={300}
+      height={350}
       bottomAxis={{
         labelStyle: {
           fontSize: 14,
@@ -56,7 +66,7 @@ const ICCvsSalesGraph = ({
           letterSpacing: 0.3,
         },
       }}
-      margin={{ bottom: 80, left: 60 }}
+      margin={{ bottom: 85, left: 60 }}
     />
   );
 };

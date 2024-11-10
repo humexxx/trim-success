@@ -2,10 +2,11 @@ import { useMemo } from "react";
 
 import { useTheme } from "@mui/material";
 import { BarChart } from "@mui/x-charts";
+import { EAmountType } from "@shared/enums";
 import { IInventoryPerformanceData } from "@shared/models";
-import { formatPercentage } from "@shared/utils";
+import { formatAmount } from "@shared/utils";
 
-const ICRGraph = ({
+const InventoryValueAddedGraph = ({
   data,
   categories,
 }: {
@@ -15,23 +16,23 @@ const ICRGraph = ({
   const theme = useTheme();
   const dataset = useMemo(() => {
     return [
+      {
+        category: "Total",
+        value: data.total,
+      },
       ...categories.map((category) => {
         return {
           category,
           value: data[category] as number,
         };
       }),
-      {
-        category: "Total",
-        value: data.total,
-      },
     ];
   }, [data, categories]);
 
   return (
     <BarChart
       dataset={dataset}
-      xAxis={[
+      yAxis={[
         {
           scaleType: "band",
           dataKey: "category",
@@ -41,16 +42,28 @@ const ICRGraph = ({
           },
         },
       ]}
-      yAxis={[{ valueFormatter: (value) => formatPercentage(value as number) }]}
+      xAxis={[
+        {
+          valueFormatter: (value) =>
+            formatAmount(value as number, EAmountType.MILLIS),
+        },
+      ]}
       series={[
         {
           dataKey: "value",
-          valueFormatter: (value) => formatPercentage(value as number),
-          color: theme.palette.grey[400],
-          label: "Inventory Carry Rate (ICR)",
+          valueFormatter: (value) => formatAmount(value as number),
+          color: theme.palette.primary.dark,
+          label: "Iventory Value Added™ (IVA)",
         },
       ]}
+      layout="horizontal"
       height={350}
+      leftAxis={{
+        tickLabelStyle: {
+          fontSize: 11,
+          letterSpacing: 0.2,
+        },
+      }}
       bottomAxis={{
         labelStyle: {
           fontSize: 14,
@@ -66,9 +79,9 @@ const ICRGraph = ({
           letterSpacing: 0.3,
         },
       }}
-      margin={{ bottom: 85, left: 60 }}
+      margin={{ bottom: 85, left: 110 }}
     />
   );
 };
 
-export default ICRGraph;
+export default InventoryValueAddedGraph;

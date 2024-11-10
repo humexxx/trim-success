@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 
 import { GridCellParams, GridColDef, GridRowModel } from "@mui/x-data-grid";
 import { IDriver, IParameter, IScorecardData } from "@shared/models";
-import { formatCurrency, formatPercentage } from "@shared/utils";
+import { formatAmount, formatPercentage } from "@shared/utils";
 import { StripedDataGrid } from "src/components";
 
 interface Props {
@@ -62,14 +62,14 @@ const ScorecardTableInventory = ({
             field: category,
             headerName: category,
             minWidth: 150,
-            valueFormatter: formatCurrency,
+            valueFormatter: formatAmount,
           }) as GridColDef
       ),
       {
         field: "total",
         headerName: "Costos Totales",
         width: 150,
-        valueFormatter: formatCurrency,
+        valueFormatter: formatAmount,
       },
       {
         field: "totalPercentage",
@@ -119,13 +119,13 @@ const ScorecardTableInventory = ({
         (category) =>
           ({
             field: category,
-            headerName: formatCurrency(Number(data?.totals[category])),
+            headerName: formatAmount(Number(data?.totals[category])),
             width: 150,
           }) as GridColDef
       ),
       {
         field: "total",
-        headerName: formatCurrency(Number(data?.totals.total)),
+        headerName: formatAmount(Number(data?.totals.total)),
         width: 150,
       },
       {

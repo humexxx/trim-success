@@ -35,7 +35,7 @@ export const DEFAULT_INVETORY_PERFORMANCE_METRICS: IIventoryPerformanceMetric[] 
       valueType: EValueType.PERCENTAGE,
     },
     {
-      key: EInventoryPerformaceMetricType.INVENTORY_COST_OVER_AVG_SALES,
+      key: EInventoryPerformaceMetricType.INVENTORY_VALUE_OVER_AVG_SALES,
       label: "Valor del Inventario sobre Ventas",
       description: "Valor del Inventario sobre Ventas",
       valueType: EValueType.PERCENTAGE,
@@ -47,7 +47,7 @@ export const DEFAULT_INVETORY_PERFORMANCE_METRICS: IIventoryPerformanceMetric[] 
       valueType: EValueType.PERCENTAGE,
     },
     {
-      key: EInventoryPerformaceMetricType.INVENTORY_EXPECTED_VALUE,
+      key: EInventoryPerformaceMetricType.INVENTORY_VALUE_ADDED,
       label: "Valor Agregado del Inventario IVA™",
       description: "Margen de la Categoría - ICC",
       valueType: EValueType.AMOUNT,
