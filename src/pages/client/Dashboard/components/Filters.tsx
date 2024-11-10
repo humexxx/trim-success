@@ -29,7 +29,7 @@ const Filters = ({ filters, setFilters }: Props) => {
           }
         >
           <MenuItem value="">Todas</MenuItem>
-          {cube.data?.paramsData.categories.map((option) => (
+          {cube.data?.cubeParameters.categories.map((option) => (
             <MenuItem key={option} value={option}>
               {option}
             </MenuItem>

@@ -1,10 +1,11 @@
 import { IBaseData } from "./baseData";
+import { ICubeParameters } from "./cubeParameters";
 import { IInventoryPerformanceData } from "./inventoryPerformance";
-import { IParamsData } from "./paramsData";
 import { IScorecardData } from "./scorecardData";
+import { IDriver } from "./settings";
 
 export interface ICubeData {
-  paramsData: IParamsData;
+  cubeParameters: ICubeParameters;
   baseData: IBaseData;
   scorecardData: IScorecardData;
   inventoryPerformanceData: IInventoryPerformanceData;
@@ -12,7 +13,7 @@ export interface ICubeData {
 
 export interface IInitCube {
   fileUid: string;
-  cubeParameters: IParamsData;
+  drivers: IDriver[];
 }
 
 export interface IInitialCubeData {

@@ -12,7 +12,7 @@ import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import { DEFAULT_DRIVERS } from "@shared/consts";
-import { ICubeData, IDriver, IParamsData } from "@shared/models";
+import { ICubeData, ICubeParameters, IDriver } from "@shared/models";
 import { useCube } from "src/context/hooks";
 
 function not(a: readonly IDriver[], b: readonly IDriver[]) {
@@ -32,10 +32,10 @@ export default function DriversStep() {
 
   const [checked, setChecked] = React.useState<readonly IDriver[]>([]);
   const [left, setLeft] = React.useState<readonly IDriver[]>([]);
-  const right = cube.data?.paramsData?.drivers || [];
+  const right = cube.data?.cubeParameters?.drivers || [];
   const setRight = (value: readonly IDriver[]) =>
     cube.setData({
-      paramsData: { drivers: value } as IParamsData,
+      cubeParameters: { drivers: value } as ICubeParameters,
     } as ICubeData);
 
   const leftChecked = intersection(checked, left);
@@ -79,11 +79,11 @@ export default function DriversStep() {
 
   useEffect(() => {
     cube.setData({
-      paramsData: {
+      cubeParameters: {
         drivers: DEFAULT_DRIVERS.filter(
           (x) => x.key !== "PLANNERS" && x.key !== "ORDERS"
         ),
-      } as IParamsData,
+      } as ICubeParameters,
     } as ICubeData);
     setLeft(
       DEFAULT_DRIVERS.filter((x) => x.key === "PLANNERS" || x.key === "ORDERS")
@@ -118,7 +118,7 @@ export default function DriversStep() {
       <List
         sx={{
           width: 250,
-          height: 230,
+          height: 450,
           bgcolor: "background.paper",
           overflow: "auto",
         }}
@@ -134,6 +134,7 @@ export default function DriversStep() {
               key={value.key}
               role="listitem"
               onClick={handleToggle(value)}
+              disabled={value.required}
             >
               <ListItemIcon>
                 <Checkbox

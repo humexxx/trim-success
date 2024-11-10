@@ -7,7 +7,7 @@ import {
 } from "react";
 
 import { STORAGE_PATH } from "@shared/consts";
-import { ICubeData, IInitCube, IParamsData } from "@shared/models";
+import { ICubeData, IInitCube, IDriver } from "@shared/models";
 import { ICallableRequest, ICallableResponse } from "@shared/models/functions";
 import { httpsCallable } from "firebase/functions";
 import { listAll, getBlob, ref } from "firebase/storage";
@@ -35,7 +35,7 @@ export interface CubeContextType {
 
   initCube: (
     fileUid: string,
-    cubeParameters: IParamsData
+    drivers: IDriver[]
   ) => Promise<ICallableResponse<ICubeData>>;
   removeCube: () => Promise<ICallableResponse>;
 }
@@ -137,7 +137,7 @@ export function CubeProvider({ children, onCubeLoadError }: Props) {
   ]);
 
   const initCube = useCallback(
-    async (fileUid: string, cubeParameters: IParamsData) => {
+    async (fileUid: string, drivers: IDriver[]) => {
       const initCube = httpsCallable<
         ICallableRequest<IInitCube>,
         ICallableResponse<ICubeData>
@@ -146,7 +146,7 @@ export function CubeProvider({ children, onCubeLoadError }: Props) {
         uid: isAdmin ? customUser!.uid! : currentUser!.uid,
         data: {
           fileUid,
-          cubeParameters,
+          drivers,
         },
       });
 

@@ -1,7 +1,7 @@
 {
   "name": "trim-success",
   "private": true,
-  "version": "0.36.0",
+  "version": "0.39.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -47,6 +47,7 @@
     "prettier": "^3.3.3",
     "standard-version": "^9.5.0",
     "typescript": "^5.6.3",
-    "vite": "^5.4.10"
+    "vite": "^5.4.10",
+    "xlsx": "^0.18.5"
   }
 }

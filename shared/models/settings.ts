@@ -1,11 +1,15 @@
-import { EColumnType } from "@shared/enums";
+import { EColumnType, EDriverType } from "@shared/enums";
 import { ESystemColumnType } from "@shared/enums/ESystemColumnType";
 
 export interface IDriver {
   label: string;
   miningLabel: string;
-  key: string;
+  key: EDriverType;
   columnIndexReference: number;
+  required: boolean;
+
+  xcatHidden?: boolean;
+  xdriverHidden?: boolean;
 }
 
 export interface IColumn {

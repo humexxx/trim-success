@@ -85,57 +85,76 @@ export const DEFAULT_DRIVERS: IDriver[] = [
     key: EDriverType.SKUS,
     columnIndexReference: getColumnIndex(EColumnType.SKU)!,
     miningLabel: "% Sku's",
+    required: true,
   },
   {
     label: "Average Inventory",
     key: EDriverType.AVERAGE_INVENTORY,
     columnIndexReference: getColumnIndex(EColumnType.AVERAGE_INVENTORY)!,
     miningLabel: "% Average Inventory",
+    required: true,
   },
   {
     label: "$ Inventory Value",
     key: EDriverType.INVENTORY_VALUE,
     columnIndexReference: getColumnIndex(EColumnType.INVENTORY_VALUE)!,
     miningLabel: "% $ Inventory Value",
+    required: true,
   },
   {
     label: "Shipped Cases",
     key: EDriverType.SHIPPED_CASES,
     columnIndexReference: getColumnIndex(EColumnType.SHIPPED_CASES)!,
     miningLabel: "% Shipped Cases",
+    required: false,
   },
   {
     label: "Inventory Cube",
     key: EDriverType.INVENTORY_CUBE,
     columnIndexReference: getColumnIndex(EColumnType.INVENTORY_CUBE)!,
     miningLabel: "% Inventory Cube",
+    required: true,
   },
   {
     label: "Sales",
     key: EDriverType.SALES,
     columnIndexReference: getColumnIndex(EColumnType.SALES)!,
     miningLabel: "% Sales",
+    required: true,
   },
   {
     label: "Planners",
     key: EDriverType.PLANNERS,
     columnIndexReference: -1, // TODO: Add column index
     miningLabel: "% Planners",
+    required: false,
+    xcatHidden: true,
   },
   {
     label: "Orders",
     key: EDriverType.ORDERS,
     columnIndexReference: -1, // TODO: Add column index
     miningLabel: "% Orders",
+    required: false,
+    xcatHidden: true,
   },
   {
     label: "Gross Margin",
     key: EDriverType.GROSS_MARGIN,
     columnIndexReference: getColumnIndex(EColumnType.GROSS_MARGIN)!,
     miningLabel: "% Gross Margin",
+    required: true,
+  },
+  {
+    label: "Cost Sales",
+    key: EDriverType.COST_SALES,
+    columnIndexReference: getColumnIndex(EColumnType.COST_SALES)!,
+    miningLabel: "",
+    required: true,
+    xcatHidden: true,
+    xdriverHidden: true,
   },
 ];
 
 export * from "./columns";
-export * from "./parameters";
 export * from "./inventoryPerformance";

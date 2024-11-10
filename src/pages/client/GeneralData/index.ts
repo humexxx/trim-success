@@ -1,3 +1,3 @@
 export { default as GeneralDataPage } from "./Page";
-export { paramsSchema } from "./schema";
+export { parametersScheme } from "./schema";
 export { GeneralParams, InventoryParams, StoringParams } from "./components";
