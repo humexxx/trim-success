@@ -10,7 +10,7 @@ import {
 } from "@mui/x-charts";
 import { MakeOptional } from "@mui/x-charts/internals";
 import { IBaseData, IDriver } from "@shared/models";
-import { formatCurrency, formatPercentage } from "@shared/utils";
+import { formatAmount, formatPercentage } from "@shared/utils";
 
 interface Props {
   data: IBaseData["categoriesData"];
@@ -28,7 +28,7 @@ const CategoriesGraph = ({ data, drivers }: Props) => {
             .sort((a, b) => a.category.localeCompare(b.category))
             .map((row) => Number(row[driver.key])),
           label: driver.label,
-          valueFormatter: (value) => formatCurrency(value as number),
+          valueFormatter: (value) => formatAmount(value as number),
         } as MakeOptional<BarSeriesType, "type">;
       });
   }, [data, drivers]);

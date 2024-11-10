@@ -1,5 +1,5 @@
 import { IBaseData, ICubeParameters } from "@shared/models";
-import { formatCurrency, formatPercentage } from "@shared/utils";
+import { formatAmount, formatPercentage } from "@shared/utils";
 import { TableLayout, TDocumentDefinitions } from "pdfmake/interfaces";
 
 const COMMON_TABLE_LAYOUT: TableLayout = {
@@ -45,7 +45,7 @@ export function generateCategoriesReport(
                 text:
                   index === 0
                     ? row[driver.key]
-                    : formatCurrency(row[driver.key] as number),
+                    : formatAmount(row[driver.key] as number),
                 margin: [0, 5, 0, 5],
                 alignment: "right",
               })),
@@ -64,7 +64,7 @@ export function generateCategoriesReport(
                   text:
                     index === 0
                       ? baseData.categoriesData.totals.SKUS
-                      : formatCurrency(
+                      : formatAmount(
                           baseData.categoriesData.totals[driver.key] as number
                         ),
                   bold: true,

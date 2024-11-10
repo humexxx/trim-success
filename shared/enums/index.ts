@@ -3,3 +3,4 @@ export * from "./EFileType";
 export * from "./EDriverType";
 export * from "./EValueType";
 export * from "./EDataModel";
+export * from "./EAmountType";

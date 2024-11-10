@@ -6,7 +6,7 @@ import { STORAGE_PATH } from "@shared/consts";
 import { EColumnType } from "@shared/enums";
 import { ESystemColumnType } from "@shared/enums/ESystemColumnType";
 import { IColumn, IDataModel, IDataModelCubeRow } from "@shared/models";
-import { formatCurrency, formatPercentage, getColumn } from "@shared/utils";
+import { formatAmount, formatPercentage, getColumn } from "@shared/utils";
 import { listAll, getMetadata, getDownloadURL, ref } from "firebase/storage";
 import StripedGrid from "src/components/StripedDataGrid";
 import { useAuth } from "src/context/hooks";
@@ -45,7 +45,7 @@ function getColumns(columns?: string[]): GridColDef[] {
       headerName: grossMarginColumn.name,
       width: 125,
       valueGetter: (value: string) => parseFloat(value),
-      valueFormatter: (value: number) => formatCurrency(value),
+      valueFormatter: (value: number) => formatAmount(value),
     },
     {
       field: ircColumn.code,
@@ -57,13 +57,13 @@ function getColumns(columns?: string[]): GridColDef[] {
       field: iccColumn.code,
       headerName: iccColumn.name,
       width: 125,
-      valueFormatter: (value: number) => formatCurrency(value),
+      valueFormatter: (value: number) => formatAmount(value),
     },
     {
       field: evColumn.code,
       headerName: evColumn.name,
       width: 125,
-      valueFormatter: (value: number) => formatCurrency(value),
+      valueFormatter: (value: number) => formatAmount(value),
     },
   ];
 }

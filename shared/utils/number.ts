@@ -1,6 +1,17 @@
-import { EValueType } from "@shared/enums";
+import { EAmountType, EValueType } from "@shared/enums";
 
-export function formatCurrency(value: number): string {
+export function formatAmount(
+  value: number,
+  formatType: EAmountType = EAmountType.DEFAULT
+): string {
+  if (formatType === EAmountType.MILLIS) {
+    const formatter = new Intl.NumberFormat("en-US", {
+      notation: "compact",
+      maximumFractionDigits: 1,
+    });
+    return formatter.format(value);
+  }
+
   return new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "USD",
@@ -22,7 +33,7 @@ export function roundToDecimals(value: number, decimals: number): number {
 export function formatValue(value: number, valueType: EValueType): string {
   switch (valueType) {
     case EValueType.AMOUNT:
-      return formatCurrency(value);
+      return formatAmount(value);
     case EValueType.PERCENTAGE:
       return formatPercentage(value);
     default:

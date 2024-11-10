@@ -429,7 +429,7 @@ function calculateInventoryPerformanceByKey(
       );
       return 12 / rotacion;
     }
-    case EInventoryPerformaceMetricType.ICC_SALES:
+    case EInventoryPerformaceMetricType.ICC_OVER_SALES:
       return (
         (Number(scorecard.inventoryCosts.totals[category]) +
           Number(scorecard.storingCosts.totals[category])) /
@@ -439,7 +439,7 @@ function calculateInventoryPerformanceByKey(
           )![EDriverType.SALES]
         )
       );
-    case EInventoryPerformaceMetricType.INVENTORY_COST_OVER_AVG_SALES:
+    case EInventoryPerformaceMetricType.INVENTORY_VALUE_OVER_AVG_SALES:
       return (
         Number(
           baseData.categoriesData.rows.find(
@@ -465,7 +465,7 @@ function calculateInventoryPerformanceByKey(
           )![EDriverType.INVENTORY_VALUE]
         )
       );
-    case EInventoryPerformaceMetricType.INVENTORY_EXPECTED_VALUE:
+    case EInventoryPerformaceMetricType.INVENTORY_VALUE_ADDED:
       return (
         Number(
           baseData.categoriesData.rows.find(
@@ -513,13 +513,13 @@ function calculateInventoryPerformanceTotalByKey(
       );
       return 12 / rotacionTotal;
     }
-    case EInventoryPerformaceMetricType.ICC_SALES:
+    case EInventoryPerformaceMetricType.ICC_OVER_SALES:
       return (
         (Number(scorecard.inventoryCosts.totals.total) +
           Number(scorecard.storingCosts.totals.total)) /
         Number(baseData.categoriesData.totals[EDriverType.SALES])
       );
-    case EInventoryPerformaceMetricType.INVENTORY_COST_OVER_AVG_SALES:
+    case EInventoryPerformaceMetricType.INVENTORY_VALUE_OVER_AVG_SALES:
       return (
         Number(baseData.categoriesData.totals[EDriverType.AVERAGE_INVENTORY]) /
         Number(baseData.categoriesData.totals[EDriverType.SALES])
@@ -529,7 +529,7 @@ function calculateInventoryPerformanceTotalByKey(
         Number(baseData.categoriesData.totals[EDriverType.GROSS_MARGIN]) /
         Number(baseData.categoriesData.totals[EDriverType.INVENTORY_VALUE])
       );
-    case EInventoryPerformaceMetricType.INVENTORY_EXPECTED_VALUE:
+    case EInventoryPerformaceMetricType.INVENTORY_VALUE_ADDED:
       return (
         Number(baseData.categoriesData.totals[EDriverType.GROSS_MARGIN]) -
         (Number(scorecard.inventoryCosts.totals.total) +
