@@ -2,14 +2,16 @@ import Brightness4Icon from "@mui/icons-material/Brightness4";
 import Brightness7Icon from "@mui/icons-material/Brightness7";
 import LogoutIcon from "@mui/icons-material/Logout";
 import MenuIcon from "@mui/icons-material/Menu";
+import VisibilityIcon from "@mui/icons-material/Visibility";
 import { AppBar, Toolbar, IconButton, Typography } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "src/context/hooks";
 import { useLocalTheme } from "src/context/hooks";
+import { EThemeType } from "src/enums";
 import { logout } from "src/utils";
 
-import { DRAWER_WIDTH } from "./Drawer";
+import { SIDENAV_WIDTH } from "./Sidenav";
 
 interface Props {
   handleDrawerToggle: () => void;
@@ -32,11 +34,16 @@ const Header = ({ handleDrawerToggle }: Props) => {
   return (
     <AppBar
       position="fixed"
+      color="default"
+      elevation={0}
       sx={{
-        width: { sm: `calc(100% - ${DRAWER_WIDTH}px)` },
-        ml: { sm: `${DRAWER_WIDTH}px` },
+        width: { lg: `calc(100% - ${SIDENAV_WIDTH}px)` },
+        ml: { lg: `${SIDENAV_WIDTH}px` },
         display: "flex",
         justifyContent: "space-between",
+        bgcolor: "background.paper",
+        borderBottom: 1,
+        borderBottomColor: "divider",
       }}
     >
       <Toolbar>
@@ -45,16 +52,21 @@ const Header = ({ handleDrawerToggle }: Props) => {
           aria-label="open drawer"
           edge="start"
           onClick={handleDrawerToggle}
-          sx={{ mr: 2, display: { sm: "none" } }}
+          sx={{ mr: 2, display: { lg: "none" } }}
         >
           <MenuIcon />
         </IconButton>
-        <Typography variant="h6" component="div" flexGrow="1">
-          Trim Success{" "}
+        <Typography
+          variant="body2"
+          component="div"
+          flexGrow="1"
+          sx={{ display: "flex", alignItems: "center" }}
+        >
           {isAdmin && customUser ? (
-            <Typography variant="caption" mb={1}>
+            <>
+              <VisibilityIcon fontSize="small" sx={{ mr: 1 }} />
               (as {customUser.name})
-            </Typography>
+            </>
           ) : null}
         </Typography>
         <IconButton
@@ -62,7 +74,7 @@ const Header = ({ handleDrawerToggle }: Props) => {
           onClick={themeContext.toggleColorMode}
           color="inherit"
         >
-          {theme.palette.mode === "dark" ? (
+          {theme.palette.mode === EThemeType.DARK ? (
             <Brightness4Icon />
           ) : (
             <Brightness7Icon />
