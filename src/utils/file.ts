@@ -1,9 +1,9 @@
-import { IBaseData, IParamsData, IScorecardData } from "@shared/models";
+import { IBaseData, IScorecardData, ICubeParameters } from "@shared/models";
 
 export function updateStoringScorecardDataRow(
   newRow: IScorecardData["storingCosts"]["rows"][number],
   rows: IScorecardData["storingCosts"]["rows"],
-  paramsData: IParamsData,
+  paramsData: ICubeParameters,
   catData: IBaseData
 ): IScorecardData["storingCosts"] {
   const storingCosts = rows.map((r) => {
@@ -55,21 +55,21 @@ export function updateStoringScorecardDataRow(
 export function updateInventoryScorecardDataRow(
   newRow: IScorecardData["inventoryCosts"]["rows"][number],
   rows: IScorecardData["inventoryCosts"]["rows"],
-  paramsData: IParamsData,
+  cubeParameters: ICubeParameters,
   catData: IBaseData
 ): IScorecardData["inventoryCosts"] {
   const inventoryCosts = rows.map((r) => {
     if (r.cost === newRow.cost) {
       return {
         ...newRow,
-        ...paramsData.categories.reduce((acc, category) => {
+        ...cubeParameters.categories.reduce((acc, category) => {
           acc[category] =
             newRow.total *
             Number(
               catData.driversData.rows.find(
                 (row) =>
                   row.driver ===
-                  paramsData.drivers.find(
+                  cubeParameters.drivers.find(
                     (driver) => driver.key === newRow.driver
                   )?.label
               )![category]
@@ -93,7 +93,7 @@ export function updateInventoryScorecardDataRow(
     totals: {
       total: inventoryCosts.reduce((acc, row) => acc + Number(row.total), 0),
       totalPercentage: 1,
-      ...paramsData.categories.reduce((acc, category) => {
+      ...cubeParameters.categories.reduce((acc, category) => {
         acc[category] = inventoryCosts.reduce(
           (acc, row) => acc + Number(row[category]),
           0

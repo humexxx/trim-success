@@ -16,8 +16,6 @@ permissions:
 jobs:
   build_and_preview:
     name: Build and Preview
-    if: ${{ github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]' }}
-
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -40,6 +38,7 @@ jobs:
 
       # Deploy to Firebase Hosting preview channel
       - uses: FirebaseExtended/action-hosting-deploy@v0
+        if: ${{ github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]' }}
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_TRIM_SUCCESS }}

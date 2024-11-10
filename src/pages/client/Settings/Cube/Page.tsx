@@ -12,7 +12,7 @@ const Page = () => {
 
   return (
     <Box sx={{ padding: 4 }}>
-      <Drivers drivers={cube.data?.paramsData.drivers} />
+      <Drivers drivers={cube.data?.cubeParameters.drivers} />
       <Columns columns={COLUMNS} />
     </Box>
   );

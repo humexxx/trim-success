@@ -2,7 +2,8 @@ import Filter1OutlinedIcon from "@mui/icons-material/Filter1Outlined";
 import Filter2OutlinedIcon from "@mui/icons-material/Filter2Outlined";
 import Filter3OutlinedIcon from "@mui/icons-material/Filter3Outlined";
 import { Grid } from "@mui/material";
-import { AdminRoute, CardButton, PageHeader } from "src/components";
+import { AdminRoute, CardButton } from "src/components";
+import { PageContent, PageHeader } from "src/components/layout";
 import { useBaseData } from "src/pages/client/DataMining/hooks";
 import { useInventoryPerformance } from "src/pages/client/InventoryPerformance/hooks";
 import { useScorecard } from "src/pages/client/Scorecard/hooks";
@@ -17,7 +18,8 @@ const Page = () => {
       <PageHeader
         title="Testing"
         description="Diferentes funcionalidades para testear."
-      >
+      />
+      <PageContent>
         <Grid container spacing={4}>
           <Grid item xs={12} sm={12} md={6} lg={4}>
             <CardButton
@@ -68,7 +70,7 @@ const Page = () => {
             />
           </Grid>
         </Grid>
-      </PageHeader>
+      </PageContent>
     </AdminRoute>
   );
 };

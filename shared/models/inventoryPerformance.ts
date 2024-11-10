@@ -1,11 +1,11 @@
+import { EValueType } from "@shared/enums";
 import { EInventoryPerformaceMetricType } from "@shared/enums/EInventoryPerformaceMetricType";
-import ENumberType from "@shared/enums/ENumberType";
 
 export interface IIventoryPerformanceMetric {
   key: EInventoryPerformaceMetricType;
   label: string;
   description: string;
-  type: ENumberType;
+  valueType: EValueType;
 }
 
 export interface IInventoryPerformanceData {

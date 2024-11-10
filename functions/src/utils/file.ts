@@ -1,26 +1,39 @@
 import { JSON_FILE_NAME, STORAGE_PATH } from "@shared/consts";
-import { IDataModel } from "@shared/models";
+import {
+  IDataModel,
+  IDataModelCubeRow,
+  IDataModelParametersRow,
+} from "@shared/models";
 import * as admin from "firebase-admin";
 import { logger } from "firebase-functions";
 import * as XLSX from "xlsx";
 
 const storage = admin.storage();
 
-function generateDataModelFromJson(jsonData: any): IDataModel {
+function parseJsonData<T>(
+  jsonData: [string[], ...(string | number)[][]],
+  options: { applyId: boolean } = { applyId: false }
+): IDataModel<T> {
   const header = jsonData[0];
-  const rowsData = [];
+  const rowsData: Array<T> = [];
 
   for (let i = 1; i < jsonData.length; i++) {
     const row = jsonData[i];
     const rowObj = row.reduce(
-      (acc: { [x: string]: any }, cell: any, index: string | number) => {
-        acc[header[index]] = cell;
+      (
+        acc: { [x: string]: string | number },
+        cell: string | number,
+        index: number
+      ) => {
+        if (header[index] || cell) acc[header[index]] = cell;
         return acc;
       },
-      {} as any
+      {}
     );
 
-    if (rowObj[header[0]]) rowsData.push(rowObj);
+    if (options.applyId) rowObj.id = i - 1;
+
+    rowsData.push(rowObj as T);
   }
 
   return {
@@ -32,26 +45,57 @@ function generateDataModelFromJson(jsonData: any): IDataModel {
 export function uploadJsonFile(
   uid: string,
   fileUid: string,
-  dataModel: IDataModel
+  dataModel: IDataModel<IDataModelCubeRow>
 ): Promise<void> {
-  const folderRef = `${STORAGE_PATH}/${uid}/`;
+  const folderPath = `${STORAGE_PATH}/${uid}/`;
 
   return storage
     .bucket()
-    .file(`${folderRef}${fileUid}-${JSON_FILE_NAME}.json`)
+    .file(`${folderPath}${fileUid}-${JSON_FILE_NAME}.json`)
     .save(JSON.stringify(dataModel), {
       contentType: "application/json",
     });
 }
 
-export async function generateDataModel(
+function getDataFromXLSX(data: Uint8Array): {
+  cubeRaw: [string[], ...(string | number)[][]];
+  parametersRaw: [string[], ...(string | number)[][]];
+} {
+  const workbook = XLSX.read(data, { type: "array" });
+
+  const cubeSheet = workbook.SheetNames[0];
+  const parametersSheet = workbook.SheetNames[1];
+
+  const cubeData = XLSX.utils.sheet_to_json(workbook.Sheets[cubeSheet], {
+    header: 1,
+    raw: true,
+  }) as [string[], ...(string | number)[][]];
+
+  const parametersData = XLSX.utils.sheet_to_json(
+    workbook.Sheets[parametersSheet],
+    {
+      header: 1,
+      raw: true,
+    }
+  ) as [string[], ...(string | number)[][]];
+
+  return {
+    cubeRaw: cubeData,
+    parametersRaw: parametersData,
+  };
+}
+
+export async function generateDataModels(
   uid: string,
   fileUid: string
-): Promise<IDataModel> {
-  logger.info(`Generating data model for file: ${fileUid}`);
+): Promise<{
+  cubeDataModel: IDataModel<IDataModelCubeRow>;
+  parametersDataModel: IDataModel<IDataModelParametersRow>;
+}> {
+  logger.info(`Generating data models for file: ${fileUid}`);
 
-  const folderRef = `${STORAGE_PATH}/${uid}/`;
-  const response = await storage.bucket().getFiles({ prefix: folderRef });
+  const folderPath = `${STORAGE_PATH}/${uid}/`;
+  const response = await storage.bucket().getFiles({ prefix: folderPath });
 
   const files = response[0];
   if (!files || files.length === 0) {
@@ -65,35 +109,16 @@ export async function generateDataModel(
 
   const [fileContent] = await file.download();
   const data = new Uint8Array(fileContent);
-  const workbook = XLSX.read(data, { type: "array" });
-  const sheet = workbook.SheetNames[0];
-  const jsonData = XLSX.utils.sheet_to_json(workbook.Sheets[sheet], {
-    header: 1,
-    raw: true,
+
+  const { cubeRaw, parametersRaw } = getDataFromXLSX(data);
+  const cubeDataModel = parseJsonData<IDataModelCubeRow>(cubeRaw, {
+    applyId: true,
   });
-  const dataModel = generateDataModelFromJson(jsonData);
-  await uploadJsonFile(uid, fileUid, dataModel);
+  const parametersDataModel =
+    parseJsonData<IDataModelParametersRow>(parametersRaw);
 
-  logger.info("Data model generated and saved.");
-  return dataModel;
-}
+  await uploadJsonFile(uid, fileUid, cubeDataModel);
 
-// TODO: make it dynamic (multiple files)
-export async function getDataModel(
-  uid: string
-): Promise<{ dataModel: IDataModel; fileUid: string }> {
-  const folderRef = `${STORAGE_PATH}/${uid}/`;
-
-  const [files] = await storage.bucket().getFiles({ prefix: folderRef });
-  if (!files || files.length === 0) {
-    throw new Error("No files found.");
-  }
-  const jsonFile = files.find((file) => file.name.includes(JSON_FILE_NAME));
-  if (!jsonFile) throw new Error("JSON file not found.");
-
-  const [fileContent] = await jsonFile.download();
-  return {
-    dataModel: JSON.parse(fileContent.toString()) as IDataModel,
-    fileUid: jsonFile.name.split("-")[0].split("/")[2],
-  };
+  logger.info(`Data models generated and saved for file: ${fileUid}`);
+  return { cubeDataModel, parametersDataModel };
 }

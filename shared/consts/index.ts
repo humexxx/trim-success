@@ -157,5 +157,4 @@ export const DEFAULT_DRIVERS: IDriver[] = [
 ];
 
 export * from "./columns";
-export * from "./parameters";
 export * from "./inventoryPerformance";

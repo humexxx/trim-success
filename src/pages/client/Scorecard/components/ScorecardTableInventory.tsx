@@ -1,14 +1,14 @@
 import { useEffect, useMemo, useState } from "react";
 
 import { GridCellParams, GridColDef, GridRowModel } from "@mui/x-data-grid";
-import { IDriver, IParam, IScorecardData } from "@shared/models";
+import { IDriver, IParameter, IScorecardData } from "@shared/models";
 import { formatCurrency, formatPercentage } from "@shared/utils";
 import { StripedDataGrid } from "src/components";
 
 interface Props {
   data?: IScorecardData["inventoryCosts"];
   categories: string[];
-  investmentTypes: IParam[];
+  investmentTypes: IParameter[];
   updateRow: (
     row: IScorecardData["inventoryCosts"]["rows"][number]
   ) => Promise<void>;
@@ -84,14 +84,14 @@ const ScorecardTableInventory = ({
         editable: true,
         type: "singleSelect",
         valueOptions: investmentTypes,
-        getOptionValue: (value: IParam) => value.key,
-        getOptionLabel: (value: IParam) =>
-          `${value.label} (${formatPercentage(value.value / 100)})`,
+        getOptionValue: (value: IParameter) => value.name,
+        getOptionLabel: (value: IParameter) =>
+          `${value.name} (${formatPercentage(value.value / 100)})`,
         valueFormatter: (params) => {
           return (
             formatPercentage(
               Number(
-                investmentTypes.find((type) => type.key === params)?.value
+                investmentTypes.find((type) => type.name === params)?.value
               ) / 100
             ) || "n/a"
           );

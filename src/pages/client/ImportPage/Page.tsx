@@ -1,4 +1,4 @@
-import { PageHeader } from "src/components";
+import { PageContent, PageHeader } from "src/components/layout";
 import { useCube } from "src/context/hooks";
 import {
   ImportedDataPage,
@@ -9,8 +9,11 @@ export default function Page() {
   const cube = useCube();
 
   return (
-    <PageHeader title="Importar">
-      {cube.hasInitialData ? <ImportedDataPage /> : <ImportDataPage />}
-    </PageHeader>
+    <>
+      <PageHeader title="Importar" />
+      <PageContent>
+        {cube.hasInitialData ? <ImportedDataPage /> : <ImportDataPage />}
+      </PageContent>
+    </>
   );
 }

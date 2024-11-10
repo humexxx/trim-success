@@ -3,29 +3,25 @@ import { useEffect, useState } from "react";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { LoadingButton } from "@mui/lab";
 import { Alert, Container, Grid, Typography } from "@mui/material";
-import {
-  DEFAULT_GENERAL_PARAMS,
-  DEFAULT_STORING_PARAMS,
-  DEFAULT_INVENTORY_PARAMS,
-  JSON_FILE_NAME,
-} from "@shared/consts";
-import { IParamsData } from "@shared/models";
+import { JSON_FILE_NAME } from "@shared/consts";
+import { ICubeParameters } from "@shared/models";
 import { useForm } from "react-hook-form";
-import { GlobalLoader, PageHeader } from "src/components";
+import { GlobalLoader } from "src/components";
 import { useCube } from "src/context/hooks";
 import { getError } from "src/utils";
+import { InferType } from "yup";
 
 import { GeneralParams, InventoryParams, StoringParams } from "./components";
 import { useParamsData } from "./hooks";
-import { paramsSchema } from "./schema";
+import { parametersScheme } from "./schema";
+import { PageContent, PageHeader } from "src/components/layout";
 
 const Page = () => {
   const cube = useCube();
+  const cubeParameters = cube.data?.cubeParameters;
+
   const { error, loading } = useParamsData();
-
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const paramsData = cube.data?.paramsData;
 
   const {
     formState: { errors },
@@ -33,25 +29,21 @@ const Page = () => {
     handleSubmit,
     setValue,
     control,
-  } = useForm<Omit<IParamsData, "categories" | "drivers">>({
-    resolver: yupResolver(paramsSchema),
+  } = useForm<InferType<typeof parametersScheme>>({
+    resolver: yupResolver(parametersScheme),
     defaultValues: {
-      generalParams: DEFAULT_GENERAL_PARAMS,
-      storingParams: DEFAULT_STORING_PARAMS,
-      inventoryParams: DEFAULT_INVENTORY_PARAMS,
+      parameters: [],
     },
   });
 
   useEffect(() => {
-    if (paramsData) {
-      setValue("generalParams", paramsData.generalParams);
-      setValue("storingParams", paramsData.storingParams);
-      setValue("inventoryParams", paramsData.inventoryParams);
+    if (cubeParameters) {
+      setValue("parameters", cubeParameters.parameters);
     }
-  }, [paramsData, setValue]);
+  }, [cubeParameters, setValue]);
 
   async function _handleSubmit(
-    _data: Omit<IParamsData, "categories" | "drivers">
+    _data: Omit<ICubeParameters, "categories" | "drivers">
   ) {
     setIsSubmitting(true);
     try {
@@ -62,8 +54,7 @@ const Page = () => {
       if (!jsonFile) throw new Error("No se encontro el archivo JSON");
 
       const generatedUID = jsonFile.name.split("-")[0].split("/")[2];
-      const paramsData = { ...cube.data!.paramsData, ..._data };
-      await cube.initCube(generatedUID, paramsData);
+      await cube.initCube(generatedUID, cubeParameters?.drivers ?? []);
       await cube.reloadCubeData();
     } catch (error) {
       console.error(getError(error));
@@ -76,65 +67,67 @@ const Page = () => {
     <>
       {isSubmitting && <GlobalLoader />}
       <PageHeader title="Datos Generales" />
-      <Container
-        sx={{ marginLeft: 0 }}
-        component="form"
-        onSubmit={handleSubmit(_handleSubmit)}
-      >
-        <Grid container spacing={4}>
-          <Grid item xs={12} sm={6} md={4}>
-            <Grid item xs={12} mb={2}>
-              <Typography color="text.primary" variant="body1">
-                Parametros Generales
-              </Typography>
+      <PageContent>
+        <Container
+          sx={{ marginLeft: 0 }}
+          component="form"
+          onSubmit={handleSubmit(_handleSubmit)}
+        >
+          <Grid container spacing={4}>
+            <Grid item xs={12} sm={6} md={4}>
+              <Grid item xs={12} mb={2}>
+                <Typography color="text.primary" variant="body1">
+                  Parametros Generales
+                </Typography>
+              </Grid>
+              <GeneralParams
+                errors={errors}
+                register={register}
+                control={control}
+              />
             </Grid>
-            <GeneralParams
-              errors={errors}
-              register={register}
-              control={control}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6} md={4}>
-            <Grid item xs={12} mb={2}>
-              <Typography color="text.primary" variant="body1">
-                Parametros de Almacenaje
-              </Typography>
+            <Grid item xs={12} sm={6} md={4}>
+              <Grid item xs={12} mb={2}>
+                <Typography color="text.primary" variant="body1">
+                  Parametros de Almacenaje
+                </Typography>
+              </Grid>
+              <StoringParams
+                errors={errors}
+                register={register}
+                control={control}
+              />
             </Grid>
-            <StoringParams
-              errors={errors}
-              register={register}
-              control={control}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6} md={4}>
-            <Grid item xs={12} mb={2}>
-              <Typography color="text.primary" variant="body1">
-                Parametros de Inventario
-              </Typography>
+            <Grid item xs={12} sm={6} md={4}>
+              <Grid item xs={12} mb={2}>
+                <Typography color="text.primary" variant="body1">
+                  Parametros de Inventario
+                </Typography>
+              </Grid>
+              <InventoryParams
+                errors={errors}
+                register={register}
+                control={control}
+              />
             </Grid>
-            <InventoryParams
-              errors={errors}
-              register={register}
-              control={control}
-            />
-          </Grid>
-          {error && (
-            <Grid item xs={12}>
-              <Alert severity="error">{error}</Alert>
+            {error && (
+              <Grid item xs={12}>
+                <Alert severity="error">{error}</Alert>
+              </Grid>
+            )}
+            <Grid item xs={12} mt={2} textAlign="right">
+              <LoadingButton
+                loading={loading || isSubmitting}
+                type="submit"
+                variant="contained"
+                color="primary"
+              >
+                Guardar
+              </LoadingButton>
             </Grid>
-          )}
-          <Grid item xs={12} mt={2} textAlign="right">
-            <LoadingButton
-              loading={loading || isSubmitting}
-              type="submit"
-              variant="contained"
-              color="primary"
-            >
-              Guardar
-            </LoadingButton>
           </Grid>
-        </Grid>
-      </Container>
+        </Container>
+      </PageContent>
     </>
   );
 };
