@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## 0.43.0 (2024-11-10)
+
+
+### Features
+
+* initial styles change ([#76](https://github.com/humexxx/trim-success/issues/76)) ([e24dc16](https://github.com/humexxx/trim-success/commit/e24dc16184a3eebcec41de1d130ca960e6992f7c))
+
 ## 0.42.0 (2024-11-10)
 
 
