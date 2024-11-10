@@ -6,7 +6,6 @@ import {
   EDataModelParameterType,
 } from "@shared/enums";
 import { ICubeData, IScorecardData } from "@shared/models";
-import { PageHeader } from "src/components";
 import { useCube } from "src/context/hooks";
 import { useDocumentMetadata } from "src/hooks";
 import {
@@ -21,6 +20,7 @@ import {
   ScorecardTableWarehouse,
 } from "./components";
 import { useScorecard } from "./hooks";
+import { PageContent, PageHeader } from "src/components/layout";
 
 const Page = () => {
   useDocumentMetadata("Scorecard - Trim Success");
@@ -129,35 +129,37 @@ const Page = () => {
         title="Scorecard"
         description="Scorecard del Almacén & Inventory"
       />
-      <Grid container spacing={4}>
-        <Grid item xs={12}>
-          <ScorecardTableWarehouse
-            data={scorecardData?.storingCosts}
-            categories={paramsData?.categories ?? []}
-            investmentTypes={investmentTypes ?? []}
-            updateRow={updateStoringCostsRow}
-            drivers={paramsData?.drivers ?? []}
-            loading={isStoringCostsLoading}
-          />
+      <PageContent>
+        <Grid container spacing={4}>
+          <Grid item xs={12}>
+            <ScorecardTableWarehouse
+              data={scorecardData?.storingCosts}
+              categories={paramsData?.categories ?? []}
+              investmentTypes={investmentTypes ?? []}
+              updateRow={updateStoringCostsRow}
+              drivers={paramsData?.drivers ?? []}
+              loading={isStoringCostsLoading}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <ScorecardTableInventory
+              loading={isInventoryCostsLoading}
+              data={scorecardData?.inventoryCosts}
+              categories={paramsData?.categories ?? []}
+              investmentTypes={investmentTypes ?? []}
+              updateRow={updateInventoryCostsRow}
+              drivers={paramsData?.drivers ?? []}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <GrandTotalGrid
+              categories={paramsData?.categories ?? []}
+              loading={isStoringCostsLoading || isInventoryCostsLoading}
+              data={scorecardData}
+            />
+          </Grid>
         </Grid>
-        <Grid item xs={12}>
-          <ScorecardTableInventory
-            loading={isInventoryCostsLoading}
-            data={scorecardData?.inventoryCosts}
-            categories={paramsData?.categories ?? []}
-            investmentTypes={investmentTypes ?? []}
-            updateRow={updateInventoryCostsRow}
-            drivers={paramsData?.drivers ?? []}
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <GrandTotalGrid
-            categories={paramsData?.categories ?? []}
-            loading={isStoringCostsLoading || isInventoryCostsLoading}
-            data={scorecardData}
-          />
-        </Grid>
-      </Grid>
+      </PageContent>
     </>
   );
 };

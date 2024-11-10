@@ -6,7 +6,7 @@ import { Alert, Container, Grid, Typography } from "@mui/material";
 import { JSON_FILE_NAME } from "@shared/consts";
 import { ICubeParameters } from "@shared/models";
 import { useForm } from "react-hook-form";
-import { GlobalLoader, PageHeader } from "src/components";
+import { GlobalLoader } from "src/components";
 import { useCube } from "src/context/hooks";
 import { getError } from "src/utils";
 import { InferType } from "yup";
@@ -14,6 +14,7 @@ import { InferType } from "yup";
 import { GeneralParams, InventoryParams, StoringParams } from "./components";
 import { useParamsData } from "./hooks";
 import { parametersScheme } from "./schema";
+import { PageContent, PageHeader } from "src/components/layout";
 
 const Page = () => {
   const cube = useCube();
@@ -66,65 +67,67 @@ const Page = () => {
     <>
       {isSubmitting && <GlobalLoader />}
       <PageHeader title="Datos Generales" />
-      <Container
-        sx={{ marginLeft: 0 }}
-        component="form"
-        onSubmit={handleSubmit(_handleSubmit)}
-      >
-        <Grid container spacing={4}>
-          <Grid item xs={12} sm={6} md={4}>
-            <Grid item xs={12} mb={2}>
-              <Typography color="text.primary" variant="body1">
-                Parametros Generales
-              </Typography>
+      <PageContent>
+        <Container
+          sx={{ marginLeft: 0 }}
+          component="form"
+          onSubmit={handleSubmit(_handleSubmit)}
+        >
+          <Grid container spacing={4}>
+            <Grid item xs={12} sm={6} md={4}>
+              <Grid item xs={12} mb={2}>
+                <Typography color="text.primary" variant="body1">
+                  Parametros Generales
+                </Typography>
+              </Grid>
+              <GeneralParams
+                errors={errors}
+                register={register}
+                control={control}
+              />
             </Grid>
-            <GeneralParams
-              errors={errors}
-              register={register}
-              control={control}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6} md={4}>
-            <Grid item xs={12} mb={2}>
-              <Typography color="text.primary" variant="body1">
-                Parametros de Almacenaje
-              </Typography>
+            <Grid item xs={12} sm={6} md={4}>
+              <Grid item xs={12} mb={2}>
+                <Typography color="text.primary" variant="body1">
+                  Parametros de Almacenaje
+                </Typography>
+              </Grid>
+              <StoringParams
+                errors={errors}
+                register={register}
+                control={control}
+              />
             </Grid>
-            <StoringParams
-              errors={errors}
-              register={register}
-              control={control}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6} md={4}>
-            <Grid item xs={12} mb={2}>
-              <Typography color="text.primary" variant="body1">
-                Parametros de Inventario
-              </Typography>
+            <Grid item xs={12} sm={6} md={4}>
+              <Grid item xs={12} mb={2}>
+                <Typography color="text.primary" variant="body1">
+                  Parametros de Inventario
+                </Typography>
+              </Grid>
+              <InventoryParams
+                errors={errors}
+                register={register}
+                control={control}
+              />
             </Grid>
-            <InventoryParams
-              errors={errors}
-              register={register}
-              control={control}
-            />
-          </Grid>
-          {error && (
-            <Grid item xs={12}>
-              <Alert severity="error">{error}</Alert>
+            {error && (
+              <Grid item xs={12}>
+                <Alert severity="error">{error}</Alert>
+              </Grid>
+            )}
+            <Grid item xs={12} mt={2} textAlign="right">
+              <LoadingButton
+                loading={loading || isSubmitting}
+                type="submit"
+                variant="contained"
+                color="primary"
+              >
+                Guardar
+              </LoadingButton>
             </Grid>
-          )}
-          <Grid item xs={12} mt={2} textAlign="right">
-            <LoadingButton
-              loading={loading || isSubmitting}
-              type="submit"
-              variant="contained"
-              color="primary"
-            >
-              Guardar
-            </LoadingButton>
           </Grid>
-        </Grid>
-      </Container>
+        </Container>
+      </PageContent>
     </>
   );
 };
