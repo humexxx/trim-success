@@ -2,10 +2,11 @@ import { useState } from "react";
 
 import { Box, Drawer, Toolbar, Container } from "@mui/material";
 import { Outlet } from "react-router-dom";
+import { VERSION } from "src/consts";
 import { useCube } from "src/context/hooks";
 
-import { AppDrawer, Header } from "./components";
-import { DRAWER_WIDTH } from "./components/Drawer";
+import { Sidenav, Header } from "./components";
+import { SIDENAV_WIDTH } from "./components/Sidenav";
 
 export default function BaseLayout() {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -32,7 +33,7 @@ export default function BaseLayout() {
       <Header handleDrawerToggle={handleDrawerToggle} />
       <Box
         component="nav"
-        sx={{ width: { sm: DRAWER_WIDTH }, flexShrink: { sm: 0 } }}
+        sx={{ width: { lg: SIDENAV_WIDTH }, flexShrink: { sm: 0 } }}
         aria-label="mailbox folders"
       >
         <Drawer
@@ -44,27 +45,27 @@ export default function BaseLayout() {
             keepMounted: true,
           }}
           sx={{
-            display: { xs: "block", sm: "none" },
+            display: { xs: "block", lg: "none" },
             "& .MuiDrawer-paper": {
               boxSizing: "border-box",
-              width: DRAWER_WIDTH,
+              width: SIDENAV_WIDTH,
             },
           }}
         >
-          <AppDrawer />
+          <Sidenav title="Trim Success" version={VERSION} />
         </Drawer>
         <Drawer
           variant="permanent"
           sx={{
-            display: { xs: "none", sm: "block" },
+            display: { xs: "none", lg: "block" },
             "& .MuiDrawer-paper": {
               boxSizing: "border-box",
-              width: DRAWER_WIDTH,
+              width: SIDENAV_WIDTH,
             },
           }}
           open
         >
-          <AppDrawer />
+          <Sidenav title="Trim Success" version={VERSION} />
         </Drawer>
       </Box>
       <Box
@@ -72,8 +73,8 @@ export default function BaseLayout() {
         sx={{
           flexGrow: 1,
           p: 3,
-          width: { sm: `calc(100% - ${DRAWER_WIDTH}px)` },
-          bgcolor: "background.paper",
+          width: { lg: `calc(100% - ${SIDENAV_WIDTH}px)` },
+          backgroundColor: "background.default",
           minHeight: "100vh",
         }}
       >
