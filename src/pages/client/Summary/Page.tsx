@@ -77,6 +77,12 @@ const Page = () => {
               categories={cube.data.cubeParameters.categories}
             />
           </Grid>
+          <Grid item xs={12} lg={9}>
+            <MainGrid />
+          </Grid>
+          <Grid item xs={12} lg={3}>
+            <Reports />
+          </Grid>
         </Grid>
       </PageContent>
     </>

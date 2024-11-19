@@ -7,6 +7,7 @@ import { ICubeParameters, IParameter } from "@shared/models";
 import * as yup from "yup";
 
 const paramSchema: yup.ObjectSchema<IParameter> = yup.object({
+  label: yup.string().required(),
   name: yup.string().required(),
   description: yup.string().optional(),
   valueType: yup.string().oneOf(Object.values(EValueType)).required(),

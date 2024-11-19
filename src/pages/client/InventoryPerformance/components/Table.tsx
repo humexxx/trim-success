@@ -1,16 +1,29 @@
 import { useMemo } from "react";
 
 import { GridColDef } from "@mui/x-data-grid";
+import { EInventoryPerformaceMetricType } from "@shared/enums/EInventoryPerformaceMetricType";
 import {
   IInventoryPerformanceData,
   IIventoryPerformanceMetric,
 } from "@shared/models";
-import { formatValue } from "@shared/utils";
+import { formatValue, roundToDecimals } from "@shared/utils";
 import { StripedDataGrid } from "src/components";
 
 interface Props {
   data: IInventoryPerformanceData;
   categories: string[];
+}
+
+function colValueFormatter(value: number, row: IIventoryPerformanceMetric) {
+  switch (row.key) {
+    case EInventoryPerformaceMetricType.ROTACION:
+    case EInventoryPerformaceMetricType.INVENTORY_MONTHLY:
+      return formatValue(roundToDecimals(value, 1), row.valueType);
+    case EInventoryPerformaceMetricType.INVENTORY_360:
+      return formatValue(roundToDecimals(value, 0), row.valueType);
+    default:
+      return formatValue(value, row.valueType);
+  }
 }
 
 const Table = ({ data, categories }: Props) => {
@@ -24,16 +37,14 @@ const Table = ({ data, categories }: Props) => {
             field: category,
             headerName: category,
             width: 200,
-            valueFormatter: (value, row: IIventoryPerformanceMetric) =>
-              formatValue(value, row.valueType),
+            valueFormatter: colValueFormatter,
           }) as GridColDef
       ),
       {
         field: "total",
         headerName: "Costo Totales",
         width: 150,
-        valueFormatter: (value, row: IIventoryPerformanceMetric) =>
-          formatValue(value, row.valueType),
+        valueFormatter: colValueFormatter,
       },
     ],
     [categories]

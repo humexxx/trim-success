@@ -2,7 +2,7 @@ import { forwardRef } from "react";
 
 import { TextFieldProps, TextField, InputAdornment } from "@mui/material";
 
-const PercentageField = forwardRef<HTMLInputElement, TextFieldProps>(
+const PercentageField = forwardRef<HTMLInputElement, TextFieldProps & {}>(
   function PercentageField(props, ref) {
     return (
       <TextField
