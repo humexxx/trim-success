@@ -5,12 +5,12 @@ import {
 } from "@shared/enums";
 
 export interface IDataModelParametersRow {
+  name: string;
   type: EDataModelParameterType;
   subType: EDataModelParameterSubType;
-  name: string;
   description?: string;
-  valueType: EValueType;
   value: number;
+  valueType: EValueType;
 }
 
 export interface IDataModelCubeRow {

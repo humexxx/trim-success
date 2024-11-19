@@ -42,7 +42,7 @@ const StoringParams = ({ register, errors, control }: Props) => {
               ...register(`parameters.${index}.value` as const, {
                 valueAsNumber: true,
               }),
-              label: field.name,
+              label: field.label,
               error: !!errors.parameters?.[index]?.value,
               helperText: errors.parameters?.[index]?.value?.message,
               fullWidth: true,
@@ -65,7 +65,7 @@ const StoringParams = ({ register, errors, control }: Props) => {
               ...register(`parameters.${index}.value` as const, {
                 valueAsNumber: true,
               }),
-              label: field.name,
+              label: field.label,
               error: !!errors.parameters?.[index]?.value,
               helperText: errors.parameters?.[index]?.value?.message,
               fullWidth: true,

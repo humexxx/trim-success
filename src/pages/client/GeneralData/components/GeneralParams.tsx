@@ -49,7 +49,7 @@ const GeneralParams = ({
               ...register(`parameters.${index}.value` as const, {
                 valueAsNumber: true,
               }),
-              label: field.name,
+              label: field.label,
               error: !!errors.parameters?.[index]?.value,
               helperText: errors.parameters?.[index]?.value?.message,
 
@@ -74,7 +74,7 @@ const GeneralParams = ({
               ...register(`parameters.${index}.value` as const, {
                 valueAsNumber: true,
               }),
-              label: field.name,
+              label: field.label,
               error: !!errors.parameters?.[index]?.value,
               helperText: errors.parameters?.[index]?.value?.message,
 

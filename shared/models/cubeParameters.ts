@@ -2,6 +2,7 @@ import { IDataModelParametersRow } from "./dataModel";
 import { IDriver } from "./settings";
 
 export interface IParameter extends IDataModelParametersRow {
+  label: string;
   autoCalculated?: boolean;
 }
 
