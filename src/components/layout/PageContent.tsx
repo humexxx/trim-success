@@ -1,11 +1,12 @@
-import { Container } from "@mui/material";
 import { ReactNode } from "react";
+
+import { Box } from "@mui/material";
 
 const PageContent = ({ children }: { children: ReactNode }) => {
   return (
-    <Container component={"section"} maxWidth="xl" sx={{ mt: 2 }}>
+    <Box component={"section"} sx={{ mt: 2 }}>
       {children}
-    </Container>
+    </Box>
   );
 };
 
