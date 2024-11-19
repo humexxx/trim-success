@@ -1,2 +1,1 @@
-export { default as MainGrid } from "./MainGrid";
-export { default as Reports } from "./Reports";
+export { default as GraphContainer } from "./GraphContainer";

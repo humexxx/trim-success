@@ -6,12 +6,16 @@ import { EAmountType } from "@shared/enums";
 import { IInventoryPerformanceData } from "@shared/models";
 import { formatAmount } from "@shared/utils";
 
+import { defaultGraphProps } from "./utils";
+
 const InventoryValueAddedGraph = ({
   data,
   categories,
+  isExpanded,
 }: {
   data: IInventoryPerformanceData["rows"][0];
   categories: string[];
+  isExpanded: boolean;
 }) => {
   const theme = useTheme();
   const dataset = useMemo(() => {
@@ -46,6 +50,8 @@ const InventoryValueAddedGraph = ({
         {
           valueFormatter: (value) =>
             formatAmount(value as number, EAmountType.MILLIS),
+          tickLabelInterval: (value, index) =>
+            index % (isExpanded ? 2 : 1) === 0,
         },
       ]}
       series={[
@@ -57,29 +63,7 @@ const InventoryValueAddedGraph = ({
         },
       ]}
       layout="horizontal"
-      height={350}
-      leftAxis={{
-        tickLabelStyle: {
-          fontSize: 11,
-          letterSpacing: 0.2,
-        },
-      }}
-      bottomAxis={{
-        labelStyle: {
-          fontSize: 14,
-          transform: `translateY(${
-            // Hack that should be added in the lib latter.
-            5 * Math.abs(Math.sin((Math.PI * 45) / 180))
-          }px)`,
-        },
-        tickLabelStyle: {
-          angle: 45,
-          textAnchor: "start",
-          fontSize: 11,
-          letterSpacing: 0.3,
-        },
-      }}
-      margin={{ bottom: 85, left: 110 }}
+      {...defaultGraphProps(isExpanded, { hasLongLeftLabels: true })}
     />
   );
 };

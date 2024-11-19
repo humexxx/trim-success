@@ -5,12 +5,16 @@ import { BarChart } from "@mui/x-charts";
 import { IInventoryPerformanceData } from "@shared/models";
 import { formatPercentage } from "@shared/utils";
 
+import { defaultGraphProps } from "./utils";
+
 const ICCvsSalesGraph = ({
   data,
   categories,
+  isExpanded,
 }: {
   data: IInventoryPerformanceData["rows"][0];
   categories: string[];
+  isExpanded: boolean;
 }) => {
   const theme = useTheme();
   const dataset = useMemo(() => {
@@ -37,7 +41,11 @@ const ICCvsSalesGraph = ({
           dataKey: "category",
           valueFormatter: (value, context) => {
             if (context.location === "tooltip") return value;
-            return value.length > 15 ? value.slice(0, 15) + "..." : value;
+            return isExpanded
+              ? value.replace(/ /g, " \n")
+              : value.length > 15
+                ? value.slice(0, 15) + "..."
+                : value;
           },
         },
       ]}
@@ -50,23 +58,7 @@ const ICCvsSalesGraph = ({
           label: "Inventory Carrying Cost vs. Sales",
         },
       ]}
-      height={350}
-      bottomAxis={{
-        labelStyle: {
-          fontSize: 14,
-          transform: `translateY(${
-            // Hack that should be added in the lib latter.
-            5 * Math.abs(Math.sin((Math.PI * 45) / 180))
-          }px)`,
-        },
-        tickLabelStyle: {
-          angle: 45,
-          textAnchor: "start",
-          fontSize: 11,
-          letterSpacing: 0.3,
-        },
-      }}
-      margin={{ bottom: 85, left: 60 }}
+      {...defaultGraphProps(isExpanded)}
     />
   );
 };
