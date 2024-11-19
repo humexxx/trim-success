@@ -83,7 +83,7 @@ const Page = () => {
       );
       if (!jsonFile) throw new Error("No se encontro el archivo JSON");
 
-      const generatedUID = jsonFile.name.split("-")[0].split("/")[2];
+      const generatedUID = jsonFile.name.split("-")[0];
       await cube.initCube(generatedUID, cubeParameters?.drivers ?? []);
       await cube.reloadCubeData();
     } catch (error) {
@@ -101,6 +101,7 @@ const Page = () => {
         <Grid
           component="form"
           onSubmit={handleSubmit(_handleSubmit)}
+          onInvalid={console.log}
           container
           spacing={4}
         >

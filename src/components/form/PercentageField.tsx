@@ -4,7 +4,6 @@ import { TextFieldProps, TextField, InputAdornment } from "@mui/material";
 
 const PercentageField = forwardRef<HTMLInputElement, TextFieldProps & {}>(
   function PercentageField(props, ref) {
-    console.log("PercentageField -> props", props);
     return (
       <TextField
         {...props}
