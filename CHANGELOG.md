@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## 0.47.0 (2024-11-20)
+
+
+### Bug Fixes
+
+* build ([a848f76](https://github.com/humexxx/trim-success/commit/a848f76d7759189b2cbc8e574d6ab07edc49310b))
+
 ## 0.46.0 (2024-11-19)
 
 ## 0.45.0 (2024-11-19)
