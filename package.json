@@ -20,7 +20,7 @@
     "@mui/lab": "^5.0.0-alpha.173",
     "@mui/material": "^5.16.7",
     "@mui/x-charts": "^7.21.0",
-    "@mui/x-data-grid": "^7.22.2",
+    "@mui/x-data-grid": "^7.23.0",
     "firebase": "^11.0.2",
     "mui-file-dropzone": "^4.0.2",
     "pdfmake": "^0.2.15",
