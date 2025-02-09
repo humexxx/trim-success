@@ -91,6 +91,7 @@ const secondaryRoutes = (isAdmin: boolean) => {
       icon: <SmartToyIcon fontSize="small" />,
       path: "/inventory/ai",
       requireInitialData: true,
+      disabled: true,
     },
     {
       admin: true,
@@ -211,14 +212,14 @@ function InventoryLayout() {
 
         <List dense>
           {secondaryRoutes(isAdmin).map(
-            ({ text, icon, path, requireInitialData }) => (
+            ({ text, icon, path, requireInitialData, disabled }) => (
               <ListItem key={text}>
                 <ListItemButton
                   sx={{ borderRadius: 2 }}
                   selected={location.pathname.includes(path)}
                   component={NavLink}
                   to={path}
-                  disabled={requireInitialData && !hasInitialData}
+                  disabled={(requireInitialData && !hasInitialData) || disabled}
                 >
                   <ListItemIcon>{icon}</ListItemIcon>
                   <ListItemText primary={text} />
