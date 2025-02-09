@@ -12,8 +12,8 @@ import { ICallableRequest, ICallableResponse } from "@shared/models/functions";
 import { httpsCallable } from "firebase/functions";
 import { listAll, getBlob, ref } from "firebase/storage";
 import { GlobalLoader } from "src/components";
-import { LOCAL_STORAGE_KEYS } from "src/consts";
-import { functions, storage } from "src/firebase";
+import { LOCAL_STORAGE_KEYS } from "src/lib/consts";
+import { functions, storage } from "src/lib/firebase";
 
 import { useAuth } from "./hooks";
 

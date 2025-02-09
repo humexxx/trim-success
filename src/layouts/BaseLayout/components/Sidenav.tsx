@@ -29,12 +29,12 @@ const dataImportRoutes = (isAdmin: boolean) =>
       admin: true,
       text: "Impersonar",
       icon: <PeopleAltIcon fontSize="small" />,
-      path: "/client/impersonate",
+      path: "/inventory/admin/impersonate",
     },
     {
       text: "Importar",
       icon: <DownloadIcon fontSize="small" />,
-      path: "/client/import",
+      path: "/inventory/import",
       requireContextUid: true,
     },
   ].filter((route) => (route.admin ? isAdmin : true));
@@ -43,13 +43,13 @@ const dataVisualizationsRoutes = [
   {
     text: "Panel",
     icon: <DashboardIcon fontSize="small" />,
-    path: "/client/dashboard",
+    path: "/inventory/dashboard",
     requireInitialData: true,
   },
   {
     text: "Generales",
     icon: <DescriptionOutlinedIcon fontSize="small" />,
-    path: "/client/general-data",
+    path: "/inventory/general-data",
     requireInitialData: true,
   },
 ];
@@ -58,19 +58,19 @@ const dataAnalyticsRoutes = [
   {
     text: "Data Mining",
     icon: <Filter1OutlinedIcon fontSize="small" />,
-    path: "/client/data-mining",
+    path: "/inventory/data-mining",
     requireInitialData: true,
   },
   {
     text: "Scorecard",
     icon: <Filter2OutlinedIcon fontSize="small" />,
-    path: "/client/scorecard",
+    path: "/inventory/scorecard",
     requireInitialData: true,
   },
   {
     text: "Inventario",
     icon: <Filter3OutlinedIcon fontSize="small" />,
-    path: "/client/inventory-performance",
+    path: "/inventory/inventory-performance",
     requireInitialData: true,
   },
 ];
@@ -80,7 +80,7 @@ const secondaryRoutes = (isAdmin: boolean) => {
     {
       text: "IA",
       icon: <SmartToyIcon fontSize="small" />,
-      path: "/client/ai",
+      path: "/inventory/ai",
       requireInitialData: true,
     },
     {
@@ -88,7 +88,7 @@ const secondaryRoutes = (isAdmin: boolean) => {
       text: "Testing",
       icon: <SpeedIcon fontSize="small" />,
       requireInitialData: true,
-      path: "/client/testing",
+      path: "/inventory/admin/testing",
     },
   ].filter((route) => (route.admin ? isAdmin : true));
 };
@@ -208,9 +208,9 @@ const Sidenav = ({ title, version }: { title: string; version: string }) => {
         <ListItem>
           <ListItemButton
             sx={{ borderRadius: 2 }}
-            selected={location.pathname.includes("/client/settings")}
+            selected={location.pathname.includes("/inventory/settings")}
             component={NavLink}
-            to="/client/settings"
+            to="/inventory/settings"
             disabled={isCubeLoading}
           >
             <ListItemIcon>

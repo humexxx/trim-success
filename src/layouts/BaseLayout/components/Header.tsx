@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "src/context/hooks";
 import { useLocalTheme } from "src/context/hooks";
 import { EThemeType } from "src/enums";
+import { ROUTES } from "src/lib/consts";
 import { logout } from "src/utils";
 
 import { SIDENAV_WIDTH } from "./Sidenav";
@@ -27,7 +28,7 @@ const Header = ({ handleDrawerToggle }: Props) => {
   function handleLogout() {
     logout(() => {
       setCustomUser(null);
-      navigate("/login");
+      navigate(ROUTES.SIGN_IN);
     });
   }
 

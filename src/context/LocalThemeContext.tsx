@@ -1,10 +1,10 @@
 import { createContext, ReactNode, useMemo } from "react";
 
 import { createTheme, ThemeProvider } from "@mui/material";
-import { LOCAL_STORAGE_KEYS } from "src/consts";
+import { LOCAL_STORAGE_KEYS } from "src/lib/consts";
 import { EThemeType } from "src/enums";
 import { useLocalStorage } from "src/hooks";
-import { getDesignTokens } from "src/themes";
+import { getDesignTokens } from "src/lib/themes";
 
 import { useAuth } from "./hooks";
 

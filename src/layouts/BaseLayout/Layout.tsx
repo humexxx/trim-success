@@ -2,7 +2,7 @@ import { useState } from "react";
 
 import { Box, Drawer, Toolbar, Container } from "@mui/material";
 import { Outlet } from "react-router-dom";
-import { VERSION } from "src/consts";
+import { VERSION } from "src/lib/consts";
 import { useCube } from "src/context/hooks";
 
 import { Sidenav, Header } from "./components";
