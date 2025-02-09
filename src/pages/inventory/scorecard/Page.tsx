@@ -1,12 +1,12 @@
 import { useCallback, useMemo, useState } from "react";
 
-import { Alert, Grid } from "@mui/material";
+import { Alert, Card, CardContent, Grid } from "@mui/material";
 import {
   EDataModelParameterSubType,
   EDataModelParameterType,
 } from "@shared/enums";
 import { ICubeData, IScorecardData } from "@shared/models";
-import { PageContent, PageHeader } from "src/components/layout";
+import { PageContent, PageHeader, PageWrapper } from "src/components/layout";
 import { useCube } from "src/context/hooks";
 import { useDocumentMetadata } from "src/hooks";
 import {
@@ -124,7 +124,7 @@ const Page = () => {
   if (error) return <Alert severity="error">{error}</Alert>;
 
   return (
-    <>
+    <PageWrapper title="Scorecard">
       <PageHeader
         title="Scorecard"
         description="Scorecard del Almacén & Inventory"
@@ -132,35 +132,47 @@ const Page = () => {
       <PageContent>
         <Grid container spacing={4}>
           <Grid item xs={12}>
-            <ScorecardTableWarehouse
-              data={scorecardData?.storingCosts}
-              categories={paramsData?.categories ?? []}
-              investmentTypes={investmentTypes ?? []}
-              updateRow={updateStoringCostsRow}
-              drivers={paramsData?.drivers ?? []}
-              loading={isStoringCostsLoading}
-            />
+            <Card variant="outlined">
+              <CardContent>
+                <ScorecardTableWarehouse
+                  data={scorecardData?.storingCosts}
+                  categories={paramsData?.categories ?? []}
+                  investmentTypes={investmentTypes ?? []}
+                  updateRow={updateStoringCostsRow}
+                  drivers={paramsData?.drivers ?? []}
+                  loading={isStoringCostsLoading}
+                />
+              </CardContent>
+            </Card>
           </Grid>
           <Grid item xs={12}>
-            <ScorecardTableInventory
-              loading={isInventoryCostsLoading}
-              data={scorecardData?.inventoryCosts}
-              categories={paramsData?.categories ?? []}
-              investmentTypes={investmentTypes ?? []}
-              updateRow={updateInventoryCostsRow}
-              drivers={paramsData?.drivers ?? []}
-            />
+            <Card variant="outlined">
+              <CardContent>
+                <ScorecardTableInventory
+                  loading={isInventoryCostsLoading}
+                  data={scorecardData?.inventoryCosts}
+                  categories={paramsData?.categories ?? []}
+                  investmentTypes={investmentTypes ?? []}
+                  updateRow={updateInventoryCostsRow}
+                  drivers={paramsData?.drivers ?? []}
+                />
+              </CardContent>
+            </Card>
           </Grid>
           <Grid item xs={12}>
-            <GrandTotalGrid
-              categories={paramsData?.categories ?? []}
-              loading={isStoringCostsLoading || isInventoryCostsLoading}
-              data={scorecardData}
-            />
+            <Card variant="outlined">
+              <CardContent>
+                <GrandTotalGrid
+                  categories={paramsData?.categories ?? []}
+                  loading={isStoringCostsLoading || isInventoryCostsLoading}
+                  data={scorecardData}
+                />
+              </CardContent>
+            </Card>
           </Grid>
         </Grid>
       </PageContent>
-    </>
+    </PageWrapper>
   );
 };
 
