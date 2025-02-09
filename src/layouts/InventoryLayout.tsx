@@ -10,6 +10,7 @@ import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
 import SettingsIcon from "@mui/icons-material/Settings";
 import SmartToyIcon from "@mui/icons-material/SmartToy";
 import SpeedIcon from "@mui/icons-material/Speed";
+import ViewModuleIcon from "@mui/icons-material/ViewModule";
 import {
   Box,
   Toolbar,
@@ -138,6 +139,25 @@ function InventoryLayout() {
         setIsMobileOpen={setIsMobileOpen}
         setIsClosing={setIsClosing}
       >
+        <List dense>
+          <ListItem>
+            <ListItemButton
+              sx={{
+                borderRadius: 2,
+              }}
+              selected={location.pathname.includes(ROUTES.MODULE_SELECTOR)}
+              component={NavLink}
+              to={ROUTES.MODULE_SELECTOR}
+            >
+              <ListItemIcon>
+                <ViewModuleIcon fontSize="small" />
+              </ListItemIcon>
+              <ListItemText primary={"Modulos"} />
+            </ListItemButton>
+          </ListItem>
+        </List>
+        <Divider />
+
         <List dense>
           <ListItem>
             <Typography variant="caption" ml={2}>

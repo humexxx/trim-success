@@ -4,7 +4,6 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import MenuIcon from "@mui/icons-material/Menu";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import { AppBar, Toolbar, IconButton, Typography } from "@mui/material";
-import { useTheme } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "src/context/hooks";
 import { useLocalTheme } from "src/context/hooks";
@@ -20,7 +19,6 @@ interface Props {
 }
 
 const Header = ({ handleDrawerToggle, hasDrawer = true }: Props) => {
-  const theme = useTheme();
   const themeContext = useLocalTheme();
   const navigate = useNavigate();
 
@@ -44,9 +42,7 @@ const Header = ({ handleDrawerToggle, hasDrawer = true }: Props) => {
         display: "flex",
         justifyContent: "space-between",
         bgcolor:
-          themeContext.theme === EThemeType.LIGHT
-            ? "#fafafa"
-            : "background.default",
+          themeContext.theme === EThemeType.LIGHT ? "#fafafa" : "grey.900",
 
         // bgcolor: "hsla(0, 0%, 100%, 0.6)",
         // backdropFilter: "blur(50px)",
@@ -82,17 +78,19 @@ const Header = ({ handleDrawerToggle, hasDrawer = true }: Props) => {
           onClick={themeContext.toggleColorMode}
           color="inherit"
         >
-          {theme.palette.mode === EThemeType.DARK ? (
-            <Brightness4Icon />
+          {themeContext.theme === EThemeType.DARK ? (
+            <Brightness4Icon sx={{ color: "white" }} />
           ) : (
             <Brightness7Icon />
           )}
         </IconButton>
         <IconButton
-          color="inherit"
           edge="end"
           onClick={handleLogout}
-          sx={{ ml: 2 }}
+          sx={{
+            ml: 2,
+            color: themeContext.theme === EThemeType.DARK ? "white" : "black",
+          }}
         >
           <LogoutIcon />
         </IconButton>
