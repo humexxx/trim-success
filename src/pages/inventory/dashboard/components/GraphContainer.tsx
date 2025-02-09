@@ -21,7 +21,7 @@ const GraphContainer = ({
       xl={isExpanded ? 12 : 4}
       sx={{ position: "relative", mb: isExpanded ? 4 : 0 }}
     >
-      <Card elevation={3} sx={{ borderRadius: 4 }}>
+      <Card elevation={3}>
         <CardContent>
           <IconButton
             sx={{ position: "absolute", right: 8, zIndex: 1 }}

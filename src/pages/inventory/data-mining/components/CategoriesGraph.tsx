@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 
-import { Box, Grid, Typography } from "@mui/material";
+import { Box, Card, CardContent, Grid, Typography } from "@mui/material";
 import {
   BarChart,
   BarSeriesType,
@@ -63,40 +63,48 @@ const CategoriesGraph = ({ data, drivers }: Props) => {
   return (
     <>
       <Grid item xs={6}>
-        <Box height={500}>
-          <BarChart
-            xAxis={[
-              {
-                scaleType: "band",
-                data: categories,
-              },
-            ]}
-            series={series.filter((x) => x.label !== "Sku's")}
-            margin={{ left: 100 }}
-            axisHighlight={{
-              y: "line",
-            }}
-            grid={{
-              horizontal: true,
-            }}
-          />
-        </Box>
+        <Card elevation={3}>
+          <CardContent>
+            <Box height={500}>
+              <BarChart
+                xAxis={[
+                  {
+                    scaleType: "band",
+                    data: categories,
+                  },
+                ]}
+                series={series.filter((x) => x.label !== "Sku's")}
+                margin={{ left: 100 }}
+                axisHighlight={{
+                  y: "line",
+                }}
+                grid={{
+                  horizontal: true,
+                }}
+              />
+            </Box>
+          </CardContent>
+        </Card>
       </Grid>
       <Grid item xs={6}>
-        <Box height={500} sx={{ position: "relative" }}>
-          <Typography
-            variant="h6"
-            sx={{
-              position: "absolute",
-              top: 50,
-              width: "100%",
-              textAlign: "center",
-            }}
-          >
-            Sku's
-          </Typography>
-          <PieChart series={series2} title="Sku's" />
-        </Box>
+        <Card elevation={3}>
+          <CardContent>
+            <Box height={500} sx={{ position: "relative" }}>
+              <Typography
+                variant="h6"
+                sx={{
+                  position: "absolute",
+                  top: 50,
+                  width: "100%",
+                  textAlign: "center",
+                }}
+              >
+                Sku's
+              </Typography>
+              <PieChart series={series2} title="Sku's" />
+            </Box>
+          </CardContent>
+        </Card>
       </Grid>
     </>
   );

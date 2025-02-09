@@ -53,6 +53,13 @@ export function LocalThemeProvider({ children }: Props) {
               size: "small",
             },
           },
+          MuiCard: {
+            styleOverrides: {
+              root: {
+                borderRadius: 16,
+              },
+            },
+          },
         },
         typography: {
           fontFamily: "Roboto, sans-serif",
