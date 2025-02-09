@@ -2,7 +2,6 @@ import React from "react";
 
 import { Box, Typography } from "@mui/material";
 import { useDocumentMetadata } from "src/hooks";
-import { APP_NAME } from "src/lib/consts";
 
 type Props = {
   title?: string;
@@ -10,15 +9,15 @@ type Props = {
 };
 
 const PageHeader = ({ title, description }: Props) => {
-  useDocumentMetadata(`${title} | ${APP_NAME}`);
+  useDocumentMetadata(`${title} | Trim Success`);
   return (
-    <Box component={"header"} mt={4}>
+    <Box component={"header"}>
       {Boolean(title) && (
         <Typography
           color="text.primary"
-          variant="h4"
-          component="h1"
-          fontWeight={600}
+          variant="h6"
+          component="h2"
+          gutterBottom
         >
           <strong>{title}</strong>
         </Typography>
