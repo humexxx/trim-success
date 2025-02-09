@@ -14,6 +14,7 @@ export const ROUTES = {
   INVENTORY: {
     DASHBOARD: "/inventory/dashboard",
     IMPORT: "/inventory/import",
+    DATA_MINING: "/inventory/data-mining",
     ADMIN: {
       IMPERSONATE: "/inventory/admin/impersonate",
     },

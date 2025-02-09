@@ -1,6 +1,8 @@
 import { PropsWithChildren } from "react";
 
 import { Toolbar, Divider, Box, Typography, Drawer } from "@mui/material";
+import { useLocalTheme } from "src/context/hooks";
+import { EThemeType } from "src/enums";
 
 const SidenavContent = ({
   title,
@@ -10,9 +12,15 @@ const SidenavContent = ({
   title: string;
   version: string;
 }>) => {
+  const themeContext = useLocalTheme();
   return (
     <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
-      <Toolbar>
+      <Toolbar
+        sx={{
+          bgcolor:
+            themeContext.theme === EThemeType.LIGHT ? "#fafafa" : "grey.900",
+        }}
+      >
         <Typography variant="h6" component="div" sx={{ position: "relative" }}>
           {title}{" "}
           <Typography
@@ -24,7 +32,8 @@ const SidenavContent = ({
           </Typography>
         </Typography>
       </Toolbar>
-      <Divider />
+
+      {themeContext.theme === EThemeType.LIGHT && <Divider />}
 
       {children}
     </Box>
@@ -89,6 +98,7 @@ function Sidenav({
           "& .MuiDrawer-paper": {
             boxSizing: "border-box",
             width: SIDENAV_WIDTH,
+            bgcolor: "transparent",
           },
         }}
         open

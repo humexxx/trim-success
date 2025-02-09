@@ -10,10 +10,10 @@ import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
 import SettingsIcon from "@mui/icons-material/Settings";
 import SmartToyIcon from "@mui/icons-material/SmartToy";
 import SpeedIcon from "@mui/icons-material/Speed";
+import ViewModuleIcon from "@mui/icons-material/ViewModule";
 import {
   Box,
   Toolbar,
-  Container,
   Divider,
   List,
   ListItem,
@@ -21,11 +21,13 @@ import {
   ListItemIcon,
   ListItemText,
   Typography,
+  CircularProgress,
 } from "@mui/material";
 import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { PrivateRoute } from "src/components";
 import { LocalThemeProvider, CubeProvider } from "src/context";
-import { useAuth, useCube } from "src/context/hooks";
+import { useAuth, useCube, useLocalTheme } from "src/context/hooks";
+import { EThemeType } from "src/enums";
 import { ROUTES, VERSION } from "src/lib/consts";
 
 import { Header, Sidenav } from "./_components";
@@ -66,7 +68,7 @@ const dataAnalyticsRoutes = [
   {
     text: "Data Mining",
     icon: <Filter1OutlinedIcon fontSize="small" />,
-    path: "/inventory/data-mining",
+    path: ROUTES.INVENTORY.DATA_MINING,
     requireInitialData: true,
   },
   {
@@ -90,6 +92,7 @@ const secondaryRoutes = (isAdmin: boolean) => {
       icon: <SmartToyIcon fontSize="small" />,
       path: "/inventory/ai",
       requireInitialData: true,
+      disabled: true,
     },
     {
       admin: true,
@@ -107,6 +110,7 @@ function InventoryLayout() {
 
   const cube = useCube();
 
+  const themeContext = useLocalTheme();
   const { hasInitialData, isCubeLoading } = useCube();
   const { isAdmin, customUser } = useAuth();
   const location = useLocation();
@@ -118,7 +122,15 @@ function InventoryLayout() {
   };
 
   return (
-    <Box sx={{ display: "flex" }}>
+    <Box
+      sx={{
+        display: "flex",
+        bgcolor:
+          themeContext.theme === EThemeType.LIGHT
+            ? "#fafafa"
+            : "background.default",
+      }}
+    >
       <Header handleDrawerToggle={handleDrawerToggle} />
       <Sidenav
         title="Inventory"
@@ -127,6 +139,25 @@ function InventoryLayout() {
         setIsMobileOpen={setIsMobileOpen}
         setIsClosing={setIsClosing}
       >
+        <List dense>
+          <ListItem>
+            <ListItemButton
+              sx={{
+                borderRadius: 2,
+              }}
+              selected={location.pathname.includes(ROUTES.MODULE_SELECTOR)}
+              component={NavLink}
+              to={ROUTES.MODULE_SELECTOR}
+            >
+              <ListItemIcon>
+                <ViewModuleIcon fontSize="small" />
+              </ListItemIcon>
+              <ListItemText primary={"Modulos"} />
+            </ListItemButton>
+          </ListItem>
+        </List>
+        <Divider />
+
         <List dense>
           <ListItem>
             <Typography variant="caption" ml={2}>
@@ -201,14 +232,14 @@ function InventoryLayout() {
 
         <List dense>
           {secondaryRoutes(isAdmin).map(
-            ({ text, icon, path, requireInitialData }) => (
+            ({ text, icon, path, requireInitialData, disabled }) => (
               <ListItem key={text}>
                 <ListItemButton
                   sx={{ borderRadius: 2 }}
                   selected={location.pathname.includes(path)}
                   component={NavLink}
                   to={path}
-                  disabled={requireInitialData && !hasInitialData}
+                  disabled={(requireInitialData && !hasInitialData) || disabled}
                 >
                   <ListItemIcon>{icon}</ListItemIcon>
                   <ListItemText primary={text} />
@@ -245,15 +276,21 @@ function InventoryLayout() {
           p: 3,
           pt: 0,
           width: { lg: `calc(100% - ${SIDENAV_WIDTH}px)` },
-          backgroundColor: "background.default",
           minHeight: "100vh",
         }}
       >
         <Toolbar />
 
-        <Container maxWidth="xl">
-          {cube.isCubeLoading ? "Loading..." : <Outlet />}
-        </Container>
+        {cube.isCubeLoading ? (
+          <Box mt={4}>
+            <CircularProgress size={20} sx={{ mr: 2 }} />
+            <Typography variant="h5" component={"span"} align="center">
+              Cargando...
+            </Typography>
+          </Box>
+        ) : (
+          <Outlet />
+        )}
       </Box>
     </Box>
   );

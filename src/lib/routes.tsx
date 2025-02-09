@@ -76,7 +76,7 @@ export const router = createBrowserRouter([
         element: <GeneralDataPage />,
       },
       {
-        path: "/inventory/data-mining",
+        path: ROUTES.INVENTORY.DATA_MINING,
         element: <DataMiningPage />,
       },
       {

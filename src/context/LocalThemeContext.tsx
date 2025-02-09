@@ -10,6 +10,7 @@ import { useAuth } from "./hooks";
 
 export interface LocalThemeContextType {
   toggleColorMode: () => void;
+  theme: EThemeType;
 }
 
 const LocalThemeContext = createContext<LocalThemeContextType | undefined>(
@@ -52,6 +53,13 @@ export function LocalThemeProvider({ children }: Props) {
               size: "small",
             },
           },
+          MuiCard: {
+            styleOverrides: {
+              root: {
+                borderRadius: 16,
+              },
+            },
+          },
         },
         typography: {
           fontFamily: "Roboto, sans-serif",
@@ -72,8 +80,9 @@ export function LocalThemeProvider({ children }: Props) {
           prev === EThemeType.LIGHT ? EThemeType.DARK : EThemeType.LIGHT
         );
       },
+      theme: mode,
     }),
-    [setMode]
+    [mode, setMode]
   );
 
   return (
