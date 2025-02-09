@@ -9,15 +9,30 @@ import {
   Button,
   CircularProgress,
 } from "@mui/material";
+import { Link } from "react-router-dom";
 
-type Props = {
+type BaseProps = {
   label: string;
   description: string;
   icon: ReactNode;
-  onClick: () => void;
+  onClick?: () => void;
   loading?: boolean;
   error?: string | null;
+  elevation?: number;
+  disabled?: boolean;
 };
+
+type LinkProps = BaseProps & {
+  isLink: true;
+  to: string;
+};
+
+type ButtonProps = BaseProps & {
+  isLink?: false;
+  to?: never;
+};
+
+type Props = LinkProps | ButtonProps;
 
 const CardButton = ({
   icon,
@@ -26,8 +41,12 @@ const CardButton = ({
   onClick,
   loading,
   error,
+  elevation = 1,
+  disabled,
+  isLink,
+  to,
 }: Props) => {
-  return (
+  const Content = (
     <Card
       sx={{
         display: "flex",
@@ -40,7 +59,8 @@ const CardButton = ({
       }}
       component={Button}
       onClick={onClick}
-      disabled={loading}
+      disabled={loading || disabled}
+      elevation={elevation}
     >
       {loading && (
         <CircularProgress
@@ -81,7 +101,7 @@ const CardButton = ({
               mb: 1,
               border: "1px solid rgba(205, 209, 228, 0.2)",
               "& svg": {
-                ...(loading
+                ...(loading || disabled
                   ? {
                       color: "text.disabled",
                     }
@@ -105,12 +125,20 @@ const CardButton = ({
         </Box>
         <Typography
           variant="body2"
-          color={loading ? "text.disabled" : "text.secondary"}
+          color={loading || disabled ? "text.disabled" : "text.secondary"}
         >
           {description}
         </Typography>
       </CardContent>
     </Card>
+  );
+
+  return isLink && !disabled ? (
+    <Link to={to} style={{ textDecoration: "none" }}>
+      {Content}
+    </Link>
+  ) : (
+    Content
   );
 };
 

@@ -1,7 +1,4 @@
-import React from "react";
-
 import { Box, Typography } from "@mui/material";
-import { useDocumentMetadata } from "src/hooks";
 
 type Props = {
   title?: string;
@@ -9,15 +6,14 @@ type Props = {
 };
 
 const PageHeader = ({ title, description }: Props) => {
-  useDocumentMetadata(`${title} | Trim Success`);
   return (
-    <Box component={"header"}>
+    <Box component={"header"} pt={4}>
       {Boolean(title) && (
         <Typography
           color="text.primary"
-          variant="h6"
-          component="h2"
-          gutterBottom
+          variant="h4"
+          component="h1"
+          fontWeight={600}
         >
           <strong>{title}</strong>
         </Typography>

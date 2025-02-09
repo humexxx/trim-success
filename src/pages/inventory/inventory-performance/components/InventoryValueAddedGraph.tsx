@@ -20,23 +20,23 @@ const InventoryValueAddedGraph = ({
   const theme = useTheme();
   const dataset = useMemo(() => {
     return [
-      {
-        category: "Total",
-        value: data.total,
-      },
       ...categories.map((category) => {
         return {
           category,
           value: data[category] as number,
         };
       }),
+      {
+        category: "Total",
+        value: data.total,
+      },
     ];
   }, [data, categories]);
 
   return (
     <BarChart
       dataset={dataset}
-      yAxis={[
+      xAxis={[
         {
           scaleType: "band",
           dataKey: "category",
@@ -46,7 +46,7 @@ const InventoryValueAddedGraph = ({
           },
         },
       ]}
-      xAxis={[
+      yAxis={[
         {
           valueFormatter: (value) =>
             formatAmount(value as number, EAmountType.MILLIS),
@@ -62,8 +62,7 @@ const InventoryValueAddedGraph = ({
           label: "Iventory Value Added™ (IVA)",
         },
       ]}
-      layout="horizontal"
-      {...defaultGraphProps(isExpanded, { hasLongLeftLabels: true })}
+      {...defaultGraphProps(isExpanded)}
     />
   );
 };

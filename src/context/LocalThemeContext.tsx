@@ -1,15 +1,16 @@
 import { createContext, ReactNode, useMemo } from "react";
 
 import { createTheme, ThemeProvider } from "@mui/material";
-import { LOCAL_STORAGE_KEYS } from "src/lib/consts";
 import { EThemeType } from "src/enums";
 import { useLocalStorage } from "src/hooks";
+import { LOCAL_STORAGE_KEYS } from "src/lib/consts";
 import { getDesignTokens } from "src/lib/themes";
 
 import { useAuth } from "./hooks";
 
 export interface LocalThemeContextType {
   toggleColorMode: () => void;
+  theme: EThemeType;
 }
 
 const LocalThemeContext = createContext<LocalThemeContextType | undefined>(
@@ -52,6 +53,21 @@ export function LocalThemeProvider({ children }: Props) {
               size: "small",
             },
           },
+          MuiCard: {
+            styleOverrides: {
+              root: {
+                borderRadius: 16,
+              },
+            },
+          },
+        },
+        typography: {
+          fontFamily: "Roboto, sans-serif",
+          h1: { fontWeight: 700 },
+          h2: { fontWeight: 600 },
+          h3: { fontWeight: 500 },
+          body1: { fontSize: "1rem", lineHeight: 1.6 },
+          body2: { fontSize: "0.875rem", lineHeight: 1.6 },
         },
       }),
     [currentUser, mode]
@@ -64,8 +80,9 @@ export function LocalThemeProvider({ children }: Props) {
           prev === EThemeType.LIGHT ? EThemeType.DARK : EThemeType.LIGHT
         );
       },
+      theme: mode,
     }),
-    [setMode]
+    [mode, setMode]
   );
 
   return (

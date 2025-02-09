@@ -1,9 +1,13 @@
 import { useMemo, useState } from "react";
 
-import { Grid } from "@mui/material";
+import Filter1OutlinedIcon from "@mui/icons-material/Filter1Outlined";
+import SaveAltIcon from "@mui/icons-material/SaveAlt";
+import { Box, Chip, Container, Grid, Typography } from "@mui/material";
 import { EInventoryPerformaceMetricType } from "@shared/enums/EInventoryPerformaceMetricType";
-import { PageContent, PageHeader } from "src/components/layout";
+import { Link } from "react-router-dom";
+import { PageContent, PageWrapper } from "src/components/layout";
 import { useCube } from "src/context/hooks";
+import { ROUTES } from "src/lib/consts";
 
 import { GraphContainer } from "./components";
 import {
@@ -110,26 +114,93 @@ const Page = () => {
   if (cube.isCubeLoading || !cube.data) return null;
 
   return (
-    <>
-      <PageHeader
-        title="Panel"
-        description="Vista general del comportamiento del negocio"
-      />
-      <PageContent>
-        <Grid container spacing={1} rowGap={2}>
-          {_graphs.map((graph) => (
-            <GraphContainer
-              isExpanded={expandedGraph === graph.key}
-              setIsExpanded={() =>
-                setExpandedGraph(expandedGraph === graph.key ? "" : graph.key)
-              }
+    <PageWrapper title="Panel" useContainer={false}>
+      <Box position={"relative"}>
+        <Box
+          sx={{
+            left: 0,
+            right: 0,
+            height: 400,
+            top: 0,
+            zIndex: 0,
+            position: "absolute",
+            bgcolor: "black",
+            borderRadius: {
+              md: 0,
+              lg: 4,
+            },
+            mx: {
+              md: 0,
+              lg: 2,
+            },
+          }}
+        />
+        <Container sx={{ zIndex: 1, position: "relative" }}>
+          <Box component={"header"} pt={4} mb={8}>
+            <Typography
+              color="white"
+              variant="h4"
+              component="h1"
+              fontWeight={600}
             >
-              {graph.component}
-            </GraphContainer>
-          ))}
-        </Grid>
-      </PageContent>
-    </>
+              <strong>Panel</strong>
+            </Typography>
+            <Typography color="white" variant="body1">
+              Vista general del comportamiento del negocio
+            </Typography>
+            <Box mt={2}>
+              <Link
+                to={ROUTES.INVENTORY.IMPORT}
+                style={{ textDecoration: "none" }}
+              >
+                <Chip
+                  label="Archivos Importados"
+                  color="primary"
+                  icon={<SaveAltIcon />}
+                  variant="filled"
+                  clickable
+                />
+              </Link>
+              <Link
+                to={ROUTES.INVENTORY.DATA_MINING}
+                style={{ textDecoration: "none", marginLeft: 12 }}
+              >
+                <Chip
+                  sx={{
+                    bgcolor: "#333",
+                    color: "white",
+                  }}
+                  label="Data Mining"
+                  icon={<Filter1OutlinedIcon color="secondary" />}
+                  variant="outlined"
+                  clickable
+                />
+              </Link>
+            </Box>
+          </Box>
+          <PageContent>
+            <Typography variant="h6" component="h2" mb={2} color={"white"}>
+              Indicadores de desempeño
+            </Typography>
+            <Grid container spacing={2}>
+              {_graphs.map((graph) => (
+                <GraphContainer
+                  key={graph.key}
+                  isExpanded={expandedGraph === graph.key}
+                  setIsExpanded={() =>
+                    setExpandedGraph(
+                      expandedGraph === graph.key ? "" : graph.key
+                    )
+                  }
+                >
+                  {graph.component}
+                </GraphContainer>
+              ))}
+            </Grid>
+          </PageContent>
+        </Container>
+      </Box>
+    </PageWrapper>
   );
 };
 
