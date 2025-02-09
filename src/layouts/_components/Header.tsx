@@ -43,6 +43,11 @@ const Header = ({ handleDrawerToggle, hasDrawer = true }: Props) => {
         ml: { lg: `${hasDrawer ? SIDENAV_WIDTH : 0}px` },
         display: "flex",
         justifyContent: "space-between",
+        bgcolor:
+          themeContext.theme === EThemeType.LIGHT
+            ? "#fafafa"
+            : "background.default",
+
         // bgcolor: "hsla(0, 0%, 100%, 0.6)",
         // backdropFilter: "blur(50px)",
       }}

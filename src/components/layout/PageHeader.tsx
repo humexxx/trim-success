@@ -1,8 +1,4 @@
-import React from "react";
-
 import { Box, Typography } from "@mui/material";
-import { useDocumentMetadata } from "src/hooks";
-import { APP_NAME } from "src/lib/consts";
 
 type Props = {
   title?: string;
@@ -10,7 +6,6 @@ type Props = {
 };
 
 const PageHeader = ({ title, description }: Props) => {
-  useDocumentMetadata(`${title} | ${APP_NAME}`);
   return (
     <Box component={"header"} pt={4}>
       {Boolean(title) && (

@@ -1,16 +1,13 @@
 import { useMemo, useState } from "react";
 
-import {
-  Box,
-  Card,
-  CardContent,
-  Container,
-  Grid,
-  Typography,
-} from "@mui/material";
+import Filter1OutlinedIcon from "@mui/icons-material/Filter1Outlined";
+import SaveAltIcon from "@mui/icons-material/SaveAlt";
+import { Box, Chip, Container, Grid, Typography } from "@mui/material";
 import { EInventoryPerformaceMetricType } from "@shared/enums/EInventoryPerformaceMetricType";
-import { PageContent, PageHeader, PageWrapper } from "src/components/layout";
+import { Link } from "react-router-dom";
+import { PageContent, PageWrapper } from "src/components/layout";
 import { useCube } from "src/context/hooks";
+import { ROUTES } from "src/lib/consts";
 
 import { GraphContainer } from "./components";
 import {
@@ -139,7 +136,7 @@ const Page = () => {
           }}
         />
         <Container sx={{ zIndex: 1, position: "relative" }}>
-          <Box component={"header"} pt={4}>
+          <Box component={"header"} pt={4} mb={8}>
             <Typography
               color="white"
               variant="h4"
@@ -151,9 +148,41 @@ const Page = () => {
             <Typography color="white" variant="body1">
               Vista general del comportamiento del negocio
             </Typography>
+            <Box mt={2}>
+              <Link
+                to={ROUTES.INVENTORY.IMPORT}
+                style={{ textDecoration: "none" }}
+              >
+                <Chip
+                  label="Archivos Importados"
+                  color="primary"
+                  icon={<SaveAltIcon />}
+                  variant="filled"
+                  clickable
+                />
+              </Link>
+              <Link
+                to={ROUTES.INVENTORY.DATA_MINING}
+                style={{ textDecoration: "none", marginLeft: 12 }}
+              >
+                <Chip
+                  sx={{
+                    bgcolor: "#333",
+                    color: "white",
+                  }}
+                  label="Data Mining"
+                  icon={<Filter1OutlinedIcon color="secondary" />}
+                  variant="outlined"
+                  clickable
+                />
+              </Link>
+            </Box>
           </Box>
           <PageContent>
-            <Grid container spacing={2} rowGap={2}>
+            <Typography variant="h6" component="h2" mb={2} color={"white"}>
+              Indicadores de desempeño
+            </Typography>
+            <Grid container spacing={2}>
               {_graphs.map((graph) => (
                 <GraphContainer
                   key={graph.key}

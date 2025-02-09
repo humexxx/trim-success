@@ -9,7 +9,7 @@ import { ICubeParameters } from "@shared/models";
 import { roundToDecimals } from "@shared/utils";
 import { useForm } from "react-hook-form";
 import { GlobalLoader } from "src/components";
-import { PageContent, PageHeader } from "src/components/layout";
+import { PageContent, PageHeader, PageWrapper } from "src/components/layout";
 import { useCube } from "src/context/hooks";
 import { getError } from "src/utils";
 import { InferType } from "yup";
@@ -94,7 +94,7 @@ const Page = () => {
   }
 
   return (
-    <>
+    <PageWrapper title="Datos Generales">
       {isSubmitting && <GlobalLoader />}
       <PageHeader title="Datos Generales" />
       <PageContent>
@@ -158,7 +158,7 @@ const Page = () => {
           </Grid>
         </Grid>
       </PageContent>
-    </>
+    </PageWrapper>
   );
 };
 

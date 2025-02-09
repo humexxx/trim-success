@@ -13,7 +13,6 @@ import SpeedIcon from "@mui/icons-material/Speed";
 import {
   Box,
   Toolbar,
-  Container,
   Divider,
   List,
   ListItem,
@@ -68,7 +67,7 @@ const dataAnalyticsRoutes = [
   {
     text: "Data Mining",
     icon: <Filter1OutlinedIcon fontSize="small" />,
-    path: "/inventory/data-mining",
+    path: ROUTES.INVENTORY.DATA_MINING,
     requireInitialData: true,
   },
   {

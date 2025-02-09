@@ -20,12 +20,6 @@ const ICCGraph = ({
   const theme = useTheme();
   const dataset = useMemo(() => {
     return [
-      {
-        category: "Total",
-        value:
-          Number(scorecard.inventoryCosts.totals.total) +
-          Number(scorecard.storingCosts.totals.total),
-      },
       ...categories.map((category) => {
         return {
           category,
@@ -34,6 +28,12 @@ const ICCGraph = ({
             Number(scorecard.storingCosts.totals[category]),
         };
       }),
+      {
+        category: "Total",
+        value:
+          Number(scorecard.inventoryCosts.totals.total) +
+          Number(scorecard.storingCosts.totals.total),
+      },
     ];
   }, [
     categories,
@@ -44,7 +44,7 @@ const ICCGraph = ({
   return (
     <BarChart
       dataset={dataset}
-      yAxis={[
+      xAxis={[
         {
           scaleType: "band",
           dataKey: "category",
@@ -54,7 +54,7 @@ const ICCGraph = ({
           },
         },
       ]}
-      xAxis={[
+      yAxis={[
         {
           valueFormatter: (value) =>
             formatAmount(value as number, EAmountType.MILLIS),
@@ -69,8 +69,7 @@ const ICCGraph = ({
           label: "Inventory Carry Cost (ICC)",
         },
       ]}
-      layout="horizontal"
-      {...defaultGraphProps(isExpanded, { hasLongLeftLabels: true })}
+      {...defaultGraphProps(isExpanded)}
     />
   );
 };

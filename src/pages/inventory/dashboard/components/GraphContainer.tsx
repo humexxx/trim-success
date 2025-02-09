@@ -24,7 +24,7 @@ const GraphContainer = ({
       <Card elevation={3} sx={{ borderRadius: 4 }}>
         <CardContent>
           <IconButton
-            sx={{ position: "absolute", right: 0, zIndex: 1 }}
+            sx={{ position: "absolute", right: 8, zIndex: 1 }}
             onClick={() => setIsExpanded(!isExpanded)}
           >
             {isExpanded ? <CloseFullscreenIcon /> : <OpenInFullIcon />}
