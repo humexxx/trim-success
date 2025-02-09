@@ -15,10 +15,11 @@ import { logout } from "src/utils";
 import { SIDENAV_WIDTH } from "./Sidenav";
 
 interface Props {
-  handleDrawerToggle: () => void;
+  handleDrawerToggle?: () => void;
+  hasDrawer?: boolean;
 }
 
-const Header = ({ handleDrawerToggle }: Props) => {
+const Header = ({ handleDrawerToggle, hasDrawer = true }: Props) => {
   const theme = useTheme();
   const themeContext = useLocalTheme();
   const navigate = useNavigate();
@@ -38,8 +39,8 @@ const Header = ({ handleDrawerToggle }: Props) => {
       color="default"
       elevation={0}
       sx={{
-        width: { lg: `calc(100% - ${SIDENAV_WIDTH}px)` },
-        ml: { lg: `${SIDENAV_WIDTH}px` },
+        width: { lg: `calc(100% - ${hasDrawer ? SIDENAV_WIDTH : 0}px)` },
+        ml: { lg: `${hasDrawer ? SIDENAV_WIDTH : 0}px` },
         display: "flex",
         justifyContent: "space-between",
         bgcolor: "background.paper",
@@ -50,15 +51,17 @@ const Header = ({ handleDrawerToggle }: Props) => {
       }}
     >
       <Toolbar>
-        <IconButton
-          color="inherit"
-          aria-label="open drawer"
-          edge="start"
-          onClick={handleDrawerToggle}
-          sx={{ mr: 2, display: { lg: "none" } }}
-        >
-          <MenuIcon />
-        </IconButton>
+        {hasDrawer && (
+          <IconButton
+            color="inherit"
+            aria-label="open drawer"
+            edge="start"
+            onClick={handleDrawerToggle}
+            sx={{ mr: 2, display: { lg: "none" } }}
+          >
+            <MenuIcon />
+          </IconButton>
+        )}
         <Typography
           variant="body2"
           component="div"

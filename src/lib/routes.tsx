@@ -2,7 +2,7 @@ import { createBrowserRouter, Navigate } from "react-router-dom";
 import { SignUpPage, SignInPage, ForgotPasswordPage } from "src/pages/auth";
 import { SalesPage } from "src/pages/sales";
 
-import { ClientLayout } from "../layouts";
+import { InventoryLayout, SalesLayout, ModuleSelectLayout } from "../layouts";
 import { LandingPage, ErrorPage, ModuleSelector } from "../pages";
 import { ROUTES } from "./consts";
 import { TestingPage, UserSelectPage } from "../pages/admin";
@@ -41,11 +41,18 @@ export const router = createBrowserRouter([
   },
   {
     path: ROUTES.MODULE_SELECTOR,
-    element: <ModuleSelector />,
+    element: <ModuleSelectLayout />,
+
+    children: [
+      {
+        path: ROUTES.MODULE_SELECTOR,
+        element: <ModuleSelector />,
+      },
+    ],
   },
   {
     path: "/inventory",
-    element: <ClientLayout />,
+    element: <InventoryLayout />,
     children: [
       {
         path: ROUTES.INVENTORY.ADMIN.IMPERSONATE,
@@ -91,11 +98,11 @@ export const router = createBrowserRouter([
     ],
   },
   {
-    path: "/sales",
-    element: <ClientLayout />,
+    path: ROUTES.SALES,
+    element: <SalesLayout />,
     children: [
       {
-        path: "/sales",
+        path: ROUTES.SALES,
         element: <SalesPage />,
       },
     ],

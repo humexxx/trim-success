@@ -1,9 +1,9 @@
 import { createContext, ReactNode, useMemo } from "react";
 
 import { createTheme, ThemeProvider } from "@mui/material";
-import { LOCAL_STORAGE_KEYS } from "src/lib/consts";
 import { EThemeType } from "src/enums";
 import { useLocalStorage } from "src/hooks";
+import { LOCAL_STORAGE_KEYS } from "src/lib/consts";
 import { getDesignTokens } from "src/lib/themes";
 
 import { useAuth } from "./hooks";
@@ -52,6 +52,14 @@ export function LocalThemeProvider({ children }: Props) {
               size: "small",
             },
           },
+        },
+        typography: {
+          fontFamily: "Roboto, sans-serif",
+          h1: { fontWeight: 700 },
+          h2: { fontWeight: 600 },
+          h3: { fontWeight: 500 },
+          body1: { fontSize: "1rem", lineHeight: 1.6 },
+          body2: { fontSize: "0.875rem", lineHeight: 1.6 },
         },
       }),
     [currentUser, mode]
