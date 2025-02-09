@@ -21,11 +21,13 @@ import {
   ListItemIcon,
   ListItemText,
   Typography,
+  CircularProgress,
 } from "@mui/material";
 import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { PrivateRoute } from "src/components";
 import { LocalThemeProvider, CubeProvider } from "src/context";
-import { useAuth, useCube } from "src/context/hooks";
+import { useAuth, useCube, useLocalTheme } from "src/context/hooks";
+import { EThemeType } from "src/enums";
 import { ROUTES, VERSION } from "src/lib/consts";
 
 import { Header, Sidenav } from "./_components";
@@ -107,6 +109,7 @@ function InventoryLayout() {
 
   const cube = useCube();
 
+  const themeContext = useLocalTheme();
   const { hasInitialData, isCubeLoading } = useCube();
   const { isAdmin, customUser } = useAuth();
   const location = useLocation();
@@ -118,7 +121,15 @@ function InventoryLayout() {
   };
 
   return (
-    <Box sx={{ display: "flex" }}>
+    <Box
+      sx={{
+        display: "flex",
+        bgcolor:
+          themeContext.theme === EThemeType.LIGHT
+            ? "#fafafa"
+            : "background.default",
+      }}
+    >
       <Header handleDrawerToggle={handleDrawerToggle} />
       <Sidenav
         title="Inventory"
@@ -245,15 +256,21 @@ function InventoryLayout() {
           p: 3,
           pt: 0,
           width: { lg: `calc(100% - ${SIDENAV_WIDTH}px)` },
-          backgroundColor: "background.default",
           minHeight: "100vh",
         }}
       >
         <Toolbar />
 
-        <Container maxWidth="xl">
-          {cube.isCubeLoading ? "Loading..." : <Outlet />}
-        </Container>
+        {cube.isCubeLoading ? (
+          <Box mt={4}>
+            <CircularProgress size={20} sx={{ mr: 2 }} />
+            <Typography variant="h5" component={"span"} align="center">
+              Cargando...
+            </Typography>
+          </Box>
+        ) : (
+          <Outlet />
+        )}
       </Box>
     </Box>
   );

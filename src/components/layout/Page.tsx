@@ -1,34 +1,29 @@
-import React from "react";
+import { PropsWithChildren } from "react";
 
-import { Box, Typography } from "@mui/material";
+import { Breakpoint, Container } from "@mui/material";
 import { useDocumentMetadata } from "src/hooks";
+import { APP_NAME } from "src/lib/consts";
 
 type Props = {
   title?: string;
   description?: string;
+  useContainer?: boolean;
+  maxWidth?: false | Breakpoint | undefined;
 };
 
-const PageHeader = ({ title, description }: Props) => {
-  useDocumentMetadata(`${title} | Trim Success`);
-  return (
-    <Box component={"header"}>
-      {Boolean(title) && (
-        <Typography
-          color="text.primary"
-          variant="h6"
-          component="h2"
-          gutterBottom
-        >
-          <strong>{title}</strong>
-        </Typography>
-      )}
-      {Boolean(description) && (
-        <Typography color="text.secondary" variant="body1">
-          {description}
-        </Typography>
-      )}
-    </Box>
-  );
+const Page = ({
+  title,
+  useContainer = true,
+  maxWidth = "xl",
+  children,
+}: PropsWithChildren<Props>) => {
+  useDocumentMetadata(`${title} | ${APP_NAME}`);
+
+  if (useContainer) {
+    return <Container maxWidth={maxWidth}>{children}</Container>;
+  }
+
+  return children;
 };
 
-export default PageHeader;
+export default Page;

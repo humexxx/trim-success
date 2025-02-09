@@ -89,6 +89,7 @@ function Sidenav({
           "& .MuiDrawer-paper": {
             boxSizing: "border-box",
             width: SIDENAV_WIDTH,
+            bgcolor: "transparent",
           },
         }}
         open

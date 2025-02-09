@@ -1,8 +1,15 @@
 import { useMemo, useState } from "react";
 
-import { Grid } from "@mui/material";
+import {
+  Box,
+  Card,
+  CardContent,
+  Container,
+  Grid,
+  Typography,
+} from "@mui/material";
 import { EInventoryPerformaceMetricType } from "@shared/enums/EInventoryPerformaceMetricType";
-import { PageContent, PageHeader } from "src/components/layout";
+import { PageContent, PageHeader, PageWrapper } from "src/components/layout";
 import { useCube } from "src/context/hooks";
 
 import { GraphContainer } from "./components";
@@ -110,26 +117,61 @@ const Page = () => {
   if (cube.isCubeLoading || !cube.data) return null;
 
   return (
-    <>
-      <PageHeader
-        title="Panel"
-        description="Vista general del comportamiento del negocio"
-      />
-      <PageContent>
-        <Grid container spacing={1} rowGap={2}>
-          {_graphs.map((graph) => (
-            <GraphContainer
-              isExpanded={expandedGraph === graph.key}
-              setIsExpanded={() =>
-                setExpandedGraph(expandedGraph === graph.key ? "" : graph.key)
-              }
+    <PageWrapper title="Panel" useContainer={false}>
+      <Box position={"relative"}>
+        <Box
+          sx={{
+            left: 0,
+            right: 0,
+            height: 400,
+            top: 0,
+            zIndex: 0,
+            position: "absolute",
+            bgcolor: "black",
+            borderRadius: {
+              md: 0,
+              lg: 4,
+            },
+            mx: {
+              md: 0,
+              lg: 2,
+            },
+          }}
+        />
+        <Container sx={{ zIndex: 1, position: "relative" }}>
+          <Box component={"header"} pt={4}>
+            <Typography
+              color="white"
+              variant="h4"
+              component="h1"
+              fontWeight={600}
             >
-              {graph.component}
-            </GraphContainer>
-          ))}
-        </Grid>
-      </PageContent>
-    </>
+              <strong>Panel</strong>
+            </Typography>
+            <Typography color="white" variant="body1">
+              Vista general del comportamiento del negocio
+            </Typography>
+          </Box>
+          <PageContent>
+            <Grid container spacing={2} rowGap={2}>
+              {_graphs.map((graph) => (
+                <GraphContainer
+                  key={graph.key}
+                  isExpanded={expandedGraph === graph.key}
+                  setIsExpanded={() =>
+                    setExpandedGraph(
+                      expandedGraph === graph.key ? "" : graph.key
+                    )
+                  }
+                >
+                  {graph.component}
+                </GraphContainer>
+              ))}
+            </Grid>
+          </PageContent>
+        </Container>
+      </Box>
+    </PageWrapper>
   );
 };
 

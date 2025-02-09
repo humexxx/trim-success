@@ -36,16 +36,13 @@ const Header = ({ handleDrawerToggle, hasDrawer = true }: Props) => {
   return (
     <AppBar
       position="fixed"
-      color="default"
+      color="transparent"
       elevation={0}
       sx={{
         width: { lg: `calc(100% - ${hasDrawer ? SIDENAV_WIDTH : 0}px)` },
         ml: { lg: `${hasDrawer ? SIDENAV_WIDTH : 0}px` },
         display: "flex",
         justifyContent: "space-between",
-        bgcolor: "background.paper",
-        borderBottom: 1,
-        borderBottomColor: "divider",
         // bgcolor: "hsla(0, 0%, 100%, 0.6)",
         // backdropFilter: "blur(50px)",
       }}

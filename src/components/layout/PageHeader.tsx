@@ -12,7 +12,7 @@ type Props = {
 const PageHeader = ({ title, description }: Props) => {
   useDocumentMetadata(`${title} | ${APP_NAME}`);
   return (
-    <Box component={"header"} mt={4}>
+    <Box component={"header"} pt={4}>
       {Boolean(title) && (
         <Typography
           color="text.primary"
