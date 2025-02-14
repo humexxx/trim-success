@@ -6,11 +6,9 @@ import {
   useState,
 } from "react";
 
-import { STORAGE_PATH } from "@shared/consts";
-import { ICubeData, IInitCube, IDriver } from "@shared/models";
+import { ICubeData, IInitCube, IDriver, IFileData } from "@shared/models";
 import { ICallableRequest, ICallableResponse } from "@shared/models/functions";
 import { httpsCallable } from "firebase/functions";
-import { listAll, getBlob, ref } from "firebase/storage";
 import { GlobalLoader } from "src/components";
 import { LOCAL_STORAGE_KEYS } from "src/lib/consts";
 import { functions, storage } from "src/lib/firebase";
@@ -22,7 +20,7 @@ export interface CubeContextType {
   setHasInitialData: (hasInitialData: boolean) => void;
   isCubeLoading: boolean;
 
-  getFiles: () => Promise<{ name: string; blob: Blob }[] | undefined>;
+  getFiles: () => Promise<IFileData[]>;
   fileData?: { columns: string[]; rows: any[] };
   setFileData: React.Dispatch<
     React.SetStateAction<{ columns: string[]; rows: any[] } | undefined>
@@ -58,38 +56,29 @@ export function CubeProvider({ children, onCubeLoadError }: Props) {
     columns: string[];
     rows: any[];
   }>();
-  const [files, setFiles] = useState<
-    { name: string; blob: Blob }[] | undefined
-  >();
+  const [files, setFiles] = useState<IFileData[] | undefined>();
 
-  const getFiles = useCallback(async (): Promise<
-    { name: string; blob: Blob }[] | undefined
-  > => {
+  const getFiles = useCallback(async (): Promise<IFileData[]> => {
     if (files) return files;
-    const folderRef = ref(
-      storage,
-      `${STORAGE_PATH}/${isAdmin ? customUser?.uid : currentUser?.uid}/`
-    );
+
+    const getFiles = httpsCallable<
+      ICallableRequest,
+      ICallableResponse<IFileData[]>
+    >(functions, "getFiles");
+    const _uid = isAdmin ? customUser!.uid : currentUser!.uid;
     try {
-      const result = await listAll(folderRef);
-      if (result.items.length) {
-        const files = await Promise.all(
-          result.items.map(async (itemRef) => {
-            const blob = await getBlob(itemRef);
-            return {
-              name: itemRef.name,
-              blob: blob,
-            };
-          })
-        );
-        setFiles(files);
-        return files;
+      const response = await getFiles({ uid: _uid });
+      if (!response.data.success) {
+        throw new Error(response.data.error);
       }
+
+      setFiles(response.data.data);
+      return response.data.data;
     } catch (error) {
       console.error("Error fetching files:", error);
-      return undefined;
+      throw new Error("Error fetching files");
     }
-  }, [currentUser?.uid, customUser?.uid, files, isAdmin]);
+  }, [currentUser, customUser, files, isAdmin]);
 
   const loadCubeData = useCallback(async () => {
     const _uid = isAdmin ? customUser!.uid : currentUser!.uid;

@@ -8,6 +8,8 @@ import * as admin from "firebase-admin";
 import { logger } from "firebase-functions";
 import * as XLSX from "xlsx";
 
+import { getBucketFiles } from "./repository";
+
 const storage = admin.storage();
 
 function parseJsonData<T>(
@@ -94,13 +96,7 @@ export async function generateDataModels(
 }> {
   logger.info(`Generating data models for file: ${fileUid}`);
 
-  const folderPath = `${STORAGE_PATH}/${uid}/`;
-  const response = await storage.bucket().getFiles({ prefix: folderPath });
-
-  const files = response[0];
-  if (!files || files.length === 0) {
-    throw new Error("No files found.");
-  }
+  const files = await getBucketFiles(uid);
 
   const file = files.find((file) => file.name.includes(fileUid));
   if (!file) {
