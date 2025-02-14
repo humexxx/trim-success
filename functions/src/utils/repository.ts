@@ -183,12 +183,8 @@ export async function generateDataModelInventoryPerformance(
 export async function getCubeDataModel(
   uid: string
 ): Promise<{ dataModel: IDataModel<IDataModelCubeRow>; fileUid: string }> {
-  const folderRef = `${STORAGE_PATH}/${uid}/`;
+  const files = await getBucketFiles(uid);
 
-  const [files] = await storage().bucket().getFiles({ prefix: folderRef });
-  if (!files || files.length === 0) {
-    throw new Error("No files found.");
-  }
   const jsonFile = files.find((file) => file.name.includes(JSON_FILE_NAME));
   if (!jsonFile) throw new Error("JSON file not found.");
 
@@ -199,4 +195,15 @@ export async function getCubeDataModel(
     ) as IDataModel<IDataModelCubeRow>,
     fileUid: jsonFile.name.split("-")[0].split("/")[2],
   };
+}
+
+export async function getBucketFiles(uid: string) {
+  const folderRef = `${STORAGE_PATH}/${uid}/`;
+
+  const [files] = await storage().bucket().getFiles({ prefix: folderRef });
+  if (!files || files.length === 0) {
+    throw new Error("No files found.");
+  }
+
+  return files;
 }
