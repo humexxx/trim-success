@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 0.48.4 (2025-02-14)
+
+
+### Bug Fixes
+
+* add check wait for automerge prs from dependabot ([9f03cbd](https://github.com/humexxx/trim-success/commit/9f03cbd7b4a46172c3a6f0ab8e26f11e9be520b6))
+
 ### 0.48.3 (2025-02-14)
 
 ### 0.48.2 (2025-02-09)
