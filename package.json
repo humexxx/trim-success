@@ -1,7 +1,7 @@
 {
   "name": "trim-success",
   "private": true,
-  "version": "0.48.4",
+  "version": "0.48.5",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -12,7 +12,7 @@
     "release": "standard-version"
   },
   "dependencies": {
-    "@emotion/react": "^11.13.0",
+    "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
     "@fontsource/roboto": "^5.1.0",
     "@hookform/resolvers": "^3.9.1",
