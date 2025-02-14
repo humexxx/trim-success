@@ -30,7 +30,7 @@ jobs:
         run: npm run release -- --no-verify --no-git-tag-version
 
       - name: Push changes
-        run: git push origin develop
+        run: git push origin main
 
       - name: Get Version from package.json
         id: package_version
