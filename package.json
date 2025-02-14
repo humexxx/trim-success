@@ -25,7 +25,7 @@
     "mui-file-dropzone": "^4.0.2",
     "pdfmake": "^0.2.15",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1",
+    "react-dom": "^19.0.0",
     "react-hook-form": "^7.53.0",
     "react-imask": "^7.6.1",
     "react-router-dom": "^6.27.0",
@@ -34,7 +34,7 @@
   "devDependencies": {
     "@types/pdfmake": "^0.2.9",
     "@types/react": "^18.3.8",
-    "@types/react-dom": "^18.3.1",
+    "@types/react-dom": "^19.0.3",
     "@typescript-eslint/eslint-plugin": "^8.24.0",
     "@typescript-eslint/parser": "^8.24.0",
     "@vitejs/plugin-react": "^4.3.3",
