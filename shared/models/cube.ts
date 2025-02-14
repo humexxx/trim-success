@@ -1,3 +1,5 @@
+import { EFileType } from "@shared/enums";
+
 import { IBaseData } from "./baseData";
 import { ICubeParameters } from "./cubeParameters";
 import { IInventoryPerformanceData } from "./inventoryPerformance";
@@ -21,4 +23,9 @@ export interface IInitialCubeData {
   sumSales: number;
   sumCostSales: number;
   sumCostInventory: number;
+}
+
+export interface IFileData {
+  name: string;
+  type: EFileType;
 }

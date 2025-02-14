@@ -1,7 +1,7 @@
 import { FirebaseError } from "firebase/app";
 import { AuthErrorCodes } from "firebase/auth";
-import { LOCAL_STORAGE_KEYS } from "src/consts";
-import { auth } from "src/firebase";
+import { LOCAL_STORAGE_KEYS } from "src/lib/consts";
+import { auth } from "src/lib/firebase";
 
 import { getError } from "./error";
 

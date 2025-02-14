@@ -1,2 +1,3 @@
-export { default as ClientLayout } from "./ClientLayout";
-export { default as AdminLayout } from "./AdminLayout";
+export { default as InventoryLayout } from "./InventoryLayout";
+export { default as ModuleSelectLayout } from "./ModuleSelectLayout";
+export { default as SalesLayout } from "./SalesLayout";
