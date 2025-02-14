@@ -10,6 +10,7 @@ import {
   Typography,
 } from "@mui/material";
 import { EFileType } from "@shared/enums";
+import { IFileData } from "@shared/models";
 import json from "src/assets/images/json.webp";
 import xls from "src/assets/images/xls.svg";
 import { ConfirmDialog } from "src/components";
@@ -21,19 +22,16 @@ const ImportedDataPage = () => {
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | undefined>(undefined);
-  const [files, setFiles] = useState<
-    { name: string; blob: Blob }[] | undefined
-  >(undefined);
+  const [files, setFiles] = useState<IFileData[] | undefined>(undefined);
 
   const cube = useCube();
-  const { customUser, isAdmin } = useAuth();
+  const { isAdmin } = useAuth();
 
   useEffect(() => {
     async function fetch() {
       setLoading(true);
       try {
         const files = await cube.getFiles();
-        if (!files?.length) throw new Error("No files found");
         setFiles(files);
       } catch (e) {
         setError(getError(e));
@@ -91,17 +89,17 @@ const ImportedDataPage = () => {
             gap={2}
             alignItems={"center"}
           >
-            {file.blob.type === EFileType.JSON && (
+            {file.type === EFileType.JSON && (
               <SubdirectoryArrowRightIcon sx={{ ml: 2 }} />
             )}
             <img
-              src={file.blob.type === EFileType.JSON ? json : xls}
-              width={file.blob.type === EFileType.JSON ? 30 : 40}
+              src={file.type === EFileType.JSON ? json : xls}
+              width={file.type === EFileType.JSON ? 30 : 40}
             />
             <Typography variant="body1" color="text.primary">
               {file.name}
             </Typography>
-            {isAdmin && file.blob.type !== EFileType.JSON && (
+            {isAdmin && file.type !== EFileType.JSON && (
               <Button
                 startIcon={<Delete />}
                 variant={"contained"}

@@ -1,5 +1,6 @@
 import { FIRESTORE_PATHS } from "@shared/consts";
-import { ICubeData, IInitCube } from "@shared/models";
+import { EFileType } from "@shared/enums";
+import { ICubeData, IFileData, IInitCube } from "@shared/models";
 import { ICallableRequest, ICallableResponse } from "@shared/models/functions";
 import * as admin from "firebase-admin";
 import * as functions from "firebase-functions";
@@ -11,6 +12,7 @@ import {
   generateDataModelInventoryPerformance,
   generateInventoryPerformance,
   generateScorecard,
+  getBucketFiles,
   getCubeDataModel,
   getCubeParamteres,
   getDataMining,
@@ -200,3 +202,24 @@ export const calculateDataModelInventoryPerformance =
       return { success: true };
     }
   );
+
+export const getFiles = functions.https.onCall<ICallableRequest>(
+  async (req): Promise<ICallableResponse<IFileData[]>> => {
+    if (!req.auth) return { success: false, error: "Not authenticated." };
+    const uid = req.auth.token.admin ? req.data.uid : req.auth?.uid;
+
+    try {
+      const files = await getBucketFiles(uid);
+
+      return {
+        success: true,
+        data: files.map((file) => ({
+          name: file.name,
+          type: file.metadata.contentType as EFileType,
+        })),
+      };
+    } catch (e: any) {
+      return { success: false, error: e };
+    }
+  }
+);
