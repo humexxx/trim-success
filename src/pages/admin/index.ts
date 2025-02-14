@@ -1,2 +1,2 @@
-export { UserSelectPage } from "./UserSelect";
-export { TestPage } from "./Test";
+export { UserSelectPage } from "./user-select";
+export { TestingPage } from "./testing";
