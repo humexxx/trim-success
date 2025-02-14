@@ -27,26 +27,7 @@ jobs:
       - run: npm install
 
       - name: Run release script (Without Tagging)
-        run: npm run release -- --no-verify --no-git-tag-version
+        run: npm run release
 
       - name: Push changes
         run: git push origin main
-
-      - name: Get Version from package.json
-        id: package_version
-        run: echo "VERSION=$(jq -r .version package.json)" >> $GITHUB_ENV
-
-      - name: Create Tag
-        run: |
-          git tag v${{ env.VERSION }}
-          git push origin v${{ env.VERSION }}
-
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: v${{ env.VERSION }}
-          name: "Release v${{ env.VERSION }}"
-          draft: false
-          prerelease: false
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

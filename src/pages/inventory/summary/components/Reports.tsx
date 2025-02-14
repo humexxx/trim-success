@@ -1,7 +1,7 @@
 import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
 import { Box } from "@mui/material";
 import pdfMake from "pdfmake/build/pdfmake";
-import * as pdfFonts from "pdfmake/build/vfs_fonts";
+// import * as pdfFonts from "pdfmake/build/vfs_fonts";
 import { CardButton } from "src/components";
 import { getError } from "src/utils";
 
@@ -15,7 +15,8 @@ const Reports = () => {
       const { data: response } = await reportsGenerator.generateGeneralReport();
       const data = JSON.parse((response as any).data);
       pdfMake
-        .createPdf(data, undefined, undefined, pdfFonts.pdfMake.vfs)
+        // .createPdf(data, undefined, undefined, pdfFonts.pdfMake.vfs)
+        .createPdf(data, undefined, undefined, pdfMake.vfs)
         .download("general_report.pdf");
     } catch (e: any) {
       getError(e);
