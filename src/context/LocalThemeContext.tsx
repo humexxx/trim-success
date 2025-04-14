@@ -1,12 +1,10 @@
 import { createContext, ReactNode, useMemo } from "react";
 
-import { createTheme, ThemeProvider } from "@mui/material";
+import { ThemeProvider } from "@mui/material";
+import theme from "humexxx-theme";
 import { EThemeType } from "src/enums";
 import { useLocalStorage } from "src/hooks";
 import { LOCAL_STORAGE_KEYS } from "src/lib/consts";
-import { getDesignTokens } from "src/lib/themes";
-
-import { useAuth } from "./hooks";
 
 export interface LocalThemeContextType {
   toggleColorMode: () => void;
@@ -26,51 +24,6 @@ export function LocalThemeProvider({ children }: Props) {
   const [mode, setMode] = useLocalStorage<EThemeType>(
     LOCAL_STORAGE_KEYS.THEME,
     EThemeType.LIGHT
-  );
-  const { currentUser } = useAuth();
-
-  const theme = useMemo(
-    () =>
-      createTheme({
-        ...((currentUser as any)
-          .hasCustomTheme /* || true when we want to add a custom theme */
-          ? getDesignTokens(mode)
-          : {
-              palette: {
-                mode,
-              },
-            }),
-        components: {
-          MuiTab: {
-            styleOverrides: {
-              root: {
-                textTransform: "none",
-              },
-            },
-          },
-          MuiTextField: {
-            defaultProps: {
-              size: "small",
-            },
-          },
-          MuiCard: {
-            styleOverrides: {
-              root: {
-                borderRadius: 16,
-              },
-            },
-          },
-        },
-        typography: {
-          fontFamily: "Roboto, sans-serif",
-          h1: { fontWeight: 700 },
-          h2: { fontWeight: 600 },
-          h3: { fontWeight: 500 },
-          body1: { fontSize: "1rem", lineHeight: 1.6 },
-          body2: { fontSize: "0.875rem", lineHeight: 1.6 },
-        },
-      }),
-    [currentUser, mode]
   );
 
   const value: LocalThemeContextType = useMemo(
