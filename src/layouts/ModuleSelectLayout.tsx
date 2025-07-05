@@ -1,7 +1,6 @@
 import { Box, Toolbar } from "@mui/material";
 import { Outlet } from "react-router-dom";
 import { PrivateRoute } from "src/components";
-import { LocalThemeProvider } from "src/context";
 
 import { Header } from "./_components";
 
@@ -31,9 +30,7 @@ function ModuleSelectLayout() {
 export default function InventoryLayoutWrapper() {
   return (
     <PrivateRoute>
-      <LocalThemeProvider>
-        <ModuleSelectLayout />
-      </LocalThemeProvider>
+      <ModuleSelectLayout />
     </PrivateRoute>
   );
 }

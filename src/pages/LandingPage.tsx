@@ -1,26 +1,34 @@
-import AssessmentIcon from "@mui/icons-material/Assessment";
-import BarChartIcon from "@mui/icons-material/BarChart";
-import BusinessCenterIcon from "@mui/icons-material/BusinessCenter";
-import EmailIcon from "@mui/icons-material/Email";
-import InventoryIcon from "@mui/icons-material/Inventory";
-import MenuIcon from "@mui/icons-material/Menu";
+import AddLocationAltIcon from "@mui/icons-material/AddLocationAlt";
+import HandymanIcon from "@mui/icons-material/Handyman";
+import {
+  Timeline,
+  TimelineConnector,
+  TimelineContent,
+  TimelineDot,
+  TimelineItem,
+  TimelineSeparator,
+} from "@mui/lab";
 import {
   AppBar,
   Toolbar,
-  IconButton,
   Box,
   Button,
   Container,
   Grid,
   Typography,
-  Card,
-  CardContent,
   Stack,
+  TextField,
 } from "@mui/material";
 import { Link } from "react-router-dom";
-import landing1 from "src/assets/images/landing_1.webp";
+import HeroImage from "src/assets/images/hero.webp";
+import { Logo } from "src/components";
+import { FEATURES } from "src/consts";
 import { useDocumentMetadata } from "src/hooks";
 import { APP_NAME, ROUTES } from "src/lib/consts";
+
+import FeatureCard from "./public/_components/FeatureCard";
+import Footer from "./public/_components/Footer";
+import Section from "./public/_components/Section";
 
 const LandingPage = () => {
   useDocumentMetadata(APP_NAME);
@@ -35,279 +43,139 @@ const LandingPage = () => {
         overflow: "hidden",
       }}
     >
-      {/* AppBar */}
-      <AppBar
-        position="fixed"
-        sx={{
-          color: "#000",
-          boxShadow: 0,
-          borderBottom: "1px solid #e0e0e0",
-          backdropFilter: "saturate(180%) blur(5px)",
-          bgcolor: "rgba(255, 255, 255, .8)",
-        }}
-      >
+      <AppBar position="relative">
         <Container maxWidth="xl">
-          <Toolbar>
-            <Typography variant="h6" sx={{ flexGrow: 1, fontWeight: 600 }}>
-              ScorChain Inventory
-            </Typography>
-            <Link to={ROUTES.SIGN_IN} style={{ textDecoration: "none" }}>
-              <Button sx={{ color: "black" }}>Inicia sesión</Button>
-            </Link>
+          <Toolbar disableGutters>
+            <Stack
+              direction="row"
+              spacing={8}
+              alignItems="center"
+              justifyContent={"space-between"}
+              sx={{ flexGrow: 1 }}
+            >
+              <Logo />
+              <Stack direction="row" spacing={2}>
+                <Link to={ROUTES.SIGN_IN} style={{ textDecoration: "none" }}>
+                  <Button
+                    sx={{ color: "white", textDecoration: "none" }}
+                    size="small"
+                  >
+                    Inicia sesión
+                  </Button>
+                </Link>
+              </Stack>
+            </Stack>
           </Toolbar>
         </Container>
       </AppBar>
 
-      {/* Hero Section with SVG Grid Lines */}
-      <Box
-        sx={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          width: "100%",
-          height: "100%",
-          zIndex: -1,
-          opacity: 0.2,
-        }}
-      >
-        <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <pattern
-              id="gridPattern"
-              width="40"
-              height="40"
-              patternUnits="userSpaceOnUse"
-            >
-              <path
-                d="M 40 0 L 0 0 0 40"
-                fill="none"
-                stroke="#ccc"
-                strokeWidth="0.5"
-              />
-            </pattern>
-          </defs>
-          <rect width="100%" height="100%" fill="url(#gridPattern)" />
-        </svg>
-      </Box>
-      <Container
-        maxWidth="lg"
-        sx={{ py: 24, textAlign: "center", position: "relative" }}
-      >
-        <Stack spacing={12}>
-          <Typography
-            variant="h1"
-            fontSize={58}
-            fontWeight={700}
-            letterSpacing={"-0.125rem"}
-            gutterBottom
-          >
-            Software para la Gestión de Inventario y Ventas
+      <Container component={"main"}>
+        {/* Hero Section */}
+        <Section>
+          <Typography variant="h1" fontWeight={700} mb={4}>
+            Maneja tu inventario con <br />
+            ScorChain
           </Typography>
-          <Typography variant="h5" color="text.secondary" sx={{ mb: 4 }}>
-            <strong>Optimiza</strong> el rendimiento de tu inventario con
-            análisis de datos, métricas financieras y dashboards interactivos.{" "}
-            <strong>Administra</strong> el ciclo de vida de tus productos y
-            mejora la rentabilidad de tu negocio.
-          </Typography>
-          <Box sx={{ display: "flex", justifyContent: "center", gap: 2 }}>
-            <Link to={ROUTES.SIGN_IN} style={{ textDecoration: "none" }}>
-              <Button
-                variant="contained"
-                size="large"
-                sx={{ fontSize: "1rem" }}
-                disableElevation
+          <Grid container spacing={8}>
+            <Grid size={6}>
+              <Timeline sx={{ "& li::before": { display: "none" } }}>
+                <TimelineItem>
+                  <TimelineSeparator>
+                    <TimelineDot>
+                      <HandymanIcon />
+                    </TimelineDot>
+                    <TimelineConnector />
+                  </TimelineSeparator>
+                  <TimelineContent>
+                    <Typography variant="body2" mt={1.75}>
+                      Llena el formulario
+                    </Typography>
+                    <Box pt={4} pb={2}>
+                      <TextField label="Email" fullWidth />
+                    </Box>
+                  </TimelineContent>
+                </TimelineItem>
+                <TimelineItem>
+                  <TimelineSeparator>
+                    <TimelineDot>
+                      <AddLocationAltIcon />
+                    </TimelineDot>
+                  </TimelineSeparator>
+                  <TimelineContent>
+                    <Typography variant="body2" mt={1.75}>
+                      Selecciona los datos adicionales de tu negocio
+                    </Typography>
+                    <Box pt={4}>
+                      <Grid container spacing={2}>
+                        <Grid size={12}>
+                          <TextField label="Negocio" fullWidth />
+                        </Grid>
+                        <Grid size={12}>
+                          <TextField label="Lugar" fullWidth />
+                        </Grid>
+                        <Grid size={12}>
+                          <Stack
+                            direction={{ xs: "column", sm: "row" }}
+                            spacing={2}
+                            alignItems={"center"}
+                          >
+                            <Link
+                              to={ROUTES.SIGN_IN}
+                              style={{ textDecoration: "none" }}
+                            >
+                              <Button
+                                sx={{ color: "white", textDecoration: "none" }}
+                                variant="contained"
+                              >
+                                Enviar Consulta
+                              </Button>
+                            </Link>
+                          </Stack>
+                        </Grid>
+                      </Grid>
+                    </Box>
+                  </TimelineContent>
+                </TimelineItem>
+              </Timeline>
+            </Grid>
+            <Grid size={6}>
+              <Box
+                sx={{
+                  position: "relative",
+                  height: 400,
+                  aspectRatio: "16 / 9",
+                  mt: 2,
+                }}
               >
-                Empezar Ahora
-              </Button>
-            </Link>
-            <Button variant="outlined" size="large" sx={{ fontSize: "1rem" }}>
-              Más Información
-            </Button>
-          </Box>
-        </Stack>
-      </Container>
-
-      <Container maxWidth="lg" sx={{ mt: 15, textAlign: "center" }}>
-        <Stack spacing={8}>
-          <Typography variant="h4" fontWeight={700} gutterBottom>
-            Del 15% al 25%
-            <Typography
-              variant="h6"
-              component={"span"}
-              color="text.secondary"
-              ml={2}
-            >
-              del inventario no genera ganancias. ¿Cómo puedes mejorar?
-            </Typography>
-          </Typography>
-
-          <Grid container spacing={4}>
-            <Grid item xs={12} sm={6} md={4}>
-              <Card variant="outlined" sx={{ borderRadius: 4 }}>
-                <CardContent>
-                  <Box
-                    justifyContent={"center"}
-                    display="flex"
-                    alignItems={"center"}
-                    height={200}
-                  >
-                    <InventoryIcon sx={{ fontSize: 50 }} />
-                  </Box>
-                  <Typography
-                    variant="h6"
-                    fontWeight={600}
-                    textAlign={"left"}
-                    gutterBottom
-                  >
-                    Scorecard Financiero
-                  </Typography>
-                  <Typography textAlign={"left"} color={"text.secondary"}>
-                    Analiza la rentabilidad del inventario por categorías y SKU.
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-            <Grid item xs={12} sm={6} md={4}>
-              <Card variant="outlined" sx={{ borderRadius: 4 }}>
-                <CardContent>
-                  <Box
-                    justifyContent={"center"}
-                    display="flex"
-                    alignItems={"center"}
-                    height={200}
-                  >
-                    <BusinessCenterIcon sx={{ fontSize: 50 }} />
-                  </Box>
-                  <Typography
-                    variant="h6"
-                    fontWeight={600}
-                    textAlign={"left"}
-                    gutterBottom
-                  >
-                    Gestión de Compras
-                  </Typography>
-                  <Typography textAlign={"left"} color={"text.secondary"}>
-                    Controla el abastecimiento de productos y reduce costos.
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-            <Grid item xs={12} sm={6} md={4}>
-              <Card variant="outlined">
-                <CardContent>
-                  <Box
-                    justifyContent={"center"}
-                    display="flex"
-                    alignItems={"center"}
-                    height={200}
-                  >
-                    <BarChartIcon sx={{ fontSize: 50 }} />
-                  </Box>
-                  <Typography
-                    variant="h6"
-                    fontWeight={600}
-                    textAlign={"left"}
-                    gutterBottom
-                  >
-                    Análisis de Ventas
-                  </Typography>
-                  <Typography textAlign={"left"} color={"text.secondary"}>
-                    Visualiza el rendimiento de tus ventas en tiempo real.
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-            <Grid item xs={12} sm={6} md={4}>
-              <Card variant="outlined" sx={{ borderRadius: 4 }}>
-                <CardContent>
-                  <Typography
-                    variant="h6"
-                    fontWeight={600}
-                    textAlign={"left"}
-                    gutterBottom
-                  >
-                    Reportes Personalizados
-                  </Typography>
-                  <Typography textAlign={"left"} color={"text.secondary"}>
-                    Crea reportes a medida para tomar decisiones informadas.
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-            <Grid item xs={12} sm={6} md={4}>
-              <Card variant="outlined" sx={{ borderRadius: 4 }}>
-                <CardContent>
-                  <Typography
-                    variant="h6"
-                    fontWeight={600}
-                    textAlign={"left"}
-                    gutterBottom
-                  >
-                    Dashboard Interactivo
-                  </Typography>
-                  <Typography textAlign={"left"} color={"text.secondary"}>
-                    Accede a métricas clave y análisis de datos en tiempo real.
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-            <Grid item xs={12} sm={6} md={4}>
-              <Card variant="outlined" sx={{ borderRadius: 4 }}>
-                <CardContent>
-                  <Typography
-                    variant="h6"
-                    fontWeight={600}
-                    textAlign={"left"}
-                    gutterBottom
-                  >
-                    Maneja las ventas
-                  </Typography>
-                  <Typography textAlign={"left"} color={"text.secondary"}>
-                    Controla el ciclo de vida de tus productos y mejora la
-                    rentabilidad.
-                  </Typography>
-                </CardContent>
-              </Card>
+                <img
+                  src={HeroImage}
+                  alt="Nubi-Go hero"
+                  style={{
+                    objectFit: "cover",
+                    borderRadius: 8,
+                    height: "100%",
+                  }}
+                />
+              </Box>
             </Grid>
           </Grid>
-        </Stack>
+        </Section>
+
+        <Section>
+          <Typography variant="h3" component={"h2"} fontWeight={700} mb={4}>
+            Servicios
+          </Typography>
+          <Grid container spacing={4}>
+            {FEATURES.map(({ id, ...props }) => (
+              <Grid size={{ xs: 12, sm: 6, md: 4 }} key={id}>
+                <FeatureCard {...props} />
+              </Grid>
+            ))}
+          </Grid>
+        </Section>
       </Container>
 
-      <Box
-        sx={{
-          py: 8,
-          mt: 15,
-          textAlign: "center",
-          borderTop: "1px solid #e0e0e0",
-        }}
-      >
-        <Container maxWidth="xl">
-          {/* footer */}
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
-            <Typography variant="body2" color="text.secondary">
-              &copy; {new Date().getFullYear()} ScorChain Inventory. Todos los
-              derechos reservados.
-            </Typography>
-            <Box>
-              <IconButton>
-                <EmailIcon />
-              </IconButton>
-              <IconButton>
-                <AssessmentIcon />
-              </IconButton>
-              <IconButton>
-                <MenuIcon />
-              </IconButton>
-            </Box>
-          </Box>
-        </Container>
-      </Box>
+      <Footer />
     </Box>
   );
 };
