@@ -53,31 +53,12 @@ const FeatureCard = ({
                 <Button
                   variant="contained"
                   size="small"
-                  sx={{ backgroundColor: "#1A1A1A" }}
+                  sx={{ backgroundColor: "#1A1A1A", mt: 2 }}
                 >
                   Ver detalles
                 </Button>
               </Box>
             </Stack>
-          </Grid>
-          <Grid
-            size={4}
-            display={"flex"}
-            alignItems={"center"}
-            justifyContent={"center"}
-          >
-            <Box
-              sx={{
-                width: 56,
-                height: 56,
-                borderRadius: "50%",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              {icon}
-            </Box>
           </Grid>
         </Grid>
       </Card>
