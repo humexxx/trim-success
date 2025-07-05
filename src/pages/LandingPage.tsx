@@ -43,7 +43,7 @@ const LandingPage = () => {
         overflow: "hidden",
       }}
     >
-      <AppBar position="relative">
+      <AppBar position="relative" sx={{ backgroundColor: "#1A1A1A" }}>
         <Container maxWidth="xl">
           <Toolbar disableGutters>
             <Stack
@@ -124,7 +124,11 @@ const LandingPage = () => {
                               style={{ textDecoration: "none" }}
                             >
                               <Button
-                                sx={{ color: "white", textDecoration: "none" }}
+                                sx={{
+                                  color: "white",
+                                  textDecoration: "none",
+                                  backgroundColor: "#1A1A1A",
+                                }}
                                 variant="contained"
                               >
                                 Enviar Consulta

@@ -50,7 +50,11 @@ const FeatureCard = ({
                 </Typography>
               </Stack>
               <Box>
-                <Button variant="contained" size="small">
+                <Button
+                  variant="contained"
+                  size="small"
+                  sx={{ backgroundColor: "#1A1A1A" }}
+                >
                   Ver detalles
                 </Button>
               </Box>
