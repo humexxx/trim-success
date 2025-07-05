@@ -146,12 +146,12 @@ export default function SignIn({ handleOnSubmit }: SignInProps) {
           Entrar
         </LoadingButton>
         <Grid container>
-          <Grid item xs>
+          <Grid>
             <Link component={RouterLink} to="/forgot-password" variant="body2">
               Olvidaste tu contraseña?
             </Link>
           </Grid>
-          <Grid item>
+          <Grid>
             <Link component={RouterLink} to="/sign-up" variant="body2">
               {"No tienes cuenta? Regístrate"}
             </Link>

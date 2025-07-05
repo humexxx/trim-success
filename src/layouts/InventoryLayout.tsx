@@ -126,9 +126,7 @@ function InventoryLayout() {
       sx={{
         display: "flex",
         bgcolor:
-          themeContext.theme === EThemeType.LIGHT
-            ? "#fafafa"
-            : "background.default",
+          themeContext.theme === EThemeType.LIGHT ? "#fafafa" : "#212121",
       }}
     >
       <Header handleDrawerToggle={handleDrawerToggle} />

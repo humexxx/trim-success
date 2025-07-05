@@ -146,7 +146,7 @@ export default function StripedGrid({ totalColumns, ...props }: Props) {
 
   return (
     <>
-      <Grid item>
+      <Grid>
         <StripedDataGrid
           density="compact"
           hideFooter
@@ -168,7 +168,7 @@ export default function StripedGrid({ totalColumns, ...props }: Props) {
         />
       </Grid>
       {totalColumns && (
-        <Grid item>
+        <Grid>
           <TotalGrid
             columns={totalColumns}
             onTotalGridScroll={onTotalGridScroll}

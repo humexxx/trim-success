@@ -51,11 +51,13 @@ const Header = ({ handleDrawerToggle, hasDrawer = true }: Props) => {
       <Toolbar>
         {hasDrawer && (
           <IconButton
-            color="inherit"
             aria-label="open drawer"
             edge="start"
             onClick={handleDrawerToggle}
-            sx={{ mr: 2, display: { lg: "none" } }}
+            sx={{
+              mr: 2,
+              display: { lg: "none" },
+            }}
           >
             <MenuIcon />
           </IconButton>
@@ -73,13 +75,9 @@ const Header = ({ handleDrawerToggle, hasDrawer = true }: Props) => {
             </>
           ) : null}
         </Typography>
-        <IconButton
-          sx={{ ml: 2 }}
-          onClick={themeContext.toggleColorMode}
-          color="inherit"
-        >
+        <IconButton sx={{ ml: 2 }} onClick={themeContext.toggleColorMode}>
           {themeContext.theme === EThemeType.DARK ? (
-            <Brightness4Icon sx={{ color: "white" }} />
+            <Brightness4Icon />
           ) : (
             <Brightness7Icon />
           )}
@@ -89,7 +87,6 @@ const Header = ({ handleDrawerToggle, hasDrawer = true }: Props) => {
           onClick={handleLogout}
           sx={{
             ml: 2,
-            color: themeContext.theme === EThemeType.DARK ? "white" : "black",
           }}
         >
           <LogoutIcon />

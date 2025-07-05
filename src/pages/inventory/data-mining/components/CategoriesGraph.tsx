@@ -62,7 +62,7 @@ const CategoriesGraph = ({ data, drivers }: Props) => {
 
   return (
     <>
-      <Grid item xs={6}>
+      <Grid size={6}>
         <Card elevation={3}>
           <CardContent>
             <Box height={500}>
@@ -86,7 +86,7 @@ const CategoriesGraph = ({ data, drivers }: Props) => {
           </CardContent>
         </Card>
       </Grid>
-      <Grid item xs={6}>
+      <Grid size={6}>
         <Card elevation={3}>
           <CardContent>
             <Box height={500} sx={{ position: "relative" }}>

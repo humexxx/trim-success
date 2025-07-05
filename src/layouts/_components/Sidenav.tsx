@@ -15,13 +15,14 @@ const SidenavContent = ({
   const themeContext = useLocalTheme();
   return (
     <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
-      <Toolbar
-        sx={{
-          bgcolor:
-            themeContext.theme === EThemeType.LIGHT ? "#fafafa" : "grey.900",
-        }}
-      >
-        <Typography variant="h6" component="div" sx={{ position: "relative" }}>
+      <Toolbar>
+        <Typography
+          variant="h6"
+          component="div"
+          sx={{
+            position: "relative",
+          }}
+        >
           {title}{" "}
           <Typography
             mb={2}

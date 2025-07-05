@@ -18,7 +18,7 @@ const Filters = ({ filters, setFilters }: Props) => {
 
   return (
     <Grid container gap={2}>
-      <Grid item xs={4}>
+      <Grid size={4}>
         <TextField
           fullWidth
           select
@@ -36,7 +36,7 @@ const Filters = ({ filters, setFilters }: Props) => {
           ))}
         </TextField>
       </Grid>
-      <Grid item xs={4}>
+      <Grid size={4}>
         <ButtonGroup aria-label="expected value filter">
           <Button
             variant={

@@ -19,10 +19,10 @@ const Page = () => {
       />
       <PageContent>
         <Grid container spacing={4}>
-          <Grid item xs={12} lg={9}>
+          <Grid size={{ xs: 12, lg: 9 }}>
             <MainGrid />
           </Grid>
-          <Grid item xs={12} lg={3}>
+          <Grid size={{ xs: 12, lg: 3 }}>
             <Reports />
           </Grid>
         </Grid>

@@ -22,7 +22,6 @@ import { Controller, useForm } from "react-hook-form";
 import { AdminContent } from "src/components";
 import * as yup from "yup";
 
-
 const schema = yup.object().shape({
   code: yup.string().required("Code is required"),
   name: yup.string().required("Name is required"),
@@ -170,7 +169,7 @@ const AdminColumns = ({ columns }: Props) => {
             mt={4}
             autoComplete="off"
           >
-            <Grid item xs={12}>
+            <Grid size={12}>
               <TextField
                 label="Nombre"
                 {...register("name")}
@@ -180,7 +179,7 @@ const AdminColumns = ({ columns }: Props) => {
                 inputRef={input}
               />
             </Grid>
-            <Grid item xs={12}>
+            <Grid size={12}>
               <TextField
                 label="Código"
                 {...register("code")}
@@ -190,7 +189,7 @@ const AdminColumns = ({ columns }: Props) => {
                 disabled
               />
             </Grid>
-            <Grid item xs={12}>
+            <Grid size={12}>
               <Controller
                 rules={{ required: true }}
                 control={control}
@@ -213,7 +212,7 @@ const AdminColumns = ({ columns }: Props) => {
             </Grid>
 
             {indexType === "unique" && (
-              <Grid item xs={12}>
+              <Grid size={12}>
                 <TextField
                   type="number"
                   label="Índice"
@@ -227,7 +226,7 @@ const AdminColumns = ({ columns }: Props) => {
             )}
             {indexType === "range" && (
               <>
-                <Grid item xs={6}>
+                <Grid size={6}>
                   <TextField
                     type="number"
                     label="Índice Inicio"
@@ -238,7 +237,7 @@ const AdminColumns = ({ columns }: Props) => {
                     inputProps={{ min: 0 }}
                   />
                 </Grid>
-                <Grid item xs={6}>
+                <Grid size={6}>
                   <TextField
                     type="number"
                     label="Índice Fin"
@@ -252,7 +251,7 @@ const AdminColumns = ({ columns }: Props) => {
               </>
             )}
 
-            <Grid item minHeight="100%" display="flex" alignItems="end">
+            <Grid minHeight="100%" display="flex" alignItems="end">
               <LoadingButton
                 type="submit"
                 variant="contained"

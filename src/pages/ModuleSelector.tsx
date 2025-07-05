@@ -12,7 +12,7 @@ const ModuleSelector = () => {
         <PageHeader title="Seleccionar Módulo" />
         <Box>
           <Grid container spacing={4}>
-            <Grid item xs={12} sm={12} md={6} lg={4}>
+            <Grid size={{ xs: 12, md: 6, lg: 4 }}>
               <CardButton
                 icon={<InventoryIcon color="secondary" />}
                 label="Inventario"
@@ -22,7 +22,7 @@ const ModuleSelector = () => {
                 to={ROUTES.INVENTORY.DASHBOARD}
               />
             </Grid>
-            <Grid item xs={12} sm={12} md={6} lg={4}>
+            <Grid size={{ xs: 12, md: 6, lg: 4 }}>
               <CardButton
                 icon={<SellIcon color="secondary" />}
                 label="Ventas"

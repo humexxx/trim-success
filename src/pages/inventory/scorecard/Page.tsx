@@ -131,7 +131,7 @@ const Page = () => {
       />
       <PageContent>
         <Grid container spacing={4}>
-          <Grid item xs={12}>
+          <Grid size={12}>
             <Card variant="outlined">
               <CardContent>
                 <ScorecardTableWarehouse
@@ -145,7 +145,7 @@ const Page = () => {
               </CardContent>
             </Card>
           </Grid>
-          <Grid item xs={12}>
+          <Grid size={12}>
             <Card variant="outlined">
               <CardContent>
                 <ScorecardTableInventory
@@ -159,7 +159,7 @@ const Page = () => {
               </CardContent>
             </Card>
           </Grid>
-          <Grid item xs={12}>
+          <Grid size={12}>
             <Card variant="outlined">
               <CardContent>
                 <GrandTotalGrid

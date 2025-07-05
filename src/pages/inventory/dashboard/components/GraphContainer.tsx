@@ -15,10 +15,7 @@ const GraphContainer = ({
 }) => {
   return (
     <Grid
-      item
-      xs={12}
-      md={isExpanded ? 12 : 6}
-      xl={isExpanded ? 12 : 4}
+      size={{ xs: 12, md: isExpanded ? 12 : 6, xl: isExpanded ? 12 : 4 }}
       sx={{ position: "relative", mb: isExpanded ? 4 : 0 }}
     >
       <Card elevation={3}>

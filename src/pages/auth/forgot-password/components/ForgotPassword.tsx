@@ -113,12 +113,12 @@ export default function ForgotPassword({
           Enviar email de recuperación
         </LoadingButton>
         <Grid container>
-          <Grid item xs>
+          <Grid>
             <Link component={RouterLink} to="/sign-in" variant="body2">
               Regresar al inicio de sesión
             </Link>
           </Grid>
-          <Grid item>
+          <Grid>
             <Link component={RouterLink} to="/sign-up" variant="body2">
               No tienes una cuenta? Regístrate
             </Link>

@@ -25,7 +25,7 @@ const Page = () => {
 
       <PageContent>
         <Grid container spacing={4}>
-          <Grid item xs={12}>
+          <Grid size={12}>
             <Card variant="outlined">
               <CardContent>
                 <CategoriesTable
@@ -35,13 +35,13 @@ const Page = () => {
               </CardContent>
             </Card>
           </Grid>
-          <Grid item container xs={12} spacing={4}>
+          <Grid container size={12} spacing={4}>
             <CategoriesGraph
               data={baseData!.categoriesData}
               drivers={cubeParameters!.drivers}
             />
           </Grid>
-          <Grid item xs={12}>
+          <Grid size={12}>
             <Card variant="outlined">
               <CardContent>
                 <DriversTable

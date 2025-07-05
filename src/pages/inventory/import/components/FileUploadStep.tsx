@@ -61,10 +61,10 @@ const FileUpload = ({ handleOnFinish, fileResolution }: Props) => {
         Los datos cargados se usarán para crear los distintos reportes.
       </Typography>
       <Grid container mx={4} my={8}>
-        <Grid item xs={2}>
+        <Grid size={2}>
           <DevicesIcon sx={{ scale: "2", color: "text.primary" }} />
         </Grid>
-        <Grid item xs={2}>
+        <Grid size={2}>
           <ForwardIcon
             sx={{
               color: "text.primary",
@@ -87,7 +87,7 @@ const FileUpload = ({ handleOnFinish, fileResolution }: Props) => {
             }}
           />
         </Grid>
-        <Grid item xs={2}>
+        <Grid size={2}>
           <StorageIcon sx={{ scale: "2", color: "text.primary" }} />
         </Grid>
       </Grid>

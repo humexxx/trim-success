@@ -28,7 +28,7 @@ const StoringParams = ({ register, errors, control }: Props) => {
 
   return (
     <Grid container spacing={2}>
-      <Grid item xs={12}>
+      <Grid size={12}>
         <Typography color="text.secondary" variant="body1">
           Costos
         </Typography>
@@ -36,7 +36,7 @@ const StoringParams = ({ register, errors, control }: Props) => {
       {parametersFieldArray.fields.map((field, index) =>
         field.type === EDataModelParameterType.STORING &&
         field.subType === EDataModelParameterSubType.COSTS ? (
-          <Grid item xs={12} key={field.id}>
+          <Grid size={12} key={field.id}>
             {inputField({
               valueType: field.valueType,
               ...register(`parameters.${index}.value` as const, {
@@ -51,7 +51,7 @@ const StoringParams = ({ register, errors, control }: Props) => {
           </Grid>
         ) : null
       )}
-      <Grid item xs={12} mt={2}>
+      <Grid size={12} mt={2}>
         <Typography color="text.secondary" variant="body1">
           Inversiones
         </Typography>
@@ -59,7 +59,7 @@ const StoringParams = ({ register, errors, control }: Props) => {
       {parametersFieldArray.fields.map((field, index) =>
         field.type === EDataModelParameterType.STORING &&
         field.subType === EDataModelParameterSubType.INVESTMENTS ? (
-          <Grid item xs={12} key={field.id}>
+          <Grid size={12} key={field.id}>
             {inputField({
               valueType: field.valueType,
               ...register(`parameters.${index}.value` as const, {

@@ -166,7 +166,7 @@ export default function SignUp({ handleOnSubmit }: SignUpProps) {
           Registrar
         </LoadingButton>
         <Grid container>
-          <Grid item xs>
+          <Grid>
             <Link component={RouterLink} to="/sign-in" variant="body2">
               Ya tienes una cuenta? Inicia sesión
             </Link>

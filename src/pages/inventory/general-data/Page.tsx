@@ -105,8 +105,8 @@ const Page = () => {
           container
           spacing={4}
         >
-          <Grid item xs={12} sm={6} md={4}>
-            <Grid item xs={12} mb={2}>
+          <Grid size={{ xs: 12, sm: 6, md: 4 }}>
+            <Grid size={12} mb={2}>
               <Typography color="text.primary" variant="body1">
                 Parametros Generales
               </Typography>
@@ -117,8 +117,8 @@ const Page = () => {
               control={control}
             />
           </Grid>
-          <Grid item xs={12} sm={6} md={4}>
-            <Grid item xs={12} mb={2}>
+          <Grid size={{ xs: 12, sm: 6, md: 4 }}>
+            <Grid size={12} mb={2}>
               <Typography color="text.primary" variant="body1">
                 Parametros de Almacenaje
               </Typography>
@@ -129,8 +129,8 @@ const Page = () => {
               control={control}
             />
           </Grid>
-          <Grid item xs={12} sm={6} md={4}>
-            <Grid item xs={12} mb={2}>
+          <Grid size={{ xs: 12, sm: 6, md: 4 }}>
+            <Grid size={12} mb={2}>
               <Typography color="text.primary" variant="body1">
                 Parametros de Inventario
               </Typography>
@@ -142,11 +142,11 @@ const Page = () => {
             />
           </Grid>
           {error && (
-            <Grid item xs={12}>
+            <Grid size={12}>
               <Alert severity="error">{error}</Alert>
             </Grid>
           )}
-          <Grid item xs={12} mt={2} textAlign="right">
+          <Grid size={12} mt={2} textAlign="right">
             <LoadingButton
               loading={loading || isSubmitting}
               type="submit"

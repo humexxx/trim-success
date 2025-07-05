@@ -22,7 +22,7 @@ const Page = () => {
         />
         <PageContent>
           <Grid container spacing={4}>
-            <Grid item xs={12} sm={12} md={6} lg={4}>
+            <Grid size={{ xs: 12, md: 6, lg: 4 }}>
               <CardButton
                 icon={<Filter1OutlinedIcon />}
                 label="Data Mining"
@@ -32,7 +32,7 @@ const Page = () => {
                 error={baseData.error}
               />
             </Grid>
-            <Grid item xs={12} sm={12} md={6} lg={4}>
+            <Grid size={{ xs: 12, md: 6, lg: 4 }}>
               <CardButton
                 icon={<Filter2OutlinedIcon />}
                 label="Scorecard"
@@ -44,7 +44,7 @@ const Page = () => {
                 error={scorecard.error}
               />
             </Grid>
-            <Grid item xs={12} sm={12} md={6} lg={4}>
+            <Grid size={{ xs: 12, md: 6, lg: 4 }}>
               <CardButton
                 icon={<Filter3OutlinedIcon />}
                 label="Rendimiento de Inventario"
@@ -56,7 +56,7 @@ const Page = () => {
                 error={inventoryPerformance.error}
               />
             </Grid>
-            <Grid item xs={12} sm={12} md={6} lg={4}>
+            <Grid size={{ xs: 12, md: 6, lg: 4 }}>
               <CardButton
                 icon={<Filter3OutlinedIcon />}
                 label="Rendimiento de Inventario (Cubo)"

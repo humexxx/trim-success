@@ -156,8 +156,8 @@ export default function DriversStep() {
 
   return (
     <Grid container spacing={2}>
-      <Grid item>{customList("Opciones", left)}</Grid>
-      <Grid item>
+      <Grid>{customList("Opciones", left)}</Grid>
+      <Grid>
         <Grid container direction="column" sx={{ alignItems: "center" }}>
           <Button
             sx={{ my: 0.5 }}
@@ -181,7 +181,7 @@ export default function DriversStep() {
           </Button>
         </Grid>
       </Grid>
-      <Grid item>{customList("Drivers Incluidos", right)}</Grid>
+      <Grid>{customList("Drivers Incluidos", right)}</Grid>
     </Grid>
   );
 }
