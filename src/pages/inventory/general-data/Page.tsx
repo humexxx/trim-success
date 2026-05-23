@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
 
 import { yupResolver } from "@hookform/resolvers/yup";
-import { LoadingButton } from "@mui/lab";
-import { Alert, Grid, Typography } from "@mui/material";
 import { JSON_FILE_NAME } from "@shared/consts";
 import { EValueType } from "@shared/enums";
 import { ICubeParameters } from "@shared/models";
@@ -13,6 +11,9 @@ import { PageContent, PageHeader, PageWrapper } from "src/components/layout";
 import { useCube } from "src/context/hooks";
 import { getError } from "src/utils";
 import { InferType } from "yup";
+
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
 
 import { GeneralParams, InventoryParams, StoringParams } from "./components";
 import { useParamsData } from "./hooks";
@@ -33,24 +34,20 @@ const Page = () => {
     control,
   } = useForm<InferType<typeof parametersScheme>>({
     resolver: yupResolver(parametersScheme),
-    defaultValues: {
-      parameters: [],
-    },
+    defaultValues: { parameters: [] },
   });
 
   useEffect(() => {
     if (cubeParameters) {
-      const _data = cubeParameters.parameters.map((x) => {
-        return {
-          ...x,
-          value:
-            x.valueType === EValueType.PERCENTAGE
-              ? x.value * 100
-              : x.valueType === EValueType.AMOUNT
-                ? roundToDecimals(x.value, 2)
-                : x.value,
-        };
-      });
+      const _data = cubeParameters.parameters.map((x) => ({
+        ...x,
+        value:
+          x.valueType === EValueType.PERCENTAGE
+            ? x.value * 100
+            : x.valueType === EValueType.AMOUNT
+              ? roundToDecimals(x.value, 2)
+              : x.value,
+      }));
       setValue("parameters", _data);
     }
   }, [cubeParameters, setValue]);
@@ -67,15 +64,13 @@ const Page = () => {
       if (x.autoCalculated) return x;
       return {
         ...x,
-        value: x.valueType === EValueType.PERCENTAGE ? x.value / 100 : x.value,
+        value:
+          x.valueType === EValueType.PERCENTAGE ? x.value / 100 : x.value,
       };
     });
 
     try {
-      await update({
-        ...cubeParameters!,
-        parameters: formattedData,
-      });
+      await update({ ...cubeParameters!, parameters: formattedData });
 
       const files = await cube.getFiles();
       const jsonFile = files?.find((file) =>
@@ -98,65 +93,47 @@ const Page = () => {
       {isSubmitting && <GlobalLoader />}
       <PageHeader title="Datos Generales" />
       <PageContent>
-        <Grid
-          component="form"
+        <form
           onSubmit={handleSubmit(_handleSubmit)}
-          onInvalid={console.log}
-          container
-          spacing={4}
+          className="grid grid-cols-1 gap-8 md:grid-cols-3"
         >
-          <Grid size={{ xs: 12, sm: 6, md: 4 }}>
-            <Grid size={12} mb={2}>
-              <Typography color="text.primary" variant="body1">
-                Parametros Generales
-              </Typography>
-            </Grid>
+          <div>
+            <p className="mb-2 text-sm font-medium">Parametros Generales</p>
             <GeneralParams
               errors={errors}
               register={register}
               control={control}
             />
-          </Grid>
-          <Grid size={{ xs: 12, sm: 6, md: 4 }}>
-            <Grid size={12} mb={2}>
-              <Typography color="text.primary" variant="body1">
-                Parametros de Almacenaje
-              </Typography>
-            </Grid>
+          </div>
+          <div>
+            <p className="mb-2 text-sm font-medium">Parametros de Almacenaje</p>
             <StoringParams
               errors={errors}
               register={register}
               control={control}
             />
-          </Grid>
-          <Grid size={{ xs: 12, sm: 6, md: 4 }}>
-            <Grid size={12} mb={2}>
-              <Typography color="text.primary" variant="body1">
-                Parametros de Inventario
-              </Typography>
-            </Grid>
+          </div>
+          <div>
+            <p className="mb-2 text-sm font-medium">Parametros de Inventario</p>
             <InventoryParams
               errors={errors}
               register={register}
               control={control}
             />
-          </Grid>
+          </div>
           {error && (
-            <Grid size={12}>
-              <Alert severity="error">{error}</Alert>
-            </Grid>
+            <div className="md:col-span-3">
+              <Alert variant="destructive">
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            </div>
           )}
-          <Grid size={12} mt={2} textAlign="right">
-            <LoadingButton
-              loading={loading || isSubmitting}
-              type="submit"
-              variant="contained"
-              color="primary"
-            >
+          <div className="mt-2 text-right md:col-span-3">
+            <Button type="submit" loading={loading || isSubmitting}>
               Guardar
-            </LoadingButton>
-          </Grid>
-        </Grid>
+            </Button>
+          </div>
+        </form>
       </PageContent>
     </PageWrapper>
   );

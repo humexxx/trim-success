@@ -1,13 +1,13 @@
 import { useMemo, useState } from "react";
 
-import Filter1OutlinedIcon from "@mui/icons-material/Filter1Outlined";
-import SaveAltIcon from "@mui/icons-material/SaveAlt";
-import { Box, Chip, Container, Grid, Typography } from "@mui/material";
 import { EInventoryPerformaceMetricType } from "@shared/enums/EInventoryPerformaceMetricType";
+import { Filter, Save } from "lucide-react";
 import { Link } from "react-router-dom";
 import { PageContent, PageWrapper } from "src/components/layout";
 import { useCube } from "src/context/hooks";
 import { ROUTES } from "src/lib/consts";
+
+import { Badge } from "@/components/ui/badge";
 
 import { GraphContainer } from "./components";
 import {
@@ -115,74 +115,37 @@ const Page = () => {
 
   return (
     <PageWrapper title="Panel" useContainer={false}>
-      <Box position={"relative"}>
-        <Box
-          sx={{
-            left: 0,
-            right: 0,
-            height: 400,
-            top: 0,
-            zIndex: 0,
-            position: "absolute",
-            bgcolor: "black",
-            borderRadius: {
-              md: 0,
-              lg: 4,
-            },
-            mx: {
-              md: 0,
-              lg: 2,
-            },
-          }}
-        />
-        <Container sx={{ zIndex: 1, position: "relative" }}>
-          <Box component={"header"} pt={4} mb={8}>
-            <Typography
-              color="white"
-              variant="h4"
-              component="h1"
-              fontWeight={600}
-            >
-              <strong>Panel</strong>
-            </Typography>
-            <Typography color="white" variant="body1">
+      <div className="relative">
+        <div className="absolute inset-x-0 top-0 z-0 mx-0 h-[400px] rounded-none bg-black lg:mx-2 lg:rounded-2xl" />
+        <div className="relative z-10 mx-auto w-full max-w-7xl px-4">
+          <header className="mb-8 pt-4">
+            <h1 className="text-3xl font-semibold text-white">Panel</h1>
+            <p className="text-white/80">
               Vista general del comportamiento del negocio
-            </Typography>
-            <Box mt={2}>
-              <Link
-                to={ROUTES.INVENTORY.IMPORT}
-                style={{ textDecoration: "none" }}
-              >
-                <Chip
-                  label="Archivos Importados"
-                  color="primary"
-                  icon={<SaveAltIcon />}
-                  variant="filled"
-                  clickable
-                />
+            </p>
+            <div className="mt-3 flex flex-wrap items-center gap-3">
+              <Link to={ROUTES.INVENTORY.IMPORT}>
+                <Badge className="cursor-pointer gap-1">
+                  <Save className="h-3 w-3" />
+                  Archivos Importados
+                </Badge>
               </Link>
-              <Link
-                to={ROUTES.INVENTORY.DATA_MINING}
-                style={{ textDecoration: "none", marginLeft: 12 }}
-              >
-                <Chip
-                  sx={{
-                    bgcolor: "#333",
-                    color: "white",
-                  }}
-                  label="Data Mining"
-                  icon={<Filter1OutlinedIcon color="secondary" />}
-                  variant="outlined"
-                  clickable
-                />
+              <Link to={ROUTES.INVENTORY.DATA_MINING}>
+                <Badge
+                  variant="outline"
+                  className="cursor-pointer gap-1 border-white/40 bg-[#333] text-white"
+                >
+                  <Filter className="h-3 w-3" />
+                  Data Mining
+                </Badge>
               </Link>
-            </Box>
-          </Box>
+            </div>
+          </header>
           <PageContent>
-            <Typography variant="h6" component="h2" mb={2} color={"white"}>
+            <h2 className="mb-2 text-lg font-semibold text-white">
               Indicadores de desempeño
-            </Typography>
-            <Grid container spacing={2}>
+            </h2>
+            <div className="grid grid-cols-1 gap-4">
               {_graphs.map((graph) => (
                 <GraphContainer
                   key={graph.key}
@@ -196,10 +159,10 @@ const Page = () => {
                   {graph.component}
                 </GraphContainer>
               ))}
-            </Grid>
+            </div>
           </PageContent>
-        </Container>
-      </Box>
+        </div>
+      </div>
     </PageWrapper>
   );
 };

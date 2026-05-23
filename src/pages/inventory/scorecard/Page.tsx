@@ -1,6 +1,5 @@
 import { useCallback, useMemo, useState } from "react";
 
-import { Alert, Card, CardContent, Grid } from "@mui/material";
 import {
   EDataModelParameterSubType,
   EDataModelParameterType,
@@ -10,10 +9,13 @@ import { PageContent, PageHeader, PageWrapper } from "src/components/layout";
 import { useCube } from "src/context/hooks";
 import { useDocumentMetadata } from "src/hooks";
 import {
-  updateStoringScorecardDataRow,
-  updateInventoryScorecardDataRow,
   getError,
+  updateInventoryScorecardDataRow,
+  updateStoringScorecardDataRow,
 } from "src/utils";
+
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Card, CardContent } from "@/components/ui/card";
 
 import {
   GrandTotalGrid,
@@ -61,19 +63,14 @@ const Page = () => {
 
         const newScorcardData: IScorecardData = {
           ...scorecardData!,
-          storingCosts: {
-            ...data,
-          },
+          storingCosts: { ...data },
         };
 
         await update(newScorcardData);
 
         setData(
           (prev) =>
-            ({
-              ...prev,
-              scorecardData: newScorcardData,
-            }) as ICubeData
+            ({ ...prev, scorecardData: newScorcardData }) as ICubeData
         );
       } catch (error) {
         setError(getError(error));
@@ -98,19 +95,14 @@ const Page = () => {
 
         const newScorcardData: IScorecardData = {
           ...scorecardData!,
-          inventoryCosts: {
-            ...data,
-          },
+          inventoryCosts: { ...data },
         };
 
         await update(newScorcardData);
 
         setData(
           (prev) =>
-            ({
-              ...prev,
-              scorecardData: newScorcardData,
-            }) as ICubeData
+            ({ ...prev, scorecardData: newScorcardData }) as ICubeData
         );
       } catch (error) {
         console.error(error);
@@ -121,7 +113,13 @@ const Page = () => {
     [baseData, paramsData, scorecardData, setData, update]
   );
 
-  if (error) return <Alert severity="error">{error}</Alert>;
+  if (error) {
+    return (
+      <Alert variant="destructive">
+        <AlertDescription>{error}</AlertDescription>
+      </Alert>
+    );
+  }
 
   return (
     <PageWrapper title="Scorecard">
@@ -130,47 +128,41 @@ const Page = () => {
         description="Scorecard del Almacén & Inventory"
       />
       <PageContent>
-        <Grid container spacing={4}>
-          <Grid size={12}>
-            <Card variant="outlined">
-              <CardContent>
-                <ScorecardTableWarehouse
-                  data={scorecardData?.storingCosts}
-                  categories={paramsData?.categories ?? []}
-                  investmentTypes={investmentTypes ?? []}
-                  updateRow={updateStoringCostsRow}
-                  drivers={paramsData?.drivers ?? []}
-                  loading={isStoringCostsLoading}
-                />
-              </CardContent>
-            </Card>
-          </Grid>
-          <Grid size={12}>
-            <Card variant="outlined">
-              <CardContent>
-                <ScorecardTableInventory
-                  loading={isInventoryCostsLoading}
-                  data={scorecardData?.inventoryCosts}
-                  categories={paramsData?.categories ?? []}
-                  investmentTypes={investmentTypes ?? []}
-                  updateRow={updateInventoryCostsRow}
-                  drivers={paramsData?.drivers ?? []}
-                />
-              </CardContent>
-            </Card>
-          </Grid>
-          <Grid size={12}>
-            <Card variant="outlined">
-              <CardContent>
-                <GrandTotalGrid
-                  categories={paramsData?.categories ?? []}
-                  loading={isStoringCostsLoading || isInventoryCostsLoading}
-                  data={scorecardData}
-                />
-              </CardContent>
-            </Card>
-          </Grid>
-        </Grid>
+        <div className="flex flex-col gap-8">
+          <Card>
+            <CardContent className="p-6">
+              <ScorecardTableWarehouse
+                data={scorecardData?.storingCosts}
+                categories={paramsData?.categories ?? []}
+                investmentTypes={investmentTypes ?? []}
+                updateRow={updateStoringCostsRow}
+                drivers={paramsData?.drivers ?? []}
+                loading={isStoringCostsLoading}
+              />
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-6">
+              <ScorecardTableInventory
+                loading={isInventoryCostsLoading}
+                data={scorecardData?.inventoryCosts}
+                categories={paramsData?.categories ?? []}
+                investmentTypes={investmentTypes ?? []}
+                updateRow={updateInventoryCostsRow}
+                drivers={paramsData?.drivers ?? []}
+              />
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-6">
+              <GrandTotalGrid
+                categories={paramsData?.categories ?? []}
+                loading={isStoringCostsLoading || isInventoryCostsLoading}
+                data={scorecardData}
+              />
+            </CardContent>
+          </Card>
+        </div>
       </PageContent>
     </PageWrapper>
   );

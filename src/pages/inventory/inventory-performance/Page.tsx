@@ -1,6 +1,8 @@
-import { Alert, Card, CardContent } from "@mui/material";
 import { PageContent, PageHeader, PageWrapper } from "src/components/layout";
 import { useCube } from "src/context/hooks";
+
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Card, CardContent } from "@/components/ui/card";
 
 import { Table } from "./components";
 
@@ -15,13 +17,15 @@ const Page = () => {
       />
       <PageContent>
         {cube.isCubeLoading || !cube.data ? (
-          <Alert severity="info">Cargando...</Alert>
+          <Alert>
+            <AlertDescription>Cargando...</AlertDescription>
+          </Alert>
         ) : (
-          <Card variant="outlined">
-            <CardContent>
+          <Card>
+            <CardContent className="p-6">
               <Table
-                data={cube.data!.inventoryPerformanceData}
-                categories={cube.data!.cubeParameters.categories}
+                data={cube.data.inventoryPerformanceData}
+                categories={cube.data.cubeParameters.categories}
               />
             </CardContent>
           </Card>

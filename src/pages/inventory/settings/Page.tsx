@@ -1,10 +1,7 @@
-import { useState } from "react";
-
-import { TabContext, TabList, TabPanel } from "@mui/lab";
-import { Box, Tab } from "@mui/material";
 import { PageWrapper } from "src/components/layout";
 import { useAuth } from "src/context/hooks";
-import { useDocumentMetadata } from "src/hooks";
+
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import { AdminSettings } from "./Admin";
 import { UserSettings } from "./components";
@@ -17,47 +14,29 @@ export interface DataSet {
   interestRate: number;
 }
 
-function getTabProps(id: string) {
-  return {
-    id: `tab-${id}`,
-    "aria-controls": `tabpanel-${id}`,
-  };
-}
-
 const Page = () => {
   const { isAdmin } = useAuth();
 
-  const [selectedTab, setSelectedTab] = useState("0");
-
   return (
     <PageWrapper title="Configuración">
-      <Box mb={2}>
-        <TabContext value={selectedTab}>
-          <Box sx={{ borderBottom: 1, borderColor: "divider" }} mb={2}>
-            <TabList
-              onChange={(_, tab) => setSelectedTab(tab)}
-              aria-label="compound interest calculator tabs"
-              scrollButtons="auto"
-              variant="scrollable"
-            >
-              <Tab label="Usuario" value="0" {...getTabProps("0")} />
-              <Tab label="Cube" value="1" {...getTabProps("1")} />
-              {Boolean(isAdmin) && (
-                <Tab label="Admin" value="2" {...getTabProps("2")} />
-              )}
-            </TabList>
-          </Box>
-          <TabPanel value={"0"} sx={{ p: 2 }}>
-            <UserSettings />
-          </TabPanel>
-          <TabPanel value={"1"} sx={{ p: 2 }}>
-            <CubeSettings />
-          </TabPanel>
-          <TabPanel value={"2"} sx={{ p: 2 }}>
+      <Tabs defaultValue="user" className="mb-4">
+        <TabsList>
+          <TabsTrigger value="user">Usuario</TabsTrigger>
+          <TabsTrigger value="cube">Cube</TabsTrigger>
+          {isAdmin && <TabsTrigger value="admin">Admin</TabsTrigger>}
+        </TabsList>
+        <TabsContent value="user" className="mt-4 p-2">
+          <UserSettings />
+        </TabsContent>
+        <TabsContent value="cube" className="mt-4 p-2">
+          <CubeSettings />
+        </TabsContent>
+        {isAdmin && (
+          <TabsContent value="admin" className="mt-4 p-2">
             <AdminSettings />
-          </TabPanel>
-        </TabContext>
-      </Box>
+          </TabsContent>
+        )}
+      </Tabs>
     </PageWrapper>
   );
 };

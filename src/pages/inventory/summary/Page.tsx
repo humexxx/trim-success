@@ -1,4 +1,3 @@
-import { Grid } from "@mui/material";
 import { PageContent, PageHeader } from "src/components/layout";
 import { useCube } from "src/context/hooks";
 
@@ -9,8 +8,6 @@ const Page = () => {
 
   if (cube.isCubeLoading || !cube.data) return null;
 
-  console.log(cube.data.inventoryPerformanceData.rows);
-
   return (
     <>
       <PageHeader
@@ -18,14 +15,14 @@ const Page = () => {
         description="Vista general del comportamiento del negocio"
       />
       <PageContent>
-        <Grid container spacing={4}>
-          <Grid size={{ xs: 12, lg: 9 }}>
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
+          <div className="lg:col-span-9">
             <MainGrid />
-          </Grid>
-          <Grid size={{ xs: 12, lg: 3 }}>
+          </div>
+          <div className="lg:col-span-3">
             <Reports />
-          </Grid>
-        </Grid>
+          </div>
+        </div>
       </PageContent>
     </>
   );
