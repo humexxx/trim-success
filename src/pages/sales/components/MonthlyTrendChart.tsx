@@ -118,7 +118,7 @@ export function MonthlyTrendChart({ byCategory }: Props) {
   }, 0);
 
   return (
-    <Card>
+    <Card className="flex h-full flex-col">
       <CardHeader className="flex flex-col gap-3 space-y-0 border-b pb-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="space-y-1">
           <CardTitle className="text-base">Tendencia mensual de ventas</CardTitle>
@@ -142,7 +142,7 @@ export function MonthlyTrendChart({ byCategory }: Props) {
           <ToggleGroupItem value="12m">12M</ToggleGroupItem>
         </ToggleGroup>
       </CardHeader>
-      <CardContent className="px-2 pb-4 pt-4 sm:px-6">
+      <CardContent className="flex-1 px-2 pb-4 pt-4 sm:px-6">
         <ChartContainer config={config} className="aspect-auto h-[300px] w-full">
           <AreaChart data={data} margin={{ top: 10, right: 12, bottom: 0, left: 12 }}>
             <defs>

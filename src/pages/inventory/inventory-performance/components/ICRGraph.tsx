@@ -3,7 +3,7 @@ import { useMemo } from "react";
 import { IInventoryPerformanceData } from "@shared/models";
 import { formatPercentage } from "@shared/utils";
 
-import { MetricBarChart } from "./MetricBarChart";
+import { MetricRadialChart } from "./MetricRadialChart";
 
 interface Props {
   data: IInventoryPerformanceData["rows"][0];
@@ -24,7 +24,9 @@ const ICRGraph = ({ data, categories, isExpanded }: Props) => {
   );
 
   return (
-    <MetricBarChart
+    // ICR is a rate — radial reads more like a "gauge" than a bar,
+    // which fits the % semantics better than a vertical bar chart.
+    <MetricRadialChart
       dataset={dataset}
       label="Inventory Carry Rate (ICR)"
       chartColor={1}

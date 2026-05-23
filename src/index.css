@@ -42,14 +42,14 @@
 
     --radius: 0.5rem;
 
-    /* Chart palette — canonical shadcn naming. Used as
+    /* Chart palette — canonical shadcn defaults. Used as
        `hsl(var(--chart-N))` inside ChartConfig so charts inherit
        theme-aware colors instead of hardcoded hex. */
-    --chart-1: 222 47% 11%;
-    --chart-2: 0 72% 51%;
-    --chart-3: 38 92% 50%;
-    --chart-4: 220 70% 50%;
-    --chart-5: 173 58% 39%;
+    --chart-1: 12 76% 61%;   /* warm coral */
+    --chart-2: 173 58% 39%;  /* teal */
+    --chart-3: 197 37% 24%;  /* deep navy */
+    --chart-4: 43 74% 66%;   /* mustard */
+    --chart-5: 27 87% 67%;   /* peach */
   }
 
   .dark {
@@ -84,11 +84,11 @@
     --ring: 0 0% 80%;
 
     /* Chart palette tuned for dark mode contrast. */
-    --chart-1: 220 70% 70%;
-    --chart-2: 0 72% 65%;
-    --chart-3: 38 92% 60%;
-    --chart-4: 173 58% 55%;
-    --chart-5: 280 65% 60%;
+    --chart-1: 220 70% 50%;  /* electric blue */
+    --chart-2: 160 60% 45%;  /* mint */
+    --chart-3: 30 80% 55%;   /* amber */
+    --chart-4: 280 65% 60%;  /* violet */
+    --chart-5: 340 75% 55%;  /* magenta */
   }
 }
 

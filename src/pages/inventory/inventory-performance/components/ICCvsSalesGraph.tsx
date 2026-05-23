@@ -3,7 +3,7 @@ import { useMemo } from "react";
 import { IInventoryPerformanceData } from "@shared/models";
 import { formatPercentage } from "@shared/utils";
 
-import { MetricBarChart } from "./MetricBarChart";
+import { MetricRadialChart } from "./MetricRadialChart";
 
 interface Props {
   data: IInventoryPerformanceData["rows"][0];
@@ -24,7 +24,10 @@ const ICCvsSalesGraph = ({ data, categories, isExpanded }: Props) => {
   );
 
   return (
-    <MetricBarChart
+    // Another % metric → radial reads better than bar for this kind of
+    // ratio (matches ICR's treatment for visual consistency between
+    // the two percentage cards).
+    <MetricRadialChart
       dataset={dataset}
       label="Inventory Carrying Cost vs. Sales"
       chartColor={3}

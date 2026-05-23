@@ -101,7 +101,7 @@ export function PortfolioRadar({ byCategory }: Props) {
   );
 
   return (
-    <Card>
+    <Card className="flex h-full flex-col">
       <CardHeader className="border-b pb-4">
         <CardTitle className="text-base">Portafolio por categoría</CardTitle>
         <CardDescription className="text-xs">
@@ -109,7 +109,7 @@ export function PortfolioRadar({ byCategory }: Props) {
           polígono, no el tamaño absoluto.
         </CardDescription>
       </CardHeader>
-      <CardContent className="px-2 pb-4 pt-4 sm:px-6">
+      <CardContent className="flex-1 px-2 pb-4 pt-4 sm:px-6">
         <ChartContainer
           config={config}
           className="mx-auto aspect-square max-h-[340px] w-full"

@@ -15,7 +15,6 @@ import { useCube } from "src/context/hooks";
 import { useDocumentMetadata } from "src/hooks";
 import { ROUTES } from "src/lib/consts";
 
-import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -25,6 +24,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
   TableBody,
@@ -33,6 +33,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 
 import { MetricBarChart } from "../inventory/inventory-performance/components/MetricBarChart";
@@ -142,12 +143,38 @@ const SalesMainPage = () => {
   }, [cube.data]);
 
   if (cube.isCubeLoading) {
+    // Skeleton mirrors the real layout: KPI strip + two equal chart
+    // cards, so the page doesn't jump when data arrives.
     return (
       <PageWrapper title="Ventas" maxWidth="2xl">
-        <PageHeader title="Ventas" />
-        <Alert className="mt-4">
-          <AlertDescription>Cargando datos del cubo...</AlertDescription>
-        </Alert>
+        <PageHeader
+          title="Resumen de ventas"
+          description="Comportamiento comercial por categoría — KPIs, tendencia mensual y portafolio."
+        />
+        <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {[0, 1, 2, 3].map((i) => (
+            <Card key={i}>
+              <CardContent className="space-y-3 p-5">
+                <Skeleton className="h-3 w-24" />
+                <Skeleton className="h-9 w-32" />
+                <Skeleton className="h-3 w-20" />
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+        <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
+          {[0, 1].map((i) => (
+            <Card key={i}>
+              <CardHeader>
+                <Skeleton className="h-4 w-40" />
+                <Skeleton className="mt-2 h-3 w-56" />
+              </CardHeader>
+              <CardContent>
+                <Skeleton className="h-64 w-full" />
+              </CardContent>
+            </Card>
+          ))}
+        </div>
       </PageWrapper>
     );
   }
@@ -240,71 +267,86 @@ const SalesMainPage = () => {
         />
       </section>
 
-      <section className="mt-6 grid grid-cols-1 gap-6 xl:grid-cols-3">
-        <div className="xl:col-span-2">
-          <MonthlyTrendChart byCategory={summary.byCategory} />
-        </div>
-        <PortfolioRadar byCategory={summary.byCategory} />
-      </section>
+      {/* Two-tab split: the trend/portfolio pair lives in tab 1, the
+          ranking pair in tab 2. Inside each tab the two cards share the
+          same grid column so they always read as a matched pair. */}
+      <Tabs defaultValue="overview" className="mt-6">
+        <TabsList>
+          <TabsTrigger value="overview">Tendencia y portafolio</TabsTrigger>
+          <TabsTrigger value="ranking">Ventas y ranking</TabsTrigger>
+        </TabsList>
 
-      <section className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-5">
-        <Card className="lg:col-span-3">
-          <CardHeader className="space-y-1">
-            <CardTitle className="text-base">Ventas por categoría</CardTitle>
-            <CardDescription className="text-xs">
-              Ventas totales del año actual por categoría, ordenadas de mayor a
-              menor.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="px-2 pb-4 pt-0">
-            <MetricBarChart
-              dataset={chartDataset}
-              label="Ventas"
-              chartColor={1}
-              formatValue={(v) => compactCurrencyFmt.format(v)}
-              isExpanded={false}
-            />
-          </CardContent>
-        </Card>
+        <TabsContent value="overview" className="mt-4">
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+            <MonthlyTrendChart byCategory={summary.byCategory} />
+            <PortfolioRadar byCategory={summary.byCategory} />
+          </div>
+        </TabsContent>
 
-        <Card className="lg:col-span-2">
-          <CardHeader className="space-y-1">
-            <CardTitle className="text-base">Top categorías</CardTitle>
-            <CardDescription className="text-xs">
-              Ranking por ventas con margen porcentual.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="px-2 pb-4 pt-0">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Categoría</TableHead>
-                  <TableHead className="text-right">Ventas</TableHead>
-                  <TableHead className="text-right">Margen %</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {summary.byCategory.map((c) => {
-                  const marginPct = c.sales > 0 ? c.grossMargin / c.sales : 0;
-                  return (
-                    <TableRow key={c.category}>
-                      <TableCell className="font-medium">
-                        {c.category}
-                      </TableCell>
-                      <TableCell className="text-right tabular-nums">
-                        {compactCurrencyFmt.format(c.sales)}
-                      </TableCell>
-                      <TableCell className="text-right tabular-nums">
-                        {percentFmt.format(marginPct)}
-                      </TableCell>
+        <TabsContent value="ranking" className="mt-4">
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+            <Card>
+              <CardHeader className="space-y-1">
+                <CardTitle className="text-base">
+                  Ventas por categoría
+                </CardTitle>
+                <CardDescription className="text-xs">
+                  Ventas totales del año actual por categoría, ordenadas de
+                  mayor a menor.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="px-2 pb-4 pt-0">
+                <MetricBarChart
+                  dataset={chartDataset}
+                  label="Ventas"
+                  chartColor={1}
+                  formatValue={(v) => compactCurrencyFmt.format(v)}
+                  isExpanded={false}
+                />
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="space-y-1">
+                <CardTitle className="text-base">Top categorías</CardTitle>
+                <CardDescription className="text-xs">
+                  Ranking por ventas con margen porcentual.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="px-2 pb-4 pt-0">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Categoría</TableHead>
+                      <TableHead className="text-right">Ventas</TableHead>
+                      <TableHead className="text-right">Margen %</TableHead>
                     </TableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
-      </section>
+                  </TableHeader>
+                  <TableBody>
+                    {summary.byCategory.map((c) => {
+                      const marginPct =
+                        c.sales > 0 ? c.grossMargin / c.sales : 0;
+                      return (
+                        <TableRow key={c.category}>
+                          <TableCell className="font-medium">
+                            {c.category}
+                          </TableCell>
+                          <TableCell className="text-right tabular-nums">
+                            {compactCurrencyFmt.format(c.sales)}
+                          </TableCell>
+                          <TableCell className="text-right tabular-nums">
+                            {percentFmt.format(marginPct)}
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
+      </Tabs>
     </PageWrapper>
   );
 };
