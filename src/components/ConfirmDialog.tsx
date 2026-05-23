@@ -1,12 +1,14 @@
-import * as React from "react";
+import { useState } from "react";
 
-import { LoadingButton } from "@mui/lab";
-import Button from "@mui/material/Button";
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
-import DialogTitle from "@mui/material/DialogTitle";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 interface Props {
   open: boolean;
@@ -24,12 +26,12 @@ export default function ConfirmDialog({
   onAgree,
   title,
   description,
-  agreeText = "Agree",
-  disagreeText = "Disagree",
+  agreeText = "Confirmar",
+  disagreeText = "Cancelar",
 }: Props) {
-  const [loading, setLoading] = React.useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const _handleClose = async () => {
+  const handleAgree = async () => {
     try {
       setLoading(true);
       await onAgree();
@@ -42,26 +44,25 @@ export default function ConfirmDialog({
   };
 
   return (
-    <Dialog
-      open={open}
-      onClose={handleClose}
-      aria-labelledby="alert-dialog-title"
-      aria-describedby="alert-dialog-description"
-    >
-      <DialogTitle id="alert-dialog-title">{title}</DialogTitle>
+    <Dialog open={open} onOpenChange={(isOpen) => !isOpen && handleClose(false)}>
       <DialogContent>
-        <DialogContentText id="alert-dialog-description">
-          {description}
-        </DialogContentText>
+        <DialogHeader>
+          <DialogTitle>{title}</DialogTitle>
+          <DialogDescription>{description}</DialogDescription>
+        </DialogHeader>
+        <DialogFooter className="gap-2 sm:gap-0">
+          <Button
+            variant="outline"
+            disabled={loading}
+            onClick={() => handleClose(false)}
+          >
+            {disagreeText}
+          </Button>
+          <Button onClick={handleAgree} autoFocus loading={loading}>
+            {agreeText}
+          </Button>
+        </DialogFooter>
       </DialogContent>
-      <DialogActions>
-        <Button disabled={loading} onClick={() => handleClose(false)}>
-          {disagreeText}
-        </Button>
-        <LoadingButton onClick={_handleClose} autoFocus loading={loading}>
-          {agreeText}
-        </LoadingButton>
-      </DialogActions>
     </Dialog>
   );
 }
