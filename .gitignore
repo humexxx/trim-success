@@ -26,6 +26,8 @@ dist-ssr
 files
 cors.json
 .env
+# direnv config — keep .envrc.example committed, ignore the real one
+.envrc
 
 # Firebase
 .firebase/
