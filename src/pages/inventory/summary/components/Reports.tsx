@@ -18,8 +18,15 @@ const Reports = () => {
     setError(null);
     try {
       const response = await reportsGenerator.generateGeneralReport();
-      if (!response.success || !response.data) {
-        throw new Error(response.error ?? "No se pudo generar el reporte");
+      // Narrow the discriminated ICallableResponse union in two steps:
+      // the `success: false` branch carries `error`, the `success: true`
+      // branch carries `data`. Combining them with `||` would lose the
+      // narrowing and TS wouldn't let us read `response.error`.
+      if (!response.success) {
+        throw new Error(response.error || "No se pudo generar el reporte");
+      }
+      if (!response.data) {
+        throw new Error("No se pudo generar el reporte");
       }
       // The Cloud Function returns the doc as a JSON string; pdfmake
       // wants a `TDocumentDefinitions` object.
