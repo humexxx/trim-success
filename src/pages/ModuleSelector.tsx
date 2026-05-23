@@ -14,6 +14,8 @@ import { useAuth } from "src/context/hooks";
 import { useHasInitialData } from "src/hooks";
 import { ROUTES } from "src/lib/consts";
 
+import { CornerRibbon } from "src/components";
+
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
@@ -27,6 +29,7 @@ interface ModuleCardProps {
   status: "ready" | "empty" | "loading" | "comingSoon";
   cta: string;
   disabled?: boolean;
+  ribbon?: { label: string; tone?: "amber" | "emerald" | "blue" | "rose" };
 }
 
 function ModuleCard({
@@ -38,6 +41,7 @@ function ModuleCard({
   status,
   cta,
   disabled,
+  ribbon,
 }: ModuleCardProps) {
   const statusMeta: Record<
     ModuleCardProps["status"],
@@ -58,6 +62,7 @@ function ModuleCard({
         disabled && "opacity-60"
       )}
     >
+      {ribbon && <CornerRibbon label={ribbon.label} tone={ribbon.tone} />}
       <CardContent className="flex h-full flex-col gap-4 p-6">
         <div className="flex items-start justify-between gap-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-md border bg-muted/40 text-foreground">
@@ -193,6 +198,7 @@ const ModuleSelector = () => {
             to={ROUTES.SALES}
             status={probe.hasData ? "ready" : "empty"}
             cta={probe.hasData ? "Ver resumen" : "Sube datos primero"}
+            ribbon={{ label: "Beta", tone: "amber" }}
             metrics={[
               {
                 label: "Fuente",
