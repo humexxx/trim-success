@@ -5,13 +5,11 @@ import { useDocumentMetadata } from "src/hooks";
 import { AdminColumns } from "./components";
 
 const Page = () => {
-  useDocumentMetadata("Configuracion Admin - Trim Success");
+  useDocumentMetadata("Configuración admin - Trim Success");
 
   return (
     <AdminGuard>
-      <div className="p-6">
-        <AdminColumns columns={COLUMNS} />
-      </div>
+      <AdminColumns columns={COLUMNS} />
     </AdminGuard>
   );
 };

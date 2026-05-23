@@ -6,12 +6,23 @@ interface Props {
 
 const Drivers = ({ drivers }: Props) => {
   return (
-    <section className="p-4">
-      <h2 className="mb-3 text-2xl font-semibold">Drivers</h2>
-      <ul className="divide-y divide-border rounded-md border">
+    <section className="space-y-3">
+      <header className="space-y-0.5">
+        <h3 className="text-sm font-semibold tracking-tight">Drivers</h3>
+        <p className="text-xs text-muted-foreground">
+          Métricas de negocio que el cubo agrega y muestra por categoría.
+        </p>
+      </header>
+      <ul className="grid grid-cols-1 gap-1 sm:grid-cols-2">
         {drivers?.map((driver, index) => (
-          <li key={index} className="px-4 py-2 text-sm">
-            {driver.label}
+          <li
+            key={index}
+            className="flex items-center justify-between rounded-md border bg-muted/20 px-3 py-2 text-sm"
+          >
+            <span>{driver.label}</span>
+            <span className="font-mono text-[11px] text-muted-foreground">
+              {driver.key}
+            </span>
           </li>
         ))}
       </ul>
