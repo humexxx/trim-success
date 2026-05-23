@@ -173,9 +173,15 @@ const ModuleSelector = () => {
                     : "Sube tu primer XLSX",
               },
               {
-                label: "Archivos",
-                value: probe.loading ? "—" : probe.fileCount,
-                hint: probe.fileCount === 1 ? "archivo cargado" : "archivos cargados",
+                label: "Cubo",
+                value: probe.loading
+                  ? "—"
+                  : probe.hasData
+                    ? "Procesado"
+                    : "—",
+                hint: probe.hasData
+                  ? "Métricas listas"
+                  : "Pendiente de importar",
               },
             ]}
           />
