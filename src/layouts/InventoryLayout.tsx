@@ -14,7 +14,7 @@ import {
   Users,
 } from "lucide-react";
 import { Outlet, useNavigate } from "react-router-dom";
-import { PrivateRoute } from "src/components";
+import { PageTransition, PrivateRoute } from "src/components";
 import { CubeProvider, LocalThemeProvider } from "src/context";
 import { useAuth, useCube } from "src/context/hooks";
 import { ROUTES, VERSION } from "src/lib/consts";
@@ -218,7 +218,9 @@ function InventoryLayout() {
             <span>Cargando...</span>
           </div>
         ) : (
-          <Outlet />
+          <PageTransition>
+            <Outlet />
+          </PageTransition>
         )}
       </main>
     </div>
