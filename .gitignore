@@ -26,3 +26,6 @@ dist-ssr
 files
 cors.json
 .env
+
+# Firebase
+.firebase/
