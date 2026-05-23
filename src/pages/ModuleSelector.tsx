@@ -11,7 +11,7 @@ import {
 import { Link } from "react-router-dom";
 import { PageHeader } from "src/components/layout";
 import { useAuth } from "src/context/hooks";
-import { useHasInitialData } from "src/hooks";
+import { useCubeSummary } from "src/hooks";
 import { ROUTES } from "src/lib/consts";
 
 import { CornerRibbon } from "src/components";
@@ -128,9 +128,21 @@ function ModuleCard({
   );
 }
 
+const compactCurrency = new Intl.NumberFormat("en-US", {
+  style: "currency",
+  currency: "USD",
+  notation: "compact",
+  maximumFractionDigits: 1,
+});
+const percentFmt = new Intl.NumberFormat("en-US", {
+  style: "percent",
+  minimumFractionDigits: 1,
+  maximumFractionDigits: 1,
+});
+
 const ModuleSelector = () => {
   const { currentUser } = useAuth();
-  const probe = useHasInitialData();
+  const probe = useCubeSummary();
 
   const displayName =
     currentUser?.displayName?.split(" ")[0] ??
@@ -142,6 +154,10 @@ const ModuleSelector = () => {
     : probe.hasData
       ? "ready"
       : "empty";
+
+  // Helper: a metric value that gracefully degrades while loading or
+  // when the cube hasn't been seeded yet. Keeps the JSX below readable.
+  const pending = "—";
 
   return (
     <div className="mx-auto w-full max-w-5xl px-4">
@@ -165,28 +181,22 @@ const ModuleSelector = () => {
             cta={probe.hasData ? "Ver panel" : "Importar datos"}
             metrics={[
               {
-                label: "Estado",
-                value: probe.loading
-                  ? "—"
-                  : probe.hasData
-                    ? "Activo"
-                    : "Sin datos",
-                hint: probe.loading
-                  ? "Verificando"
-                  : probe.hasData
-                    ? "Listo para usar"
-                    : "Sube tu primer XLSX",
+                label: "Categorías",
+                value: probe.summary
+                  ? probe.summary.categoryCount
+                  : pending,
+                hint: probe.summary
+                  ? "agrupando el catálogo"
+                  : "Pendiente de importar",
               },
               {
-                label: "Cubo",
-                value: probe.loading
-                  ? "—"
-                  : probe.hasData
-                    ? "Procesado"
-                    : "—",
-                hint: probe.hasData
-                  ? "Métricas listas"
-                  : "Pendiente de importar",
+                label: "SKUs activos",
+                value: probe.summary
+                  ? probe.summary.totalSkus.toLocaleString("en-US")
+                  : pending,
+                hint: probe.summary
+                  ? "en el cubo actual"
+                  : "Sube tu primer XLSX",
               },
             ]}
           />
@@ -201,13 +211,22 @@ const ModuleSelector = () => {
             ribbon={{ label: "Beta", tone: "amber" }}
             metrics={[
               {
-                label: "Fuente",
-                value: probe.hasData ? "Cubo activo" : "Sin datos",
+                label: "Ventas",
+                value: probe.summary
+                  ? compactCurrency.format(probe.summary.totalSales)
+                  : pending,
+                hint: probe.summary
+                  ? "del periodo cargado"
+                  : "Sin datos",
               },
               {
-                label: "Vista",
-                value: "KPIs",
-                hint: "Total, margen, top categorías",
+                label: "Margen",
+                value: probe.summary
+                  ? percentFmt.format(probe.summary.grossMarginPct)
+                  : pending,
+                hint: probe.summary
+                  ? compactCurrency.format(probe.summary.totalGrossMargin)
+                  : "—",
               },
             ]}
             disabled={!probe.hasData}
