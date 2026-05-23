@@ -2,8 +2,11 @@
  * Idempotent seed script: creates a demo + admin Firebase Auth user in
  * the production "trim-success" project and sets the admin custom claim.
  *
- * Usage:
- *   GOOGLE_APPLICATION_CREDENTIALS=/path/to/service-account.json \
+ * Usage (uses gcloud Application Default Credentials by default):
+ *   npx tsx scripts/seed-demo-accounts.ts
+ *
+ * Or with an explicit service account JSON:
+ *   GOOGLE_APPLICATION_CREDENTIALS=/path/to/sa.json \
  *     npx tsx scripts/seed-demo-accounts.ts
  *
  * What it does (all are no-ops if state already matches):
@@ -84,23 +87,18 @@ async function setAdminClaim(uid: string, isAdmin: boolean) {
   console.log(`  ✓ Set admin claim to ${isAdmin}`);
 }
 
-async function main() {
-  if (!process.env.GOOGLE_APPLICATION_CREDENTIALS) {
-    console.error(
-      "✗ Missing GOOGLE_APPLICATION_CREDENTIALS env var.\n" +
-        "  Set it to the path of your Firebase service account JSON.\n" +
-        "  Download from: Firebase Console → Project Settings → Service Accounts."
-    );
-    process.exit(1);
-  }
+const PROJECT_ID = process.env.FIREBASE_PROJECT_ID ?? "trim-success";
 
+async function main() {
+  // applicationDefault() honors GOOGLE_APPLICATION_CREDENTIALS first
+  // and falls back to ~/.config/gcloud/application_default_credentials.json
+  // (created by `gcloud auth application-default login`).
   admin.initializeApp({
     credential: admin.credential.applicationDefault(),
+    projectId: PROJECT_ID,
   });
 
-  console.log(
-    `→ Project: ${admin.app().options.projectId ?? "(from credentials)"}`
-  );
+  console.log(`→ Project: ${PROJECT_ID}`);
 
   for (const user of USERS) {
     console.log(`\n${user.email} (admin=${user.isAdmin})`);
