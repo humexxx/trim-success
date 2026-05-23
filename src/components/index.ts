@@ -8,4 +8,3 @@ export { default as Logo } from "./Logo";
 export { default as CardButton } from "./CardButton";
 export { DataTable } from "./DataTable";
 export { PageTransition } from "./PageTransition";
-export { CornerRibbon } from "./CornerRibbon";

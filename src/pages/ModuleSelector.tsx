@@ -14,8 +14,6 @@ import { useAuth } from "src/context/hooks";
 import { useCubeSummary } from "src/hooks";
 import { ROUTES } from "src/lib/consts";
 
-import { CornerRibbon } from "src/components";
-
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
@@ -29,7 +27,8 @@ interface ModuleCardProps {
   status: "ready" | "empty" | "loading" | "comingSoon";
   cta: string;
   disabled?: boolean;
-  ribbon?: { label: string; tone?: "amber" | "emerald" | "blue" | "rose" };
+  /** Render a small "Beta" chip next to the title. */
+  beta?: boolean;
 }
 
 function ModuleCard({
@@ -41,7 +40,7 @@ function ModuleCard({
   status,
   cta,
   disabled,
-  ribbon,
+  beta,
 }: ModuleCardProps) {
   const statusMeta: Record<
     ModuleCardProps["status"],
@@ -57,24 +56,13 @@ function ModuleCard({
   const inner = (
     <Card
       className={cn(
-        "group relative h-full transition-all",
-        // Only clip overflow when there's NO ribbon — the ribbon
-        // intentionally extends past the corner to wrap around the card.
-        !ribbon && "overflow-hidden",
+        "group relative h-full overflow-hidden transition-all",
         !disabled && "hover:border-foreground/40 hover:shadow-md",
         disabled && "opacity-60"
       )}
     >
-      {ribbon && <CornerRibbon label={ribbon.label} tone={ribbon.tone} />}
       <CardContent className="flex h-full flex-col gap-4 p-6">
-        <div
-          className={cn(
-            "flex items-start justify-between gap-3",
-            // Reserve room for the diagonal ribbon so the status badge
-            // doesn't get clipped underneath it.
-            ribbon && "pr-10"
-          )}
-        >
+        <div className="flex items-start justify-between gap-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-md border bg-muted/40 text-foreground">
             {icon}
           </div>
@@ -95,7 +83,14 @@ function ModuleCard({
         </div>
 
         <div className="space-y-1">
-          <h3 className="text-lg font-semibold tracking-tight">{title}</h3>
+          <div className="flex items-center gap-2">
+            <h3 className="text-lg font-semibold tracking-tight">{title}</h3>
+            {beta && (
+              <span className="inline-flex items-center rounded-full bg-amber-100 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-amber-800 dark:bg-amber-500/15 dark:text-amber-400">
+                Beta
+              </span>
+            )}
+          </div>
           <p className="text-sm text-muted-foreground">{description}</p>
         </div>
 
@@ -218,7 +213,7 @@ const ModuleSelector = () => {
             to={ROUTES.SALES}
             status={probe.hasData ? "ready" : "empty"}
             cta={probe.hasData ? "Ver resumen" : "Sube datos primero"}
-            ribbon={{ label: "Beta", tone: "amber" }}
+            beta
             metrics={[
               {
                 label: "Ventas",
