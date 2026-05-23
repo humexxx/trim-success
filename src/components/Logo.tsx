@@ -1,12 +1,19 @@
-import { Typography } from "@mui/material";
 import { Link } from "react-router-dom";
 
-const Logo = () => {
+import { cn } from "@/lib/utils";
+
+interface LogoProps {
+  className?: string;
+  to?: string;
+}
+
+const Logo = ({ className, to = "/" }: LogoProps) => {
   return (
-    <Link to="/" style={{ textDecoration: "none", color: "white" }}>
-      <Typography variant="h6" component="span">
-        ScorChain
-      </Typography>
+    <Link
+      to={to}
+      className={cn("text-lg font-semibold tracking-tight", className)}
+    >
+      ScorChain
     </Link>
   );
 };
