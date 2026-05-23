@@ -1,75 +1,43 @@
 import { useMemo } from "react";
 
-import { useTheme } from "@mui/material";
-import { BarChart } from "@mui/x-charts";
 import { EAmountType } from "@shared/enums";
 import { IScorecardData } from "@shared/models";
 import { formatAmount } from "@shared/utils";
 
-import { defaultGraphProps } from "./utils";
+import { MetricBarChart } from "./MetricBarChart";
 
-const ICCGraph = ({
-  scorecard,
-  categories,
-  isExpanded,
-}: {
+interface Props {
   scorecard: IScorecardData;
   categories: string[];
   isExpanded: boolean;
-}) => {
-  const theme = useTheme();
-  const dataset = useMemo(() => {
-    return [
-      ...categories.map((category) => {
-        return {
-          category,
-          value:
-            Number(scorecard.inventoryCosts.totals[category]) +
-            Number(scorecard.storingCosts.totals[category]),
-        };
-      }),
+}
+
+const ICCGraph = ({ scorecard, categories, isExpanded }: Props) => {
+  const dataset = useMemo(
+    () => [
+      ...categories.map((category) => ({
+        category,
+        value:
+          Number(scorecard.inventoryCosts.totals[category]) +
+          Number(scorecard.storingCosts.totals[category]),
+      })),
       {
         category: "Total",
         value:
           Number(scorecard.inventoryCosts.totals.total) +
           Number(scorecard.storingCosts.totals.total),
       },
-    ];
-  }, [
-    categories,
-    scorecard.inventoryCosts.totals,
-    scorecard.storingCosts.totals,
-  ]);
+    ],
+    [categories, scorecard.inventoryCosts.totals, scorecard.storingCosts.totals]
+  );
 
   return (
-    <BarChart
+    <MetricBarChart
       dataset={dataset}
-      xAxis={[
-        {
-          scaleType: "band",
-          dataKey: "category",
-          valueFormatter: (value, context) => {
-            if (context.location === "tooltip") return value;
-            return value.length > 15 ? value.slice(0, 15) + "..." : value;
-          },
-        },
-      ]}
-      yAxis={[
-        {
-          valueFormatter: (value) =>
-            formatAmount(value as number, EAmountType.MILLIS),
-          tickLabelInterval: (_, index) => index % (isExpanded ? 2 : 1) === 0,
-        },
-      ]}
-      series={[
-        {
-          dataKey: "value",
-          valueFormatter: (value) => formatAmount(value as number),
-          color: theme.palette.error.dark,
-          label: "Inventory Carry Cost (ICC)",
-        },
-      ]}
-      {...defaultGraphProps(isExpanded)}
+      label="Inventory Carry Cost (ICC)"
+      color="#b91c1c"
+      formatValue={(v) => formatAmount(v, EAmountType.MILLIS)}
+      isExpanded={isExpanded}
     />
   );
 };

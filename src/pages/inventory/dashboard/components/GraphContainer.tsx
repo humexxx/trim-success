@@ -1,36 +1,45 @@
 import { ReactNode } from "react";
 
-import CloseFullscreenIcon from "@mui/icons-material/CloseFullscreen";
-import OpenInFullIcon from "@mui/icons-material/OpenInFull";
-import { Card, CardContent, Grid, IconButton } from "@mui/material";
+import { Maximize2, Minimize2 } from "lucide-react";
 
-const GraphContainer = ({
-  isExpanded,
-  setIsExpanded,
-  children,
-}: {
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
+
+interface Props {
   isExpanded: boolean;
   setIsExpanded: (val: boolean) => void;
   children: ReactNode;
-}) => {
+}
+
+const GraphContainer = ({ isExpanded, setIsExpanded, children }: Props) => {
   return (
-    <Grid
-      size={{ xs: 12, md: isExpanded ? 12 : 6, xl: isExpanded ? 12 : 4 }}
-      sx={{ position: "relative", mb: isExpanded ? 4 : 0 }}
+    <div
+      className={cn(
+        "relative",
+        // Mirrors the previous responsive grid: 1 col on xs, 2 cols on md
+        // (or 1 col when expanded), 3 cols on xl (or 1 col when expanded).
+        isExpanded
+          ? "col-span-full mb-4"
+          : "col-span-full md:col-span-6 xl:col-span-4"
+      )}
     >
-      <Card elevation={3}>
-        <CardContent>
-          <IconButton
-            sx={{ position: "absolute", right: 8, zIndex: 1 }}
+      <Card className="shadow-md">
+        <CardContent className="p-6">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="absolute right-2 top-2 z-10"
+            aria-label={isExpanded ? "Reducir gráfico" : "Expandir gráfico"}
             onClick={() => setIsExpanded(!isExpanded)}
           >
-            {isExpanded ? <CloseFullscreenIcon /> : <OpenInFullIcon />}
-          </IconButton>
+            {isExpanded ? <Minimize2 /> : <Maximize2 />}
+          </Button>
           {children}
         </CardContent>
       </Card>
-    </Grid>
+    </div>
   );
-};
+}
 
 export default GraphContainer;

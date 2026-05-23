@@ -1,64 +1,39 @@
 import { useMemo } from "react";
 
-import { useTheme } from "@mui/material";
-import { BarChart } from "@mui/x-charts";
 import { IInventoryPerformanceData } from "@shared/models";
 import { formatPercentage } from "@shared/utils";
 
-import { defaultGraphProps } from "./utils";
+import { MetricBarChart } from "./MetricBarChart";
+
+interface Props {
+  data: IInventoryPerformanceData["rows"][0];
+  categories: string[];
+  isExpanded: boolean;
+}
 
 const InventoryValueOverSalesGraph = ({
   data,
   categories,
   isExpanded,
-}: {
-  data: IInventoryPerformanceData["rows"][0];
-  categories: string[];
-  isExpanded: boolean;
-}) => {
-  const theme = useTheme();
-  const dataset = useMemo(() => {
-    return [
-      ...categories.map((category) => {
-        return {
-          category,
-          value: data[category] as number,
-        };
-      }),
-      {
-        category: "Total",
-        value: data.total,
-      },
-    ];
-  }, [data, categories]);
+}: Props) => {
+  const dataset = useMemo(
+    () => [
+      ...categories.map((category) => ({
+        category,
+        value: data[category] as number,
+      })),
+      { category: "Total", value: data.total },
+    ],
+    [data, categories]
+  );
 
   return (
-    <BarChart
+    <MetricBarChart
       dataset={dataset}
-      xAxis={[
-        {
-          scaleType: "band",
-          dataKey: "category",
-          valueFormatter: (value, context) => {
-            if (context.location === "tooltip") return value;
-            return isExpanded
-              ? value.replace(/ /g, " \n")
-              : value.length > 15
-                ? value.slice(0, 15) + "..."
-                : value;
-          },
-        },
-      ]}
-      yAxis={[{ valueFormatter: (value) => formatPercentage(value as number) }]}
-      series={[
-        {
-          dataKey: "value",
-          valueFormatter: (value) => formatPercentage(value as number),
-          color: theme.palette.secondary.dark,
-          label: "Inventory Value vs. Sales",
-        },
-      ]}
-      {...defaultGraphProps(isExpanded)}
+      label="Inventory Value vs. Sales"
+      color="#475569"
+      formatValue={(v) => formatPercentage(v)}
+      isExpanded={isExpanded}
     />
   );
 };
