@@ -1,22 +1,16 @@
 import { useEffect, useState } from "react";
 
-import { Delete } from "@mui/icons-material";
-import SubdirectoryArrowRightIcon from "@mui/icons-material/SubdirectoryArrowRight";
-import {
-  Alert,
-  Button,
-  CircularProgress,
-  Stack,
-  Typography,
-} from "@mui/material";
 import { EFileType } from "@shared/enums";
 import { IFileData } from "@shared/models";
+import { CornerDownRight, Loader2, Trash2 } from "lucide-react";
 import json from "src/assets/images/json.webp";
 import xls from "src/assets/images/xls.svg";
 import { ConfirmDialog } from "src/components";
-import { useAuth } from "src/context/hooks";
-import { useCube } from "src/context/hooks";
+import { useAuth, useCube } from "src/context/hooks";
 import { getError } from "src/utils";
+
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
 
 const ImportedDataPage = () => {
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
@@ -39,7 +33,6 @@ const ImportedDataPage = () => {
         setLoading(false);
       }
     }
-
     fetch();
   }, [cube]);
 
@@ -54,21 +47,27 @@ const ImportedDataPage = () => {
   async function handleDeleteCube() {
     try {
       await cube.removeCube();
-    } catch (e) {
+    } catch {
       throw new Error("Error deleting cube data");
     }
   }
 
-  if (loading)
+  if (loading) {
     return (
-      <Stack direction={"row"} gap={2} alignItems={"center"}>
-        <CircularProgress size={20} />
-        <Typography variant="body1" color="text.primary">
-          Loading...
-        </Typography>
-      </Stack>
+      <div className="flex items-center gap-2">
+        <Loader2 className="h-5 w-5 animate-spin" />
+        <span className="text-sm">Loading...</span>
+      </div>
     );
-  if (error) return <Alert severity="error">{error}</Alert>;
+  }
+
+  if (error) {
+    return (
+      <Alert variant="destructive">
+        <AlertDescription>{error}</AlertDescription>
+      </Alert>
+    );
+  }
 
   return (
     <>
@@ -81,38 +80,32 @@ const ImportedDataPage = () => {
         agreeText="Borrar"
         disagreeText="Cancelar"
       />
-      <Stack direction={"column"} gap={4}>
+      <div className="flex flex-col gap-6">
         {files?.map((file) => (
-          <Stack
-            key={file.name}
-            direction={"row"}
-            gap={2}
-            alignItems={"center"}
-          >
+          <div key={file.name} className="flex items-center gap-3">
             {file.type === EFileType.JSON && (
-              <SubdirectoryArrowRightIcon sx={{ ml: 2 }} />
+              <CornerDownRight className="ml-4 h-4 w-4 text-muted-foreground" />
             )}
             <img
               src={file.type === EFileType.JSON ? json : xls}
               width={file.type === EFileType.JSON ? 30 : 40}
+              alt=""
             />
-            <Typography variant="body1" color="text.primary">
-              {file.name}
-            </Typography>
+            <span className="text-sm">{file.name}</span>
             {isAdmin && file.type !== EFileType.JSON && (
               <Button
-                startIcon={<Delete />}
-                variant={"contained"}
-                color="error"
-                sx={{ ml: 2 }}
+                variant="destructive"
+                size="sm"
+                className="ml-2"
                 onClick={() => setIsConfirmDialogOpen(true)}
               >
+                <Trash2 />
                 Delete
               </Button>
             )}
-          </Stack>
+          </div>
         ))}
-      </Stack>
+      </div>
     </>
   );
 };

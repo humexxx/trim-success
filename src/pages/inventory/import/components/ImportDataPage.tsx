@@ -1,21 +1,16 @@
-import { useState } from "react";
+import { ReactNode, useState } from "react";
 
-import { LoadingButton } from "@mui/lab";
-import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
-import Step from "@mui/material/Step";
-import StepContent from "@mui/material/StepContent";
-import StepLabel from "@mui/material/StepLabel";
-import Stepper from "@mui/material/Stepper";
-import Typography from "@mui/material/Typography";
+import { Check } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useCube } from "src/context/hooks";
 import { ROUTES } from "src/lib/consts";
-import {
-  DropzoneStep,
-  FileUploadStep,
-  DriversStep,
-} from "src/pages/inventory/import/components";
+
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+
+import DriversStep from "./DriversStep";
+import DropzoneStep from "./DropzoneStep";
+import FileUploadStep from "./FileUploadStep";
 
 export interface FileResolution {
   jsonData?: unknown[];
@@ -23,6 +18,12 @@ export interface FileResolution {
   columns?: string[];
   file?: File;
   sheetName?: string;
+}
+
+interface StepDef {
+  label: string;
+  optional?: ReactNode;
+  body: ReactNode;
 }
 
 export default function ImportDataPage() {
@@ -36,74 +37,101 @@ export default function ImportDataPage() {
   const navigate = useNavigate();
   const cube = useCube();
 
-  const handleNext = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep + 1);
-  };
-
+  const handleNext = () => setActiveStep((s) => s + 1);
   const handleBack = () => {
     setStepError("");
-    setActiveStep((prevActiveStep) => prevActiveStep - 1);
+    setActiveStep((s) => s - 1);
   };
-
   const handleOnFinish = () => {
     cube.setHasInitialData(true);
     navigate(ROUTES.INVENTORY.DASHBOARD);
   };
 
-  return (
-    <Stepper activeStep={activeStep} orientation="vertical">
-      <Step>
-        <StepLabel>Importar Archivo</StepLabel>
-        <StepContent>
-          <StepContentWrapper>
-            <DropzoneStep
-              handleNext={(file: File) => {
-                setFileResolution({ file });
-                handleNext();
-              }}
-            />
-          </StepContentWrapper>
+  const steps: StepDef[] = [
+    {
+      label: "Importar Archivo",
+      body: (
+        <>
+          <DropzoneStep
+            handleNext={(file: File) => {
+              setFileResolution({ file });
+              handleNext();
+            }}
+          />
           <StepperFooter
             handleBack={handleBack}
             handleNext={handleNext}
             isFirstStep
             disableNext={!fileResolution?.file || !fileResolution.jsonData}
           />
-        </StepContent>
-      </Step>
-      <Step>
-        <StepLabel>Verificar Drivers</StepLabel>
-        <StepContent>
-          <StepContentWrapper>
-            <DriversStep />
-          </StepContentWrapper>
+        </>
+      ),
+    },
+    {
+      label: "Verificar Drivers",
+      body: (
+        <>
+          <DriversStep />
           <StepperFooter
             handleBack={handleBack}
             handleNext={handleNext}
             disableNext={Boolean(stepError)}
           />
-        </StepContent>
-      </Step>
-      <Step>
-        <StepLabel
-          optional={
-            <Typography variant="caption">
-              Carga de datos al sistema para la generación de reportes
-            </Typography>
-          }
-        >
-          Carga de datos
-        </StepLabel>
-        <StepContent>
-          <StepContentWrapper>
-            <FileUploadStep
-              fileResolution={fileResolution!}
-              handleOnFinish={handleOnFinish}
-            />
-          </StepContentWrapper>
-        </StepContent>
-      </Step>
-    </Stepper>
+        </>
+      ),
+    },
+    {
+      label: "Carga de datos",
+      optional: (
+        <span className="text-xs text-muted-foreground">
+          Carga de datos al sistema para la generación de reportes
+        </span>
+      ),
+      body: (
+        <FileUploadStep
+          fileResolution={fileResolution!}
+          handleOnFinish={handleOnFinish}
+        />
+      ),
+    },
+  ];
+
+  return (
+    <ol className="relative space-y-6 border-l border-border pl-8">
+      {steps.map((step, idx) => {
+        const isActive = activeStep === idx;
+        const isCompleted = activeStep > idx;
+        return (
+          <li key={step.label} className="relative">
+            <span
+              className={cn(
+                "absolute -left-[2.45rem] flex h-7 w-7 items-center justify-center rounded-full border-2 text-xs font-semibold ring-4 ring-background",
+                isCompleted
+                  ? "border-foreground bg-foreground text-background"
+                  : isActive
+                    ? "border-foreground bg-background text-foreground"
+                    : "border-border bg-background text-muted-foreground"
+              )}
+              aria-hidden="true"
+            >
+              {isCompleted ? <Check className="h-3.5 w-3.5" /> : idx + 1}
+            </span>
+            <div className="flex flex-col">
+              <span
+                className={cn(
+                  "text-sm font-medium",
+                  !isActive && !isCompleted && "text-muted-foreground"
+                )}
+              >
+                {step.label}
+              </span>
+              {step.optional}
+              {isActive && <div className="mt-3">{step.body}</div>}
+            </div>
+          </li>
+        );
+      })}
+    </ol>
   );
 }
 
@@ -123,30 +151,13 @@ function StepperFooter({
   loading = false,
 }: StepperFooterProps) {
   return (
-    <Box sx={{ my: 2 }}>
-      <div>
-        <Button
-          disabled={isFirstStep}
-          onClick={handleBack}
-          sx={{ mt: 1, mr: 1 }}
-        >
-          Atrás
-        </Button>
-        <LoadingButton
-          variant="contained"
-          onClick={handleNext}
-          sx={{ mt: 1, mr: 1 }}
-          disabled={disableNext}
-          loading={loading}
-          disableElevation
-        >
-          Continuar
-        </LoadingButton>
-      </div>
-    </Box>
+    <div className="mt-4 flex items-center gap-2">
+      <Button variant="ghost" onClick={handleBack} disabled={isFirstStep}>
+        Atrás
+      </Button>
+      <Button onClick={handleNext} disabled={disableNext} loading={loading}>
+        Continuar
+      </Button>
+    </div>
   );
-}
-
-function StepContentWrapper({ children }: { children: React.ReactNode }) {
-  return <Box sx={{ m: 2 }}>{children}</Box>;
 }

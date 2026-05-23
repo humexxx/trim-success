@@ -1,16 +1,14 @@
 import { useState } from "react";
 
-import DevicesIcon from "@mui/icons-material/Devices";
-import ForwardIcon from "@mui/icons-material/Forward";
-import StorageIcon from "@mui/icons-material/Storage";
-import { LoadingButton } from "@mui/lab";
-import { Alert, Box, Grid, Typography } from "@mui/material";
 import { STORAGE_PATH } from "@shared/consts";
 import { collection, doc } from "firebase/firestore";
 import { ref, uploadBytes } from "firebase/storage";
-import { useAuth } from "src/context/hooks";
-import { useCube } from "src/context/hooks";
+import { ArrowRight, Database, Laptop2 } from "lucide-react";
+import { useAuth, useCube } from "src/context/hooks";
 import { firestore, storage } from "src/lib/firebase";
+
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
 
 import { FileResolution } from "./ImportDataPage";
 
@@ -19,7 +17,7 @@ interface Props {
   fileResolution: FileResolution;
 }
 
-const FileUpload = ({ handleOnFinish, fileResolution }: Props) => {
+const FileUploadStep = ({ handleOnFinish, fileResolution }: Props) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { currentUser, isAdmin, customUser } = useAuth();
@@ -43,8 +41,8 @@ const FileUpload = ({ handleOnFinish, fileResolution }: Props) => {
       await cube.initCube(generateUID, cube.data!.cubeParameters.drivers);
       await cube.reloadCubeData();
       handleOnFinish();
-    } catch (error) {
-      setError(`Error al subir el archivo: ${error}`);
+    } catch (e) {
+      setError(`Error al subir el archivo: ${e}`);
       await cube.removeCube();
     } finally {
       setLoading(false);
@@ -52,58 +50,35 @@ const FileUpload = ({ handleOnFinish, fileResolution }: Props) => {
   }
 
   return (
-    <>
-      {Boolean(error) && <Alert severity="error">{error}</Alert>}
-      {loading && (
-        <Alert severity="info">Esto puede tardar un par de minutos...</Alert>
+    <div className="space-y-4">
+      {error && (
+        <Alert variant="destructive">
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
       )}
-      <Typography color="text.primary" mt={2}>
-        Los datos cargados se usarán para crear los distintos reportes.
-      </Typography>
-      <Grid container mx={4} my={8}>
-        <Grid size={2}>
-          <DevicesIcon sx={{ scale: "2", color: "text.primary" }} />
-        </Grid>
-        <Grid size={2}>
-          <ForwardIcon
-            sx={{
-              color: "text.primary",
-              scale: "2",
-              animation: "moveFade 1s ease-in-out infinite",
-              "@keyframes moveFade": {
-                "0%": {
-                  transform: "translateX(0)",
-                  opacity: 1,
-                },
-                "50%": {
-                  transform: "translateX(10px)",
-                  opacity: 0.5,
-                },
-                "100%": {
-                  transform: "translateX(0)",
-                  opacity: 1,
-                },
-              },
-            }}
-          />
-        </Grid>
-        <Grid size={2}>
-          <StorageIcon sx={{ scale: "2", color: "text.primary" }} />
-        </Grid>
-      </Grid>
+      {loading && (
+        <Alert>
+          <AlertDescription>
+            Esto puede tardar un par de minutos...
+          </AlertDescription>
+        </Alert>
+      )}
 
-      <Box sx={{ my: 2 }}>
-        <LoadingButton
-          variant="contained"
-          onClick={handleOnClick}
-          sx={{ mt: 1, mr: 1 }}
-          loading={loading}
-        >
-          Cargar Datos y Terminar
-        </LoadingButton>
-      </Box>
-    </>
+      <p className="text-sm">
+        Los datos cargados se usarán para crear los distintos reportes.
+      </p>
+
+      <div className="my-8 flex items-center gap-6 text-foreground">
+        <Laptop2 className="h-10 w-10" />
+        <ArrowRight className="h-10 w-10 animate-pulse" />
+        <Database className="h-10 w-10" />
+      </div>
+
+      <Button onClick={handleOnClick} loading={loading}>
+        Cargar Datos y Terminar
+      </Button>
+    </div>
   );
 };
 
-export default FileUpload;
+export default FileUploadStep;
