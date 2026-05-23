@@ -175,13 +175,6 @@ export default function SignIn({ handleOnSubmit }: SignInProps) {
               Entrar
             </Button>
           </div>
-
-          <div className="text-center text-sm">
-            ¿No tienes cuenta?{" "}
-            <Link to="/sign-up" className="underline underline-offset-4">
-              Regístrate
-            </Link>
-          </div>
         </form>
       </Form>
 

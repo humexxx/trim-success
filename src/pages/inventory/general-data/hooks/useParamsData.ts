@@ -28,8 +28,8 @@ function useParamsData(): UseParamsData {
           )
         );
         await setDoc(docRef, { ...data });
-      } catch (error: any) {
-        setError(error.message ?? error.toString());
+      } catch (error: unknown) {
+        setError(error instanceof Error ? error.message : String(error));
       } finally {
         setLoading(false);
       }

@@ -9,7 +9,6 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-
 import { colorForCategory } from "src/lib/categoryColors";
 
 import {

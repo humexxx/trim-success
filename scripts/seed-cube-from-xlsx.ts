@@ -15,15 +15,12 @@
  *   npx tsx scripts/seed-cube-from-xlsx.ts
  */
 
+import admin from "firebase-admin";
 import { readFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-
-import admin from "firebase-admin";
 import * as XLSX from "xlsx";
 
-import { DEFAULT_DRIVERS, FIRESTORE_PATHS } from "../shared/consts";
-import { EDriverType } from "../shared/enums";
 import {
   calculateCategoriesDataRows,
   calculateCategoriesTotalsData,
@@ -33,6 +30,8 @@ import {
   calculateScorecardData,
   generateCubeParameters,
 } from "../functions/src/utils/cube";
+import { DEFAULT_DRIVERS, FIRESTORE_PATHS } from "../shared/consts";
+import { EDriverType } from "../shared/enums";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const DEFAULT_EMAIL = "demo@trim-success.test";

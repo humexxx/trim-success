@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import { IColumn } from "@shared/models";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
@@ -9,40 +9,58 @@ interface ISettingsCube {
   columns: IColumn[];
 }
 
+/** Narrow `unknown` thrown values to a readable message string. */
+function errorMessage(err: unknown, fallback: string): string {
+  if (err instanceof Error) return err.message || fallback;
+  return fallback;
+}
+
 export function useUserSettingsCube() {
   const [settings, setSettings] = useState<ISettingsCube | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const user = useAuth();
+  const { currentUser } = useAuth();
 
   useEffect(() => {
-    const fetchSettings = async () => {
+    // Without an authenticated user there's nothing to fetch — bail
+    // out rather than racing the auth context.
+    if (!currentUser?.uid) {
+      setLoading(false);
+      return;
+    }
+
+    let cancelled = false;
+    async function fetchSettings(uid: string) {
       try {
         const settingsDoc = await getDoc(
-          doc(firestore, "settings", "cube", "users", user.currentUser!.uid)
+          doc(firestore, "settings", "cube", "users", uid)
         );
+        if (cancelled) return;
         if (settingsDoc.exists()) {
           setSettings(settingsDoc.data() as ISettingsCube);
         } else {
           throw new Error("Settings not found");
         }
-      } catch (err: any) {
-        setError(err.message || "Error fetching settings");
+      } catch (err: unknown) {
+        if (cancelled) return;
+        setError(errorMessage(err, "Error fetching settings"));
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
+    }
+    fetchSettings(currentUser.uid);
+    return () => {
+      cancelled = true;
     };
-
-    fetchSettings();
-  }, []);
+  }, [currentUser?.uid]);
 
   const updateUserSettings = useCallback(async (columns: IColumn[]) => {
     try {
       const docRef = doc(firestore, "settings", "cube");
       await updateDoc(docRef, { columns });
       setSettings((prev) => ({ ...prev!, columns }));
-    } catch (err: any) {
-      setError(err.message || "Error updating columns");
+    } catch (err: unknown) {
+      setError(errorMessage(err, "Error updating columns"));
     }
   }, []);
 

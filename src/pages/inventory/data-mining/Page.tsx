@@ -2,6 +2,7 @@ import { PageHeader, PageWrapper } from "src/components/layout";
 import { useCube } from "src/context/hooks";
 import { useDocumentMetadata } from "src/hooks";
 
+import { CategoriesGraph, CategoriesTable, DriversTable } from "./components";
 import {
   Card,
   CardContent,
@@ -11,7 +12,6 @@ import {
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 
-import { CategoriesGraph, CategoriesTable, DriversTable } from "./components";
 
 const Page = () => {
   useDocumentMetadata(
@@ -27,7 +27,7 @@ const Page = () => {
     // Skeleton mirrors the final layout — table card, two-chart row,
     // drivers card — so the page doesn't reflow when data lands.
     return (
-      <PageWrapper title="Data Mining" maxWidth="2xl">
+      <PageWrapper title="Data Mining">
         <PageHeader
           title="Data Mining"
           description="Categorización por driver: cómo se distribuye cada métrica entre las categorías del catálogo."
@@ -70,7 +70,7 @@ const Page = () => {
   }
 
   return (
-    <PageWrapper title="Data Mining" maxWidth="2xl">
+    <PageWrapper title="Data Mining">
       <PageHeader
         title="Data Mining"
         description="Categorización por driver: cómo se distribuye cada métrica entre las categorías del catálogo."

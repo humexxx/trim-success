@@ -7,11 +7,14 @@ import { ICubeParameters } from "@shared/models";
 import { roundToDecimals } from "@shared/utils";
 import { useForm } from "react-hook-form";
 import { GlobalLoader } from "src/components";
-import { PageContent, PageHeader, PageWrapper } from "src/components/layout";
+import { PageHeader, PageWrapper } from "src/components/layout";
 import { useCube } from "src/context/hooks";
 import { getError } from "src/utils";
 import { InferType } from "yup";
 
+import { GeneralParams, InventoryParams, StoringParams } from "./components";
+import { useParamsData } from "./hooks";
+import { parametersScheme } from "./schema";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
@@ -22,9 +25,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-import { GeneralParams, InventoryParams, StoringParams } from "./components";
-import { useParamsData } from "./hooks";
-import { parametersScheme } from "./schema";
 
 const Page = () => {
   const cube = useCube();
@@ -99,7 +99,6 @@ const Page = () => {
     <PageWrapper
       title="Datos generales"
       description="Configura parámetros generales del cubo: costo de capital, días por periodo y supuestos."
-      maxWidth="2xl"
     >
       {isSubmitting && <GlobalLoader />}
       <PageHeader

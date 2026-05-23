@@ -12,7 +12,7 @@ import { ICallableRequest, ICallableResponse } from "@shared/models/functions";
 import { httpsCallable } from "firebase/functions";
 import { GlobalLoader } from "src/components";
 import { LOCAL_STORAGE_KEYS } from "src/lib/consts";
-import { functions, storage } from "src/lib/firebase";
+import { functions } from "src/lib/firebase";
 
 import { useAuth } from "./hooks";
 
@@ -22,9 +22,11 @@ export interface CubeContextType {
   isCubeLoading: boolean;
 
   getFiles: () => Promise<IFileData[]>;
-  fileData?: { columns: string[]; rows: any[] };
+  fileData?: { columns: string[]; rows: Record<string, unknown>[] };
   setFileData: React.Dispatch<
-    React.SetStateAction<{ columns: string[]; rows: any[] } | undefined>
+    React.SetStateAction<
+      { columns: string[]; rows: Record<string, unknown>[] } | undefined
+    >
   >;
 
   data: ICubeData | undefined;
@@ -55,7 +57,7 @@ export function CubeProvider({ children, onCubeLoadError }: Props) {
   const [data, setData] = useState<ICubeData | undefined>(undefined);
   const [fileData, setFileData] = useState<{
     columns: string[];
-    rows: any[];
+    rows: Record<string, unknown>[];
   }>();
   const [files, setFiles] = useState<IFileData[] | undefined>();
 
@@ -97,7 +99,9 @@ export function CubeProvider({ children, onCubeLoadError }: Props) {
 
       setData(response.data.data);
       setHasInitialData(true);
-    } catch (e) {
+    } catch {
+      // Cube load failure → bubble to the route-level handler. The
+      // error itself isn't actionable here, so we don't keep it.
       onCubeLoadError();
       setHasInitialData(false);
     } finally {

@@ -47,7 +47,7 @@ export function updateStoringScorecardDataRow(
           0
         );
         return acc;
-      }, {} as any),
+      }, {} as Record<string, number>),
     },
   };
 }
@@ -99,7 +99,7 @@ export function updateInventoryScorecardDataRow(
           0
         );
         return acc;
-      }, {} as any),
+      }, {} as Record<string, number>),
     },
   };
 }

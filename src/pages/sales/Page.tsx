@@ -20,6 +20,8 @@ import {
   percentFmt,
 } from "src/lib/formatters";
 
+import { MonthlyTrendChart, PortfolioRadar } from "./components";
+import { MetricBarChart } from "../inventory/inventory-performance/components/MetricBarChart";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -41,9 +43,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 
-import { MetricBarChart } from "../inventory/inventory-performance/components/MetricBarChart";
 
-import { MonthlyTrendChart, PortfolioRadar } from "./components";
 
 interface KpiCardProps {
   label: string;

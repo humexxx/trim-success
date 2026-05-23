@@ -1,12 +1,12 @@
 import { useMemo } from "react";
 
-import { ColumnDef } from "@tanstack/react-table";
 import { EInventoryPerformaceMetricType } from "@shared/enums/EInventoryPerformaceMetricType";
 import {
   IInventoryPerformanceData,
   IIventoryPerformanceMetric,
 } from "@shared/models";
 import { formatValue, roundToDecimals } from "@shared/utils";
+import { ColumnDef } from "@tanstack/react-table";
 
 import { DataTable } from "@/components/DataTable";
 

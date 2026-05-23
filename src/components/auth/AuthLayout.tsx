@@ -2,7 +2,7 @@ import { ReactNode } from "react";
 
 import { Link } from "react-router-dom";
 
-import heroImage from "@/assets/images/hero.webp";
+import { AuthChartSlideshow } from "@/components/auth/AuthChartSlideshow";
 import { cn } from "@/lib/utils";
 
 interface AuthLayoutProps {
@@ -32,13 +32,8 @@ export function AuthLayout({ children, className }: AuthLayoutProps) {
           <div className={cn("w-full max-w-sm", className)}>{children}</div>
         </div>
       </div>
-      <div className="relative hidden bg-muted lg:block">
-        <img
-          src={heroImage}
-          alt=""
-          aria-hidden="true"
-          className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
-        />
+      <div className="relative hidden lg:block">
+        <AuthChartSlideshow />
       </div>
     </div>
   );

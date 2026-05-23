@@ -1,6 +1,7 @@
 import { PageHeader, PageWrapper } from "src/components/layout";
 import { useCube } from "src/context/hooks";
 
+import { Table } from "./components";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
   Card,
@@ -10,7 +11,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-import { Table } from "./components";
 
 const Page = () => {
   const cube = useCube();
@@ -19,7 +19,6 @@ const Page = () => {
     <PageWrapper
       title="Rendimiento de inventario"
       description="Métricas de rotación, días de inventario y eficiencia operativa por categoría."
-      maxWidth="2xl"
     >
       <PageHeader
         title="Rendimiento de inventario"

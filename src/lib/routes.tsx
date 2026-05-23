@@ -2,7 +2,9 @@ import { lazy, Suspense } from "react";
 
 import { Loader2 } from "lucide-react";
 import { createBrowserRouter, Navigate } from "react-router-dom";
+import { ForgotPasswordPage, SignInPage } from "src/pages/auth";
 
+import { ErrorPage, LandingPage } from "../pages";
 import { ROUTES } from "./consts";
 
 // Eagerly load the auth + landing chunk — these pages must paint
@@ -11,9 +13,6 @@ import { ROUTES } from "./consts";
 // visit, and an anonymous visitor never pays for the inventory bundle.
 // Aligned with bundle-dynamic-imports from the Vercel React Best
 // Practices skill.
-import { ForgotPasswordPage, SignInPage, SignUpPage } from "src/pages/auth";
-
-import { ErrorPage, LandingPage } from "../pages";
 
 const ModuleSelectLayout = lazy(() => import("../layouts/ModuleSelectLayout"));
 const InventoryLayout = lazy(() => import("../layouts/InventoryLayout"));
@@ -45,7 +44,13 @@ const SalesPage = lazy(() => import("../pages/sales/Page"));
  * Spinner shown briefly while a route chunk is loaded over the network.
  * Centered + full-viewport so it never causes layout shift inside any
  * particular layout — the page that finally renders replaces it.
+ *
+ * Co-located with the router on purpose — it's only used here and
+ * splitting it out would just add an extra module for no value. The
+ * Fast Refresh warning isn't a real concern: this file is the router
+ * itself, not a hot-reloadable component module.
  */
+// eslint-disable-next-line react-refresh/only-export-components
 function RouteFallback() {
   return (
     <div className="flex min-h-[60vh] items-center justify-center text-muted-foreground">
@@ -66,7 +71,7 @@ export const router = createBrowserRouter([
     element: <LandingPage />,
     errorElement: <ErrorPage />,
   },
-  { path: "/sign-up", element: <SignUpPage /> },
+  { path: "/sign-up", element: <Navigate replace to="/login" /> },
   { path: ROUTES.SIGN_IN, element: <Navigate replace to="/login" /> },
   { path: "/login", element: <SignInPage /> },
   { path: "/forgot-password", element: <ForgotPasswordPage /> },

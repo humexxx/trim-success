@@ -1,8 +1,8 @@
 import { useMemo } from "react";
 
-import { ColumnDef } from "@tanstack/react-table";
 import { IBaseData, IDriver } from "@shared/models";
 import { formatAmount } from "@shared/utils";
+import { ColumnDef } from "@tanstack/react-table";
 
 import { DataTable, DataTableTotalCell } from "@/components/DataTable";
 

@@ -1,6 +1,7 @@
 import { PageHeader, PageWrapper } from "src/components/layout";
 import { useCube } from "src/context/hooks";
 
+import { MainGrid, Reports } from "./components";
 import {
   Card,
   CardContent,
@@ -9,7 +10,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-import { MainGrid, Reports } from "./components";
 
 const Page = () => {
   const cube = useCube();
@@ -20,7 +20,6 @@ const Page = () => {
     <PageWrapper
       title="Resumen"
       description="Indicadores clave del cubo activo: SKUs, categorías, ventas, margen y costo total."
-      maxWidth="2xl"
     >
       <PageHeader
         title="Resumen general"

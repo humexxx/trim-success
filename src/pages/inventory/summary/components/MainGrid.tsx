@@ -1,20 +1,19 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 
-import { ColumnDef } from "@tanstack/react-table";
 import { STORAGE_PATH } from "@shared/consts";
 import { EColumnType } from "@shared/enums";
 import { ESystemColumnType } from "@shared/enums/ESystemColumnType";
-import { IColumn, IDataModel, IDataModelCubeRow } from "@shared/models";
+import { IDataModel, IDataModelCubeRow } from "@shared/models";
 import { formatAmount, formatPercentage, getColumn } from "@shared/utils";
+import { ColumnDef } from "@tanstack/react-table";
 import { getDownloadURL, getMetadata, listAll, ref } from "firebase/storage";
 import { useAuth } from "src/context/hooks";
 import { storage } from "src/lib/firebase";
 import { getError } from "src/utils";
 
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { DataTable } from "@/components/DataTable";
-
 import Filters, { IFilterCriteria } from "./Filters";
+import { DataTable } from "@/components/DataTable";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 function getColumns(
   columns?: string[]

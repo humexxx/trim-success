@@ -122,12 +122,6 @@ export default function ForgotPassword({
           <Link to="/login" className="underline underline-offset-4">
             Volver al inicio de sesión
           </Link>
-          <span className="text-muted-foreground">
-            ¿No tienes cuenta?{" "}
-            <Link to="/sign-up" className="underline underline-offset-4">
-              Regístrate
-            </Link>
-          </span>
         </div>
       </div>
     </AuthLayout>

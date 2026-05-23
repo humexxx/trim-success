@@ -1,5 +1,4 @@
 import { Link } from "react-router-dom";
-
 import { APP_NAME } from "src/lib/consts";
 
 import { cn } from "@/lib/utils";

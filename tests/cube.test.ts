@@ -1,8 +1,10 @@
-import { describe, expect, it } from "vitest";
 
 import { DEFAULT_DRIVERS } from "@shared/consts";
 import { EDriverType } from "@shared/enums";
 import { EInventoryPerformaceMetricType } from "@shared/enums/EInventoryPerformaceMetricType";
+import { describe, expect, it } from "vitest";
+
+import { sampleCubeRows, sampleParameters } from "./fixtures";
 import {
   calculateCategoriesDataRows,
   calculateCategoriesTotalsData,
@@ -12,8 +14,6 @@ import {
   calculateScorecardData,
   generateCubeParameters,
 } from "../functions/src/utils/cube";
-
-import { sampleCubeRows, sampleParameters } from "./fixtures";
 
 const driversNoPlanners = DEFAULT_DRIVERS.filter(
   (d) => d.key !== EDriverType.PLANNERS && d.key !== EDriverType.ORDERS

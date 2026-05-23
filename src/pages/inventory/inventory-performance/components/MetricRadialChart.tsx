@@ -6,7 +6,6 @@ import {
   RadialBar,
   RadialBarChart,
 } from "recharts";
-
 import { colorForCategory } from "src/lib/categoryColors";
 
 import {

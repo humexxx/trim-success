@@ -5,14 +5,14 @@ import { useNavigate } from "react-router-dom";
 import { useCube } from "src/context/hooks";
 import { ROUTES } from "src/lib/consts";
 
+import DriversStep from "./DriversStep";
+import DropzoneStep from "./DropzoneStep";
+import FileUploadStep from "./FileUploadStep";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 
-import DriversStep from "./DriversStep";
-import DropzoneStep from "./DropzoneStep";
-import FileUploadStep from "./FileUploadStep";
 
 export interface FileResolution {
   jsonData?: unknown[];

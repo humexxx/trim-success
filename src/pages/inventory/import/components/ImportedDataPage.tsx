@@ -1,15 +1,15 @@
 import { useEffect, useMemo, useState } from "react";
 
-import { EDriverType, EFileType } from "@shared/enums";
+import { EAmountType, EDriverType, EFileType } from "@shared/enums";
 import { IFileData } from "@shared/models";
+import { formatAmount } from "@shared/utils";
 import {
   CheckCircle2,
-  CornerDownRight,
   Database,
+  FileSpreadsheet,
+  FileText,
   Trash2,
 } from "lucide-react";
-import json from "src/assets/images/json.webp";
-import xls from "src/assets/images/xls.svg";
 import { ConfirmDialog } from "src/components";
 import { useAuth, useCube } from "src/context/hooks";
 
@@ -58,6 +58,7 @@ const ImportedDataPage = () => {
       categoryCount: data.cubeParameters.categories?.length ?? 0,
       skus: Number(totals[EDriverType.SKUS] ?? 0),
       sales: Number(totals[EDriverType.SALES] ?? 0),
+      drivers: data.cubeParameters.drivers ?? [],
     };
   }, [cube.data]);
 
@@ -79,16 +80,14 @@ const ImportedDataPage = () => {
 
   if (loading) {
     return (
-      <div className="flex flex-col gap-3">
-        {[0, 1, 2].map((i) => (
-          <div key={i} className="flex items-center gap-3">
-            <Skeleton className="h-10 w-10 rounded" />
-            <Skeleton className="h-4 w-48" />
-          </div>
-        ))}
+      <div className="flex flex-col gap-4">
+        <Skeleton className="h-20 w-full" />
+        <Skeleton className="h-40 w-full" />
       </div>
     );
   }
+
+  const hasFiles = files && files.length > 0;
 
   return (
     <>
@@ -103,12 +102,12 @@ const ImportedDataPage = () => {
       />
 
       <div className="flex flex-col gap-4">
-        {/* Cube summary card — always present when the cube is
-            loaded. This is the source of truth for "do I have data?",
-            independent of whether Storage has a backing file. */}
+        {/* Cube summary — always present when the cube is loaded. This
+            is the source of truth for "do I have data?", independent of
+            whether Storage has a backing file. */}
         {cubeSummary && (
           <Card>
-            <CardContent className="flex items-start justify-between gap-4 p-5">
+            <CardContent className="flex flex-col gap-3 p-5 sm:flex-row sm:items-center sm:justify-between">
               <div className="flex items-start gap-3">
                 <div className="flex h-10 w-10 items-center justify-center rounded-md border bg-muted/40 text-foreground">
                   <Database className="h-5 w-5" />
@@ -144,29 +143,115 @@ const ImportedDataPage = () => {
           </Card>
         )}
 
-        {/* Storage-backed files, if any. Hidden entirely when Storage
-            returned nothing — the cube card above already communicates
-            "data is loaded". */}
-        {files && files.length > 0 && (
-          <div className="flex flex-col gap-6">
-            {files.map((file) => (
-              <div key={file.name} className="flex items-center gap-3">
-                {file.type === EFileType.JSON && (
-                  <CornerDownRight className="ml-4 h-4 w-4 text-muted-foreground" />
-                )}
-                <img
-                  src={file.type === EFileType.JSON ? json : xls}
-                  width={file.type === EFileType.JSON ? 30 : 40}
-                  alt=""
+        {/* Detail card: file list (when available) + cube stats below */}
+        {cubeSummary && (
+          <Card>
+            <CardContent className="p-5">
+              <h3 className="mb-3 text-sm font-semibold">
+                {hasFiles ? "Archivos del cubo" : "Detalle del cubo"}
+              </h3>
+
+              {hasFiles && (
+                <ul className="divide-y">
+                  {files!.map((file) => {
+                    const isJson = file.type === EFileType.JSON;
+                    return (
+                      <li
+                        key={file.name}
+                        className="flex items-center gap-3 py-3 first:pt-0 last:pb-0"
+                      >
+                        <div className="flex h-9 w-9 items-center justify-center rounded-md border bg-muted/30 text-muted-foreground">
+                          {isJson ? (
+                            <FileText className="h-4 w-4" />
+                          ) : (
+                            <FileSpreadsheet className="h-4 w-4" />
+                          )}
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <p className="truncate text-sm font-medium">
+                            {file.name}
+                          </p>
+                        </div>
+                        <Badge variant="outline" className="text-[10px]">
+                          {isJson ? "JSON" : "XLSX"}
+                        </Badge>
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
+
+              <div
+                className={`grid grid-cols-3 gap-4 ${
+                  hasFiles ? "mt-5 border-t pt-4" : ""
+                }`}
+              >
+                <Stat
+                  label="Categorías"
+                  value={cubeSummary.categoryCount.toLocaleString("en-US")}
                 />
-                <span className="text-sm">{file.name}</span>
+                <Stat
+                  label="SKUs activos"
+                  value={cubeSummary.skus.toLocaleString("en-US")}
+                />
+                <Stat
+                  label="Ventas"
+                  value={
+                    cubeSummary.sales > 0
+                      ? formatAmount(cubeSummary.sales, EAmountType.MILLIS)
+                      : "—"
+                  }
+                />
               </div>
-            ))}
-          </div>
+
+              {cubeSummary.drivers.length > 0 && (
+                <div className="mt-5 border-t pt-4">
+                  <p className="mb-3 text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                    Drivers configurados
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {cubeSummary.drivers.map((d) => (
+                      <span
+                        key={d.key}
+                        className="inline-flex items-center gap-1.5 rounded-md border bg-muted/30 px-2 py-1 text-xs"
+                      >
+                        <span
+                          className={`h-1.5 w-1.5 rounded-full ${
+                            d.required
+                              ? "bg-emerald-500"
+                              : "bg-muted-foreground/60"
+                          }`}
+                        />
+                        {d.label}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
         )}
       </div>
     </>
   );
 };
+
+interface StatProps {
+  label: string;
+  value: string;
+}
+
+function Stat({ label, value }: StatProps) {
+  return (
+    <div>
+      <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+        {label}
+      </p>
+      <p className="mt-1 text-lg font-semibold tracking-tight tabular-nums">
+        {value}
+      </p>
+    </div>
+  );
+}
 
 export default ImportedDataPage;

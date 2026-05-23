@@ -7,6 +7,7 @@ import {
   Radar,
   RadarChart,
 } from "recharts";
+import { Legend } from "recharts";
 import { colorForCategory } from "src/lib/categoryColors";
 
 import {
@@ -23,7 +24,6 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import { Legend } from "recharts";
 
 interface CategoryPortfolio {
   category: string;

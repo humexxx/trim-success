@@ -16,12 +16,7 @@ import { Link } from "react-router-dom";
 import { PageHeader, PageWrapper } from "src/components/layout";
 import { useCube } from "src/context/hooks";
 import { ROUTES } from "src/lib/consts";
-
 import { compactCurrencyFmt, percentFmt } from "src/lib/formatters";
-
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
 
 import { GraphContainer } from "./components";
 import {
@@ -31,6 +26,10 @@ import {
   InventoryValueAddedGraph,
   InventoryValueOverSalesGraph,
 } from "../inventory-performance/components";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
+
 
 // Re-alias the shared formatter so existing local callsites
 // (`compactCurrency.format(...)`) keep working without churn.

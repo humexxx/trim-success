@@ -7,10 +7,10 @@ import { ArrowRight, Database, Laptop2 } from "lucide-react";
 import { useAuth, useCube } from "src/context/hooks";
 import { firestore, storage } from "src/lib/firebase";
 
+import { FileResolution } from "./ImportDataPage";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 
-import { FileResolution } from "./ImportDataPage";
 
 interface Props {
   handleOnFinish: () => void;

@@ -1,12 +1,12 @@
 import { PageHeader, PageWrapper } from "src/components/layout";
 import { useAuth } from "src/context/hooks";
 
-import { Card, CardContent } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import { AdminSettings } from "./Admin";
 import { UserSettings } from "./components";
 import { CubeSettings } from "./Cube";
+import { Card, CardContent } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export interface DataSet {
   id?: number;
@@ -22,7 +22,6 @@ const Page = () => {
     <PageWrapper
       title="Configuración"
       description="Ajustes del cubo, preferencias de cuenta y opciones avanzadas."
-      maxWidth="2xl"
     >
       <PageHeader
         title="Configuración"

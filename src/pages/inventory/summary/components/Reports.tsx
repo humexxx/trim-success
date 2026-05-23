@@ -6,9 +6,9 @@ import type { TDocumentDefinitions } from "pdfmake/interfaces";
 import { CardButton } from "src/components";
 import { getError } from "src/utils";
 
+import { useReportsGenerator } from "../hooks";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
-import { useReportsGenerator } from "../hooks";
 
 const Reports = () => {
   const reportsGenerator = useReportsGenerator();

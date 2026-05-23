@@ -15,7 +15,6 @@ import { useCubeSummary, useDocumentMetadata } from "src/hooks";
 import { ROUTES } from "src/lib/consts";
 import { compactCurrencyFmt, percentFmt } from "src/lib/formatters";
 
-import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 

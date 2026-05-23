@@ -19,14 +19,14 @@ import { CubeProvider, LocalThemeProvider } from "src/context";
 import { useAuth, useCube } from "src/context/hooks";
 import { ROUTES, VERSION } from "src/lib/consts";
 
-import { Separator } from "@/components/ui/separator";
-
 import {
   Header,
   Sidenav,
   SidenavLink,
   SidenavSection,
 } from "./_components";
+import { Separator } from "@/components/ui/separator";
+
 
 const dataImportRoutes = (isAdmin: boolean) =>
   [

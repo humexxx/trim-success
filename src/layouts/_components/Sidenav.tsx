@@ -1,7 +1,7 @@
 import { PropsWithChildren } from "react";
 
-import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import { Separator } from "@/components/ui/separator";
+import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 
 export const SIDENAV_WIDTH = 240;
 

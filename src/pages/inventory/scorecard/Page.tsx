@@ -14,6 +14,12 @@ import {
   updateStoringScorecardDataRow,
 } from "src/utils";
 
+import {
+  GrandTotalGrid,
+  ScorecardTableInventory,
+  ScorecardTableWarehouse,
+} from "./components";
+import { useScorecard } from "./hooks";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
   Card,
@@ -23,12 +29,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-import {
-  GrandTotalGrid,
-  ScorecardTableInventory,
-  ScorecardTableWarehouse,
-} from "./components";
-import { useScorecard } from "./hooks";
 
 const Page = () => {
   useDocumentMetadata(
@@ -116,7 +116,7 @@ const Page = () => {
 
   if (error) {
     return (
-      <PageWrapper title="Scorecard" maxWidth="2xl">
+      <PageWrapper title="Scorecard">
         <PageHeader title="Scorecard" />
         <Alert variant="destructive" className="mt-4">
           <AlertDescription>{error}</AlertDescription>
@@ -126,7 +126,7 @@ const Page = () => {
   }
 
   return (
-    <PageWrapper title="Scorecard" maxWidth="2xl">
+    <PageWrapper title="Scorecard">
       <PageHeader
         title="Scorecard financiero"
         description="Costos de almacenaje e inventario por categoría — edita drivers e investment types inline para recalcular en tiempo real."

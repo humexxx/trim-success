@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 
-import { ColumnDef } from "@tanstack/react-table";
 import { IBaseData } from "@shared/models";
+import { ColumnDef } from "@tanstack/react-table";
 
 import { DataTable } from "@/components/DataTable";
 

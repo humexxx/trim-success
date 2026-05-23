@@ -7,6 +7,7 @@ import { useAuth } from "src/context/hooks";
 import { useLocalStorage } from "src/hooks";
 import { LOCAL_STORAGE_KEYS, ROUTES } from "src/lib/consts";
 
+import { useUsers } from "../hooks";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import {
@@ -17,7 +18,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import { useUsers } from "../hooks";
 
 const AdminClientSelector = () => {
   const { users, loading } = useUsers();
