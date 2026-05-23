@@ -104,7 +104,7 @@ export default function ImportDataPage() {
         : false; // last step has its own submit button
 
   return (
-    <div className="mx-auto w-full max-w-3xl">
+    <div className="mx-auto w-full max-w-2xl">
       <Stepper
         steps={steps.map((s) => s.label)}
         activeStep={activeStep}

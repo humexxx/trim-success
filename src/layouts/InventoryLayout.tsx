@@ -208,7 +208,10 @@ function InventoryLayout() {
         </SidenavSection>
       </Sidenav>
 
-      <main className="flex-1 px-6 pt-20 lg:pl-[calc(240px+1.5rem)]">
+      {/* main is flex-1 after Sidenav (which reserves lg:w-[240px]),
+          so no extra left padding is needed. Adding pl-[240px] here
+          would double-offset and push content off-center on desktop. */}
+      <main className="flex-1 px-6 pt-20">
         {isCubeLoading ? (
           <div className="mt-4 flex items-center gap-2 text-lg">
             <Loader2 className="h-5 w-5 animate-spin" />

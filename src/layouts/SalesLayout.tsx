@@ -32,7 +32,8 @@ function SalesLayout() {
         setIsClosing={setIsClosing}
       />
 
-      <main className="flex-1 px-6 pt-20 lg:pl-[calc(240px+1.5rem)]">
+      {/* Nav flex-1 already reserves 240px; no lg:pl override here. */}
+      <main className="flex-1 px-6 pt-20">
         <div className="mx-auto max-w-7xl">
           {cube.isCubeLoading ? "Loading..." : <Outlet />}
         </div>
