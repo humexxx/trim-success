@@ -1,7 +1,6 @@
-import { Grid, Typography } from "@mui/material";
 import {
-  EDataModelParameterType,
   EDataModelParameterSubType,
+  EDataModelParameterType,
 } from "@shared/enums";
 import {
   Control,
@@ -27,54 +26,51 @@ const StoringParams = ({ register, errors, control }: Props) => {
   });
 
   return (
-    <Grid container spacing={2}>
-      <Grid size={12}>
-        <Typography color="text.secondary" variant="body1">
-          Costos
-        </Typography>
-      </Grid>
-      {parametersFieldArray.fields.map((field, index) =>
-        field.type === EDataModelParameterType.STORING &&
-        field.subType === EDataModelParameterSubType.COSTS ? (
-          <Grid size={12} key={field.id}>
-            {inputField({
-              valueType: field.valueType,
-              ...register(`parameters.${index}.value` as const, {
-                valueAsNumber: true,
-              }),
-              label: field.label,
-              error: !!errors.parameters?.[index]?.value,
-              helperText: errors.parameters?.[index]?.value?.message,
-              fullWidth: true,
-              disabled: field.autoCalculated,
-            })}
-          </Grid>
-        ) : null
-      )}
-      <Grid size={12} mt={2}>
-        <Typography color="text.secondary" variant="body1">
-          Inversiones
-        </Typography>
-      </Grid>
-      {parametersFieldArray.fields.map((field, index) =>
-        field.type === EDataModelParameterType.STORING &&
-        field.subType === EDataModelParameterSubType.INVESTMENTS ? (
-          <Grid size={12} key={field.id}>
-            {inputField({
-              valueType: field.valueType,
-              ...register(`parameters.${index}.value` as const, {
-                valueAsNumber: true,
-              }),
-              label: field.label,
-              error: !!errors.parameters?.[index]?.value,
-              helperText: errors.parameters?.[index]?.value?.message,
-              fullWidth: true,
-              disabled: field.autoCalculated,
-            })}
-          </Grid>
-        ) : null
-      )}
-    </Grid>
+    <div className="space-y-4">
+      <p className="text-sm text-muted-foreground">Costos</p>
+      <div className="space-y-3">
+        {parametersFieldArray.fields.map((field, index) =>
+          field.type === EDataModelParameterType.STORING &&
+          field.subType === EDataModelParameterSubType.COSTS ? (
+            <div key={field.id}>
+              {inputField({
+                valueType: field.valueType,
+                ...register(`parameters.${index}.value` as const, {
+                  valueAsNumber: true,
+                }),
+                label: field.label,
+                error: !!errors.parameters?.[index]?.value,
+                helperText: errors.parameters?.[index]?.value?.message,
+                fullWidth: true,
+                disabled: field.autoCalculated,
+              })}
+            </div>
+          ) : null
+        )}
+      </div>
+
+      <p className="pt-2 text-sm text-muted-foreground">Inversiones</p>
+      <div className="space-y-3">
+        {parametersFieldArray.fields.map((field, index) =>
+          field.type === EDataModelParameterType.STORING &&
+          field.subType === EDataModelParameterSubType.INVESTMENTS ? (
+            <div key={field.id}>
+              {inputField({
+                valueType: field.valueType,
+                ...register(`parameters.${index}.value` as const, {
+                  valueAsNumber: true,
+                }),
+                label: field.label,
+                error: !!errors.parameters?.[index]?.value,
+                helperText: errors.parameters?.[index]?.value?.message,
+                fullWidth: true,
+                disabled: field.autoCalculated,
+              })}
+            </div>
+          ) : null
+        )}
+      </div>
+    </div>
   );
 };
 

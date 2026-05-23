@@ -1,26 +1,16 @@
 import { useRef } from "react";
 
 import { yupResolver } from "@hookform/resolvers/yup";
-import AddIcon from "@mui/icons-material/Add";
-import DeleteIcon from "@mui/icons-material/Delete";
-import { LoadingButton } from "@mui/lab";
-import {
-  TextField,
-  List as MuiList,
-  ListItem,
-  Box,
-  Grid,
-  Typography,
-  Container,
-  RadioGroup,
-  FormControlLabel,
-  Radio,
-  IconButton,
-} from "@mui/material";
 import { IColumn } from "@shared/models";
+import { Plus, Trash2 } from "lucide-react";
 import { Controller, useForm } from "react-hook-form";
 import { AdminContent } from "src/components";
 import * as yup from "yup";
+
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 const schema = yup.object().shape({
   code: yup.string().required("Code is required"),
@@ -82,7 +72,7 @@ interface Props {
 }
 
 const AdminColumns = ({ columns }: Props) => {
-  const input = useRef<HTMLDivElement>(null);
+  const input = useRef<HTMLInputElement>(null);
   const {
     register,
     handleSubmit,
@@ -104,167 +94,152 @@ const AdminColumns = ({ columns }: Props) => {
 
   const indexType = watch("indexType", "unique");
 
-  const onSubmit = (data: {
-    name: string;
-    code: string;
-    indexType: string;
-    index?: number;
-    indexStart?: number;
-    indexEnd?: number;
-  }) => {
-    const _index =
-      data.indexType === "unique"
-        ? data.index
-        : Array.from(
-            { length: data.indexEnd! - data.indexStart! + 1 },
-            (_, i) => data.indexStart! + i
-          );
-
+  const onSubmit = () => {
+    // Add column is intentionally disabled at the UI level; this preserves
+    // the form wiring so future writes only need to flip the button + ship a
+    // mutation hook.
     reset();
-    const _data = { name: data.name, code: data.code, index: _index! };
     input.current?.focus();
   };
 
   return (
     <AdminContent>
-      <Container
-        maxWidth="md"
-        sx={{ marginLeft: 0, paddingLeft: "0 !important" }}
-      >
-        <Typography variant="h4" gutterBottom>
-          Columnas
-        </Typography>
-        <Box>
-          <MuiList>
-            {columns?.map(({ code, index, name, indexRange }, idx) => (
-              <ListItem key={code} sx={{ paddingLeft: 0, display: "flex" }}>
-                <TextField
-                  label="Nombre"
-                  value={name}
-                  sx={{ flex: 1, marginRight: 2 }}
-                />
-                <TextField
-                  label="Código"
-                  value={code}
-                  sx={{ flex: 1, marginRight: 2 }}
-                  disabled
-                />
-                <TextField
-                  label="Índice"
+      <div className="max-w-3xl">
+        <h2 className="mb-4 text-2xl font-semibold">Columnas</h2>
+
+        <ul className="space-y-3">
+          {columns?.map(({ code, index, name, indexRange }) => (
+            <li key={code} className="grid grid-cols-12 items-end gap-3">
+              <div className="col-span-4 space-y-1.5">
+                <Label>Nombre</Label>
+                <Input value={name} readOnly />
+              </div>
+              <div className="col-span-3 space-y-1.5">
+                <Label>Código</Label>
+                <Input value={code} disabled />
+              </div>
+              <div className="col-span-4 space-y-1.5">
+                <Label>Índice</Label>
+                <Input
                   value={index ? index.toString() : indexRange?.toString()}
-                  sx={{ flex: 1, marginRight: 2 }}
+                  readOnly
                 />
-                <IconButton aria-label="delete" disabled>
-                  <DeleteIcon />
-                </IconButton>
-              </ListItem>
-            ))}
-          </MuiList>
-
-          <Grid
-            component="form"
-            onSubmit={handleSubmit(onSubmit)}
-            container
-            spacing={2}
-            mt={4}
-            autoComplete="off"
-          >
-            <Grid size={12}>
-              <TextField
-                label="Nombre"
-                {...register("name")}
-                error={!!errors.name}
-                helperText={errors.name?.message}
-                fullWidth
-                inputRef={input}
-              />
-            </Grid>
-            <Grid size={12}>
-              <TextField
-                label="Código"
-                {...register("code")}
-                error={!!errors.code}
-                helperText={errors.code?.message}
-                fullWidth
+              </div>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
                 disabled
-              />
-            </Grid>
-            <Grid size={12}>
-              <Controller
-                rules={{ required: true }}
-                control={control}
-                name="indexType"
-                render={({ field }) => (
-                  <RadioGroup row {...field}>
-                    <FormControlLabel
-                      value="unique"
-                      control={<Radio />}
-                      label="Único"
-                    />
-                    <FormControlLabel
-                      value="range"
-                      control={<Radio />}
-                      label="Rango"
-                    />
-                  </RadioGroup>
-                )}
-              />
-            </Grid>
-
-            {indexType === "unique" && (
-              <Grid size={12}>
-                <TextField
-                  type="number"
-                  label="Índice"
-                  {...register("index")}
-                  error={!!errors.index}
-                  helperText={errors.index?.message}
-                  fullWidth
-                  inputProps={{ min: 0 }}
-                />
-              </Grid>
-            )}
-            {indexType === "range" && (
-              <>
-                <Grid size={6}>
-                  <TextField
-                    type="number"
-                    label="Índice Inicio"
-                    {...register("indexStart")}
-                    error={!!errors.indexStart}
-                    helperText={errors.indexStart?.message}
-                    fullWidth
-                    inputProps={{ min: 0 }}
-                  />
-                </Grid>
-                <Grid size={6}>
-                  <TextField
-                    type="number"
-                    label="Índice Fin"
-                    {...register("indexEnd")}
-                    error={!!errors.indexEnd}
-                    helperText={errors.indexEnd?.message}
-                    fullWidth
-                    inputProps={{ min: 0 }}
-                  />
-                </Grid>
-              </>
-            )}
-
-            <Grid minHeight="100%" display="flex" alignItems="end">
-              <LoadingButton
-                type="submit"
-                variant="contained"
-                sx={{ mb: 3 }}
-                startIcon={<AddIcon />}
-                disabled
+                aria-label="Eliminar columna"
               >
-                Agregar
-              </LoadingButton>
-            </Grid>
-          </Grid>
-        </Box>
-      </Container>
+                <Trash2 />
+              </Button>
+            </li>
+          ))}
+        </ul>
+
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="mt-8 space-y-4"
+          autoComplete="off"
+        >
+          <div className="space-y-1.5">
+            <Label htmlFor="admin-col-name">Nombre</Label>
+            <Input id="admin-col-name" {...register("name")} ref={input} />
+            {errors.name && (
+              <p className="text-xs text-destructive">{errors.name.message}</p>
+            )}
+          </div>
+
+          <div className="space-y-1.5">
+            <Label htmlFor="admin-col-code">Código</Label>
+            <Input id="admin-col-code" {...register("code")} disabled />
+            {errors.code && (
+              <p className="text-xs text-destructive">{errors.code.message}</p>
+            )}
+          </div>
+
+          <Controller
+            control={control}
+            name="indexType"
+            render={({ field }) => (
+              <RadioGroup
+                value={field.value}
+                onValueChange={field.onChange}
+                className="flex gap-6"
+              >
+                <div className="flex items-center gap-2">
+                  <RadioGroupItem value="unique" id="rg-unique" />
+                  <Label htmlFor="rg-unique" className="font-normal">
+                    Único
+                  </Label>
+                </div>
+                <div className="flex items-center gap-2">
+                  <RadioGroupItem value="range" id="rg-range" />
+                  <Label htmlFor="rg-range" className="font-normal">
+                    Rango
+                  </Label>
+                </div>
+              </RadioGroup>
+            )}
+          />
+
+          {indexType === "unique" && (
+            <div className="space-y-1.5">
+              <Label htmlFor="admin-col-index">Índice</Label>
+              <Input
+                id="admin-col-index"
+                type="number"
+                min={0}
+                {...register("index")}
+              />
+              {errors.index && (
+                <p className="text-xs text-destructive">
+                  {errors.index.message}
+                </p>
+              )}
+            </div>
+          )}
+
+          {indexType === "range" && (
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-1.5">
+                <Label htmlFor="admin-col-start">Índice Inicio</Label>
+                <Input
+                  id="admin-col-start"
+                  type="number"
+                  min={0}
+                  {...register("indexStart")}
+                />
+                {errors.indexStart && (
+                  <p className="text-xs text-destructive">
+                    {errors.indexStart.message}
+                  </p>
+                )}
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="admin-col-end">Índice Fin</Label>
+                <Input
+                  id="admin-col-end"
+                  type="number"
+                  min={0}
+                  {...register("indexEnd")}
+                />
+                {errors.indexEnd && (
+                  <p className="text-xs text-destructive">
+                    {errors.indexEnd.message}
+                  </p>
+                )}
+              </div>
+            </div>
+          )}
+
+          <Button type="submit" disabled>
+            <Plus />
+            Agregar
+          </Button>
+        </form>
+      </div>
     </AdminContent>
   );
 };

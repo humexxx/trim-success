@@ -1,4 +1,3 @@
-import { Typography, Box, List, ListItem, ListItemText } from "@mui/material";
 import { IDriver } from "@shared/models";
 
 interface Props {
@@ -7,18 +6,16 @@ interface Props {
 
 const Drivers = ({ drivers }: Props) => {
   return (
-    <Box sx={{ padding: 4 }}>
-      <Typography variant="h4" component="h1" gutterBottom>
-        Drivers
-      </Typography>
-      <List disablePadding>
+    <section className="p-4">
+      <h2 className="mb-3 text-2xl font-semibold">Drivers</h2>
+      <ul className="divide-y divide-border rounded-md border">
         {drivers?.map((driver, index) => (
-          <ListItem key={index}>
-            <ListItemText primary={driver.label} />
-          </ListItem>
+          <li key={index} className="px-4 py-2 text-sm">
+            {driver.label}
+          </li>
         ))}
-      </List>
-    </Box>
+      </ul>
+    </section>
   );
 };
 

@@ -1,4 +1,3 @@
-import { Typography, Box, List, ListItem, ListItemText } from "@mui/material";
 import { IColumn } from "@shared/models";
 
 interface Props {
@@ -7,18 +6,16 @@ interface Props {
 
 const Columns = ({ columns }: Props) => {
   return (
-    <Box sx={{ padding: 4 }}>
-      <Typography variant="h4" component="h1" gutterBottom>
-        Columns
-      </Typography>
-      <List disablePadding>
+    <section className="p-4">
+      <h2 className="mb-3 text-2xl font-semibold">Columns</h2>
+      <ul className="divide-y divide-border rounded-md border">
         {columns?.map(({ name }, index) => (
-          <ListItem key={index}>
-            <ListItemText primary={name} />
-          </ListItem>
+          <li key={index} className="px-4 py-2 text-sm">
+            {name}
+          </li>
         ))}
-      </List>
-    </Box>
+      </ul>
+    </section>
   );
 };
 

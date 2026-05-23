@@ -1,43 +1,60 @@
-import { forwardRef } from "react";
+import { forwardRef, InputHTMLAttributes } from "react";
 
-import { TextFieldProps, TextField } from "@mui/material";
 import { IMaskInput } from "react-imask";
 
-interface CustomProps {
-  onChange: (event: { target: { name: string; value: string } }) => void;
-  name: string;
+import { Label } from "@/components/ui/label";
+import { cn } from "@/lib/utils";
+
+interface Props
+  extends Omit<InputHTMLAttributes<HTMLInputElement>, "size" | "onChange"> {
+  label?: string;
+  error?: boolean;
+  helperText?: string;
+  fullWidth?: boolean;
+  onChange?: (event: { target: { name: string; value: string } }) => void;
 }
 
-const CostaRicaPhoneMask = forwardRef<HTMLInputElement, CustomProps>(
-  function CostaRicaPhoneMask(props, ref) {
-    const { onChange, ...other } = props;
-    return (
+const PhoneField = forwardRef<HTMLInputElement, Props>(function PhoneField(
+  { label, error, helperText, fullWidth, className, id, name, onChange, value, ...props },
+  ref
+) {
+  const inputId = id ?? name;
+  return (
+    <div className={cn(fullWidth && "w-full", "space-y-1.5")}>
+      {label && (
+        <Label htmlFor={inputId} className={error ? "text-destructive" : undefined}>
+          {label}
+        </Label>
+      )}
       <IMaskInput
-        {...other}
-        mask="0000-0000"
-        inputRef={ref}
-        onAccept={(value: any) =>
-          onChange({ target: { name: props.name, value } })
-        }
-        overwrite
-      />
-    );
-  }
-);
-
-const PhoneField = forwardRef<HTMLInputElement, TextFieldProps>(
-  function PhoneField(props, ref) {
-    return (
-      <TextField
         {...props}
+        name={name}
+        value={value as string | undefined}
+        mask="0000-0000"
+        overwrite
         inputRef={ref}
-        InputProps={{
-          inputComponent: CostaRicaPhoneMask as any,
-          ...props.InputProps,
-        }}
+        onAccept={(val: string) =>
+          onChange?.({ target: { name: name ?? "", value: val } })
+        }
+        className={cn(
+          "flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
+          error && "border-destructive",
+          className
+        )}
+        id={inputId}
       />
-    );
-  }
-);
+      {helperText && (
+        <p
+          className={cn(
+            "text-xs",
+            error ? "text-destructive" : "text-muted-foreground"
+          )}
+        >
+          {helperText}
+        </p>
+      )}
+    </div>
+  );
+});
 
 export default PhoneField;

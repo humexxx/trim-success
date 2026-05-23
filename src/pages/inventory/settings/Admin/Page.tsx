@@ -1,4 +1,3 @@
-import { Box } from "@mui/material";
 import { COLUMNS } from "@shared/consts";
 import { AdminGuard } from "src/components";
 import { useDocumentMetadata } from "src/hooks";
@@ -10,9 +9,9 @@ const Page = () => {
 
   return (
     <AdminGuard>
-      <Box sx={{ padding: 4 }}>
+      <div className="p-6">
         <AdminColumns columns={COLUMNS} />
-      </Box>
+      </div>
     </AdminGuard>
   );
 };

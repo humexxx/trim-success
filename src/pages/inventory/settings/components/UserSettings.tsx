@@ -1,21 +1,26 @@
 import { useEffect, useState } from "react";
 
 import { yupResolver } from "@hookform/resolvers/yup";
-import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-import SaveIcon from "@mui/icons-material/Save";
-import { LoadingButton } from "@mui/lab";
-import { Container } from "@mui/material";
-import Avatar from "@mui/material/Avatar";
-import Box from "@mui/material/Box";
-import TextField from "@mui/material/TextField";
-import Typography from "@mui/material/Typography";
 import { doc, getDoc, setDoc } from "firebase/firestore";
+import { Save, UserCircle2 } from "lucide-react";
 import { useForm, Controller, SubmitHandler } from "react-hook-form";
 import { PhoneField } from "src/components/form";
 import { useAuth } from "src/context/hooks";
-import { firestore } from "src/lib/firebase";
 import { useDocumentMetadata } from "src/hooks";
+import { firestore } from "src/lib/firebase";
 import * as yup from "yup";
+
+import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 
 const schema = yup.object().shape({
   name: yup.string().required("Nombre requerido"),
@@ -34,23 +39,13 @@ export default function UserPage() {
   const user = useAuth();
   const [isLoading, setIsLoading] = useState(false);
 
-  const {
-    handleSubmit,
-    control,
-    formState: { errors },
-    setValue,
-  } = useForm<FormInputs>({
+  const form = useForm<FormInputs>({
     resolver: yupResolver(schema),
-    defaultValues: {
-      name: "",
-      phone: "",
-      description: "",
-    },
+    defaultValues: { name: "", phone: "", description: "" },
   });
 
   const onSubmit: SubmitHandler<FormInputs> = async (data) => {
     setIsLoading(true);
-
     try {
       const docRef = doc(firestore, "users", user.currentUser!.uid);
       await setDoc(docRef, data, { merge: true });
@@ -70,93 +65,82 @@ export default function UserPage() {
 
       if (docSnap.exists()) {
         const data = docSnap.data() as FormInputs;
-
-        setValue("name", data.name);
-        setValue("phone", data.phone);
-        setValue("description", data.description);
+        form.setValue("name", data.name);
+        form.setValue("phone", data.phone);
+        form.setValue("description", data.description);
       }
       setIsLoading(false);
     };
 
     loadUserData();
-  }, [setValue, user.currentUser]);
+  }, [form, user.currentUser]);
 
   return (
-    <Container maxWidth="sm">
-      <Box display="flex" alignItems="center">
-        <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
-          <AccountCircleIcon />
-        </Avatar>
-        <Typography ml={1} component="h1" variant="h5">
-          Información de Usuario
-        </Typography>
-      </Box>
-      <Box
-        component="form"
-        onSubmit={handleSubmit(onSubmit)}
-        noValidate
-        sx={{ my: 4 }}
-      >
-        <Controller
-          name="name"
-          control={control}
-          render={({ field }) => (
-            <TextField
-              {...field}
-              margin="dense"
-              fullWidth
-              label="Nombre"
-              autoFocus
-              error={!!errors.name}
-              helperText={errors.name ? errors.name.message : " "}
-              disabled={isLoading}
-            />
-          )}
-        />
-        <Controller
-          name="phone"
-          control={control}
-          render={({ field }) => (
-            <PhoneField
-              {...field}
-              label="Teléfono"
-              margin="dense"
-              fullWidth
-              error={!!errors.phone}
-              helperText={errors.phone ? errors.phone.message : " "}
-              disabled={isLoading}
-            />
-          )}
-        />
-        <Controller
-          name="description"
-          control={control}
-          render={({ field }) => (
-            <TextField
-              {...field}
-              margin="dense"
-              fullWidth
-              label="Descripción"
-              multiline
-              rows={2}
-              error={!!errors.description}
-              helperText={errors.description ? errors.description.message : " "}
-              disabled={isLoading}
-            />
-          )}
-        />
-        <Box display="flex" justifyContent="flex-end">
-          <LoadingButton
-            type="submit"
-            variant="contained"
-            sx={{ mt: 3, mb: 2 }}
-            loading={isLoading}
-            startIcon={<SaveIcon />}
-          >
-            Salvar
-          </LoadingButton>
-        </Box>
-      </Box>
-    </Container>
+    <div className="mx-auto w-full max-w-md">
+      <div className="flex items-center gap-3">
+        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-secondary text-secondary-foreground">
+          <UserCircle2 className="h-5 w-5" />
+        </div>
+        <h1 className="text-xl font-semibold">Información de Usuario</h1>
+      </div>
+
+      <Form {...form}>
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          noValidate
+          className="my-6 space-y-4"
+        >
+          <FormField
+            control={form.control}
+            name="name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Nombre</FormLabel>
+                <FormControl>
+                  <Input autoFocus disabled={isLoading} {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <Controller
+            control={form.control}
+            name="phone"
+            render={({ field, fieldState }) => (
+              <PhoneField
+                label="Teléfono"
+                fullWidth
+                error={!!fieldState.error}
+                helperText={fieldState.error?.message}
+                disabled={isLoading}
+                {...field}
+              />
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="description"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Descripción</FormLabel>
+                <FormControl>
+                  <Textarea rows={2} disabled={isLoading} {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <div className="flex justify-end pt-2">
+            <Button type="submit" loading={isLoading}>
+              <Save />
+              Salvar
+            </Button>
+          </div>
+        </form>
+      </Form>
+    </div>
   );
 }
