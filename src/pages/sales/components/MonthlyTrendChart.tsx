@@ -9,6 +9,7 @@ import {
   YAxis,
 } from "recharts";
 import { colorForCategory } from "src/lib/categoryColors";
+import { compactCurrencyFmt } from "src/lib/formatters";
 
 import {
   Card,
@@ -111,12 +112,9 @@ export function MonthlyTrendChart({ byCategory }: Props) {
     [sortedCategories, allCategoryNames]
   );
 
-  const fmt = new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    notation: "compact",
-    maximumFractionDigits: 1,
-  });
+  // Use the shared module-scope formatter — Intl construction is
+  // non-trivial so we don't want a fresh one each render.
+  const fmt = compactCurrencyFmt;
 
   const totalRange = data.reduce((acc, row) => {
     sortedCategories.forEach((c) => {

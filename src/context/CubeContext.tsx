@@ -3,6 +3,7 @@ import {
   ReactNode,
   useCallback,
   useEffect,
+  useMemo,
   useState,
 } from "react";
 
@@ -165,23 +166,39 @@ export function CubeProvider({ children, onCubeLoadError }: Props) {
     return response.data;
   }, [currentUser, customUser, isAdmin]);
 
-  const value: CubeContextType = {
-    hasInitialData,
-    setHasInitialData,
-    isCubeLoading: loading,
+  // Memoize the context value so consumers only re-render when one of
+  // the actual underlying pieces changes. Without this, every render of
+  // CubeProvider creates a fresh `value` object and forces a re-render
+  // of every component reading from this context.
+  const value: CubeContextType = useMemo(
+    () => ({
+      hasInitialData,
+      setHasInitialData,
+      isCubeLoading: loading,
 
-    getFiles,
-    fileData,
-    setFileData,
+      getFiles,
+      fileData,
+      setFileData,
 
-    data,
-    setData,
+      data,
+      setData,
 
-    reloadCubeData: loadCubeData,
+      reloadCubeData: loadCubeData,
 
-    initCube,
-    removeCube,
-  };
+      initCube,
+      removeCube,
+    }),
+    [
+      hasInitialData,
+      loading,
+      getFiles,
+      fileData,
+      data,
+      loadCubeData,
+      initCube,
+      removeCube,
+    ]
+  );
 
   return (
     <CubeContext.Provider value={value}>

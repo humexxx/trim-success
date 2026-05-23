@@ -113,10 +113,10 @@ const MainGrid = () => {
           ] === filters.category
       );
     }
-    if (filters.expetedValue) {
+    if (filters.expectedValue) {
       _rows = _rows.filter((row) => {
         const ev = row[getColumn(ESystemColumnType.EV)!.code!] as number;
-        return filters.expetedValue === "positive" ? ev > 0 : ev < 0;
+        return filters.expectedValue === "positive" ? ev > 0 : ev < 0;
       });
     }
 

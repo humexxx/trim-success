@@ -42,26 +42,28 @@ const CardButton = ({
       )}
     >
       {loading && (
-        <Loader2 className="absolute right-4 top-4 h-5 w-5 animate-spin" />
+        <Loader2
+          className="absolute right-4 top-4 h-5 w-5 animate-spin"
+          aria-label="Cargando"
+        />
       )}
       {error && (
-        <span className="absolute right-4 top-4 text-xs text-destructive">
+        <span
+          role="alert"
+          className="absolute right-4 top-4 text-xs text-destructive"
+        >
           {error}
         </span>
       )}
       <CardContent className="flex flex-col items-start gap-2 p-6 text-left">
-        <div className="rounded-md border bg-muted/30 p-2 text-foreground">
+        <div
+          aria-hidden="true"
+          className="rounded-md border bg-muted/30 p-2 text-foreground"
+        >
           {icon}
         </div>
         <h3 className="text-base font-semibold">{label}</h3>
-        <p
-          className={cn(
-            "text-sm",
-            isInactive ? "text-muted-foreground" : "text-muted-foreground"
-          )}
-        >
-          {description}
-        </p>
+        <p className="text-sm text-muted-foreground">{description}</p>
       </CardContent>
     </Card>
   );

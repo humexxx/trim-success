@@ -13,6 +13,7 @@ import { PageHeader } from "src/components/layout";
 import { useAuth } from "src/context/hooks";
 import { useCubeSummary, useDocumentMetadata } from "src/hooks";
 import { ROUTES } from "src/lib/consts";
+import { compactCurrencyFmt, percentFmt } from "src/lib/formatters";
 
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -133,17 +134,8 @@ function ModuleCard({
   );
 }
 
-const compactCurrency = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-  notation: "compact",
-  maximumFractionDigits: 1,
-});
-const percentFmt = new Intl.NumberFormat("en-US", {
-  style: "percent",
-  minimumFractionDigits: 1,
-  maximumFractionDigits: 1,
-});
+// Local alias for the legacy `compactCurrency` name used in this file.
+const compactCurrency = compactCurrencyFmt;
 
 const ModuleSelector = () => {
   const { currentUser } = useAuth();

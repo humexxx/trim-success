@@ -47,11 +47,15 @@ export const removeCubeData = functions.https.onCall<ICallableRequest>(
         .collection(FIRESTORE_PATHS.SETTINGS.INDEX(uid))
         .get();
 
-      collection.forEach((doc) => doc.ref.delete());
+      // forEach + .delete() fires-and-forgets — the function would
+      // return success before the deletes finish. Await them all.
+      await Promise.all(collection.docs.map((doc) => doc.ref.delete()));
 
       return { success: true };
     } catch (error) {
-      return { error };
+      // Don't leak raw Firebase/Node error objects to the client.
+      functions.logger.error("removeCubeData failed", error);
+      return { error: "Failed to remove cube data" };
     }
   }
 );

@@ -13,7 +13,7 @@ import { cn } from "@/lib/utils";
 
 export interface IFilterCriteria {
   category: string;
-  expetedValue?: "positive" | "negative";
+  expectedValue?: "positive" | "negative";
 }
 
 interface Props {
@@ -64,17 +64,17 @@ const Filters = ({ filters, setFilters }: Props) => {
         >
           <Button
             type="button"
-            variant={filters?.expetedValue === "positive" ? "default" : "ghost"}
+            variant={filters?.expectedValue === "positive" ? "default" : "ghost"}
             className={cn(
               "rounded-none border-r",
-              filters?.expetedValue === "positive" &&
+              filters?.expectedValue === "positive" &&
                 "bg-emerald-600 hover:bg-emerald-600/90"
             )}
             onClick={() =>
               setFilters((prev) => ({
                 ...prev,
-                expetedValue:
-                  prev.expetedValue === "positive" ? undefined : "positive",
+                expectedValue:
+                  prev.expectedValue === "positive" ? undefined : "positive",
               }))
             }
           >
@@ -82,16 +82,16 @@ const Filters = ({ filters, setFilters }: Props) => {
           </Button>
           <Button
             type="button"
-            variant={filters?.expetedValue === "negative" ? "default" : "ghost"}
+            variant={filters?.expectedValue === "negative" ? "default" : "ghost"}
             className={cn(
               "rounded-none",
-              filters?.expetedValue === "negative" && "bg-destructive hover:bg-destructive/90"
+              filters?.expectedValue === "negative" && "bg-destructive hover:bg-destructive/90"
             )}
             onClick={() =>
               setFilters((prev) => ({
                 ...prev,
-                expetedValue:
-                  prev.expetedValue === "negative" ? undefined : "negative",
+                expectedValue:
+                  prev.expectedValue === "negative" ? undefined : "negative",
               }))
             }
           >

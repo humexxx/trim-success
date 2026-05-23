@@ -14,6 +14,11 @@ import { PageHeader, PageWrapper } from "src/components/layout";
 import { useCube } from "src/context/hooks";
 import { useDocumentMetadata } from "src/hooks";
 import { ROUTES } from "src/lib/consts";
+import {
+  compactCurrencyFmt,
+  currencyFmt,
+  percentFmt,
+} from "src/lib/formatters";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -39,24 +44,6 @@ import { cn } from "@/lib/utils";
 import { MetricBarChart } from "../inventory/inventory-performance/components/MetricBarChart";
 
 import { MonthlyTrendChart, PortfolioRadar } from "./components";
-
-const currencyFmt = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-  minimumFractionDigits: 0,
-  maximumFractionDigits: 0,
-});
-const compactCurrencyFmt = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-  notation: "compact",
-  maximumFractionDigits: 1,
-});
-const percentFmt = new Intl.NumberFormat("en-US", {
-  style: "percent",
-  minimumFractionDigits: 1,
-  maximumFractionDigits: 1,
-});
 
 interface KpiCardProps {
   label: string;
@@ -146,7 +133,7 @@ const SalesMainPage = () => {
     // Skeleton mirrors the real layout: KPI strip + two equal chart
     // cards, so the page doesn't jump when data arrives.
     return (
-      <PageWrapper title="Ventas" maxWidth="2xl">
+      <PageWrapper title="Ventas">
         <PageHeader
           title="Resumen de ventas"
           description="Comportamiento comercial por categoría — KPIs, tendencia mensual y portafolio."
@@ -181,7 +168,7 @@ const SalesMainPage = () => {
 
   if (!summary || summary.totalSales === 0) {
     return (
-      <PageWrapper title="Ventas" maxWidth="2xl">
+      <PageWrapper title="Ventas">
         <PageHeader
           title="Ventas"
           description="Resumen del comportamiento comercial por categoría"
@@ -219,7 +206,7 @@ const SalesMainPage = () => {
   ];
 
   return (
-    <PageWrapper title="Ventas" maxWidth="2xl">
+    <PageWrapper title="Ventas">
       <PageHeader
         title="Resumen de ventas"
         description="Comportamiento comercial por categoría — KPIs, tendencia mensual y portafolio."
