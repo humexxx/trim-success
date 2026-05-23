@@ -1,8 +1,11 @@
 import { useMemo } from "react";
 
-import { GridColDef } from "@mui/x-data-grid";
+import { ColumnDef } from "@tanstack/react-table";
 import { IBaseData } from "@shared/models";
-import { StripedDataGrid } from "src/components";
+
+import { DataTable } from "@/components/DataTable";
+
+type Row = IBaseData["driversData"]["rows"][number];
 
 interface Props {
   data?: IBaseData["driversData"];
@@ -10,35 +13,30 @@ interface Props {
 }
 
 const DriversTable = ({ data, categories }: Props) => {
-  const columns: GridColDef[] = useMemo(() => {
-    const columns: GridColDef[] = [
+  const rows = useMemo(() => data?.rows ?? [], [data]);
+
+  const columns = useMemo<ColumnDef<Row>[]>(() => {
+    return [
       {
-        field: "driver",
-        headerName: "Driver",
-        valueFormatter: (value) => `% ${value}`,
-        minWidth: 150,
-        flex: 1,
+        accessorKey: "driver",
+        header: "Driver",
+        cell: ({ getValue }) => `% ${getValue() as string}`,
       },
-      ...categories.sort().map((category) => {
-        return {
-          field: category,
-          type: "number",
-          width: 150,
-          valueFormatter: (value) => `${Math.round(value * 100)}%`,
-        } as GridColDef;
-      }),
+      ...[...categories]
+        .sort()
+        .map<ColumnDef<Row>>((category) => ({
+          accessorKey: category,
+          header: category,
+          cell: ({ getValue }) => {
+            const raw = getValue() as number | undefined;
+            if (raw == null) return "-";
+            return `${Math.round(raw * 100)}%`;
+          },
+        })),
     ];
-    return columns;
   }, [categories]);
 
-  return (
-    <StripedDataGrid
-      getRowId={(row) => row.driver}
-      aria-label="Drivers table"
-      columns={columns}
-      rows={data?.rows ?? []}
-    />
-  );
+  return <DataTable data={rows} columns={columns} />;
 };
 
 export default DriversTable;

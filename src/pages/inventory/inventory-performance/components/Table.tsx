@@ -1,20 +1,21 @@
 import { useMemo } from "react";
 
-import { GridColDef } from "@mui/x-data-grid";
+import { ColumnDef } from "@tanstack/react-table";
 import { EInventoryPerformaceMetricType } from "@shared/enums/EInventoryPerformaceMetricType";
 import {
   IInventoryPerformanceData,
   IIventoryPerformanceMetric,
 } from "@shared/models";
 import { formatValue, roundToDecimals } from "@shared/utils";
-import { StripedDataGrid } from "src/components";
+
+import { DataTable } from "@/components/DataTable";
 
 interface Props {
   data: IInventoryPerformanceData;
   categories: string[];
 }
 
-function colValueFormatter(value: number, row: IIventoryPerformanceMetric) {
+function formatCell(value: number, row: IIventoryPerformanceMetric) {
   switch (row.key) {
     case EInventoryPerformaceMetricType.ROTACION:
     case EInventoryPerformaceMetricType.INVENTORY_MONTHLY:
@@ -27,39 +28,29 @@ function colValueFormatter(value: number, row: IIventoryPerformanceMetric) {
 }
 
 const Table = ({ data, categories }: Props) => {
-  const columns: GridColDef[] = useMemo(
+  const columns = useMemo<ColumnDef<IIventoryPerformanceMetric>[]>(
     () => [
-      { field: "label", headerName: "", flex: 1, minWidth: 150 },
-      { field: "description", headerName: "", flex: 1, minWidth: 150 },
-      ...categories.sort().map(
-        (category) =>
-          ({
-            field: category,
-            headerName: category,
-            width: 200,
-            valueFormatter: colValueFormatter,
-          }) as GridColDef
+      { accessorKey: "label", header: "" },
+      { accessorKey: "description", header: "" },
+      ...[...categories].sort().map<ColumnDef<IIventoryPerformanceMetric>>(
+        (category) => ({
+          accessorKey: category,
+          header: category,
+          cell: ({ getValue, row }) =>
+            formatCell(getValue() as number, row.original),
+        })
       ),
       {
-        field: "total",
-        headerName: "Costo Totales",
-        width: 150,
-        valueFormatter: colValueFormatter,
+        accessorKey: "total",
+        header: "Costo Totales",
+        cell: ({ getValue, row }) =>
+          formatCell(getValue() as number, row.original),
       },
     ],
     [categories]
   );
 
-  return (
-    <StripedDataGrid
-      getRowId={(row) => row.label}
-      aria-label="Rendimiento de Inventario"
-      columns={columns}
-      rows={data.rows}
-      disableColumnMenu
-      hideFooter
-    />
-  );
+  return <DataTable data={data.rows} columns={columns} />;
 };
 
 export default Table;
