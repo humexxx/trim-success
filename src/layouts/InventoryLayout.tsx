@@ -1,49 +1,44 @@
 import { useCallback, useState } from "react";
 
-import DashboardIcon from "@mui/icons-material/Dashboard";
-import DescriptionOutlinedIcon from "@mui/icons-material/DescriptionOutlined";
-import DownloadIcon from "@mui/icons-material/Download";
-import Filter1OutlinedIcon from "@mui/icons-material/Filter1Outlined";
-import Filter2OutlinedIcon from "@mui/icons-material/Filter2Outlined";
-import Filter3OutlinedIcon from "@mui/icons-material/Filter3Outlined";
-import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
-import SettingsIcon from "@mui/icons-material/Settings";
-import SmartToyIcon from "@mui/icons-material/SmartToy";
-import SpeedIcon from "@mui/icons-material/Speed";
-import ViewModuleIcon from "@mui/icons-material/ViewModule";
 import {
-  Box,
-  Toolbar,
-  Divider,
-  List,
-  ListItem,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
-  Typography,
-  CircularProgress,
-} from "@mui/material";
-import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
+  ChartLine,
+  Download,
+  FileText,
+  Filter,
+  LayoutDashboard,
+  Loader2,
+  Settings,
+  Sparkles,
+  TestTubeDiagonal,
+  UserCog,
+  Users,
+} from "lucide-react";
+import { Outlet, useNavigate } from "react-router-dom";
 import { PrivateRoute } from "src/components";
-import { LocalThemeProvider, CubeProvider } from "src/context";
-import { useAuth, useCube, useLocalTheme } from "src/context/hooks";
-import { EThemeType } from "src/enums";
+import { CubeProvider, LocalThemeProvider } from "src/context";
+import { useAuth, useCube } from "src/context/hooks";
 import { ROUTES, VERSION } from "src/lib/consts";
 
-import { Header, Sidenav } from "./_components";
-import { SIDENAV_WIDTH } from "./_components/Sidenav";
+import { Separator } from "@/components/ui/separator";
+
+import {
+  Header,
+  Sidenav,
+  SidenavLink,
+  SidenavSection,
+} from "./_components";
 
 const dataImportRoutes = (isAdmin: boolean) =>
   [
     {
       admin: true,
       text: "Impersonar",
-      icon: <PeopleAltIcon fontSize="small" />,
+      icon: <Users className="h-4 w-4" />,
       path: "/inventory/admin/impersonate",
     },
     {
       text: "Importar",
-      icon: <DownloadIcon fontSize="small" />,
+      icon: <Download className="h-4 w-4" />,
       path: "/inventory/import",
       requireContextUid: true,
     },
@@ -52,13 +47,13 @@ const dataImportRoutes = (isAdmin: boolean) =>
 const dataVisualizationsRoutes = [
   {
     text: "Panel",
-    icon: <DashboardIcon fontSize="small" />,
+    icon: <LayoutDashboard className="h-4 w-4" />,
     path: "/inventory/dashboard",
     requireInitialData: true,
   },
   {
     text: "Generales",
-    icon: <DescriptionOutlinedIcon fontSize="small" />,
+    icon: <FileText className="h-4 w-4" />,
     path: "/inventory/general-data",
     requireInitialData: true,
   },
@@ -67,19 +62,19 @@ const dataVisualizationsRoutes = [
 const dataAnalyticsRoutes = [
   {
     text: "Data Mining",
-    icon: <Filter1OutlinedIcon fontSize="small" />,
+    icon: <Filter className="h-4 w-4" />,
     path: ROUTES.INVENTORY.DATA_MINING,
     requireInitialData: true,
   },
   {
     text: "Scorecard",
-    icon: <Filter2OutlinedIcon fontSize="small" />,
+    icon: <ChartLine className="h-4 w-4" />,
     path: "/inventory/scorecard",
     requireInitialData: true,
   },
   {
     text: "Inventario",
-    icon: <Filter3OutlinedIcon fontSize="small" />,
+    icon: <UserCog className="h-4 w-4" />,
     path: "/inventory/inventory-performance",
     requireInitialData: true,
   },
@@ -89,7 +84,7 @@ const secondaryRoutes = (isAdmin: boolean) => {
   return [
     {
       text: "IA",
-      icon: <SmartToyIcon fontSize="small" />,
+      icon: <Sparkles className="h-4 w-4" />,
       path: "/inventory/ai",
       requireInitialData: true,
       disabled: true,
@@ -97,7 +92,7 @@ const secondaryRoutes = (isAdmin: boolean) => {
     {
       admin: true,
       text: "Testing",
-      icon: <SpeedIcon fontSize="small" />,
+      icon: <TestTubeDiagonal className="h-4 w-4" />,
       requireInitialData: true,
       path: "/inventory/admin/testing",
     },
@@ -108,12 +103,8 @@ function InventoryLayout() {
   const [isClosing, setIsClosing] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
 
-  const cube = useCube();
-
-  const themeContext = useLocalTheme();
   const { hasInitialData, isCubeLoading } = useCube();
   const { isAdmin, customUser } = useAuth();
-  const location = useLocation();
 
   const handleDrawerToggle = () => {
     if (!isClosing) {
@@ -122,13 +113,7 @@ function InventoryLayout() {
   };
 
   return (
-    <Box
-      sx={{
-        display: "flex",
-        bgcolor:
-          themeContext.theme === EThemeType.LIGHT ? "#fafafa" : "#212121",
-      }}
-    >
+    <div className="flex min-h-screen bg-background">
       <Header handleDrawerToggle={handleDrawerToggle} />
       <Sidenav
         title="Inventory"
@@ -137,160 +122,103 @@ function InventoryLayout() {
         setIsMobileOpen={setIsMobileOpen}
         setIsClosing={setIsClosing}
       >
-        <List dense>
-          <ListItem>
-            <ListItemButton
-              sx={{
-                borderRadius: 2,
-              }}
-              selected={location.pathname.includes(ROUTES.MODULE_SELECTOR)}
-              component={NavLink}
-              to={ROUTES.MODULE_SELECTOR}
-            >
-              <ListItemIcon>
-                <ViewModuleIcon fontSize="small" />
-              </ListItemIcon>
-              <ListItemText primary={"Modulos"} />
-            </ListItemButton>
-          </ListItem>
-        </List>
-        <Divider />
+        <SidenavSection>
+          <SidenavLink
+            to={ROUTES.MODULE_SELECTOR}
+            icon={<LayoutDashboard className="h-4 w-4" />}
+          >
+            Modulos
+          </SidenavLink>
+        </SidenavSection>
 
-        <List dense>
-          <ListItem>
-            <Typography variant="caption" ml={2}>
-              Data Import
-            </Typography>
-          </ListItem>
+        <Separator />
+
+        <SidenavSection label="Data Import">
           {dataImportRoutes(isAdmin).map(
             ({ text, icon, path, requireContextUid }) => (
-              <ListItem key={text}>
-                <ListItemButton
-                  sx={{ borderRadius: 2 }}
-                  selected={location.pathname.includes(path)}
-                  component={NavLink}
-                  to={path}
-                  disabled={requireContextUid && isAdmin && !customUser?.uid}
-                >
-                  <ListItemIcon>{icon}</ListItemIcon>
-                  <ListItemText primary={text} />
-                </ListItemButton>
-              </ListItem>
+              <SidenavLink
+                key={text}
+                to={path}
+                icon={icon}
+                disabled={requireContextUid && isAdmin && !customUser?.uid}
+              >
+                {text}
+              </SidenavLink>
             )
           )}
-        </List>
+        </SidenavSection>
 
-        <List dense>
-          <ListItem>
-            <Typography variant="caption" ml={2}>
-              Resumen
-            </Typography>
-          </ListItem>
+        <SidenavSection label="Resumen">
           {dataVisualizationsRoutes.map(
             ({ text, icon, path, requireInitialData }) => (
-              <ListItem key={text}>
-                <ListItemButton
-                  sx={{ borderRadius: 2 }}
-                  selected={location.pathname.includes(path)}
-                  component={NavLink}
-                  to={path}
-                  disabled={requireInitialData && !hasInitialData}
-                >
-                  <ListItemIcon>{icon}</ListItemIcon>
-                  <ListItemText primary={text} />
-                </ListItemButton>
-              </ListItem>
+              <SidenavLink
+                key={text}
+                to={path}
+                icon={icon}
+                disabled={requireInitialData && !hasInitialData}
+              >
+                {text}
+              </SidenavLink>
             )
           )}
-        </List>
+        </SidenavSection>
 
-        <List sx={{ flexGrow: 1 }} dense>
-          <ListItem>
-            <Typography variant="caption" ml={2}>
-              Data Analytics
-            </Typography>
-          </ListItem>
+        <SidenavSection label="Data Analytics">
           {dataAnalyticsRoutes.map(
             ({ text, icon, path, requireInitialData }) => (
-              <ListItem key={text}>
-                <ListItemButton
-                  sx={{ borderRadius: 2 }}
-                  selected={location.pathname.includes(path)}
-                  component={NavLink}
-                  to={path}
-                  disabled={requireInitialData && !hasInitialData}
-                >
-                  <ListItemIcon>{icon}</ListItemIcon>
-                  <ListItemText primary={text} />
-                </ListItemButton>
-              </ListItem>
+              <SidenavLink
+                key={text}
+                to={path}
+                icon={icon}
+                disabled={requireInitialData && !hasInitialData}
+              >
+                {text}
+              </SidenavLink>
             )
           )}
-        </List>
+        </SidenavSection>
 
-        <List dense>
+        <div className="flex-1" />
+
+        <SidenavSection>
           {secondaryRoutes(isAdmin).map(
             ({ text, icon, path, requireInitialData, disabled }) => (
-              <ListItem key={text}>
-                <ListItemButton
-                  sx={{ borderRadius: 2 }}
-                  selected={location.pathname.includes(path)}
-                  component={NavLink}
-                  to={path}
-                  disabled={(requireInitialData && !hasInitialData) || disabled}
-                >
-                  <ListItemIcon>{icon}</ListItemIcon>
-                  <ListItemText primary={text} />
-                </ListItemButton>
-              </ListItem>
+              <SidenavLink
+                key={text}
+                to={path}
+                icon={icon}
+                disabled={(requireInitialData && !hasInitialData) || disabled}
+              >
+                {text}
+              </SidenavLink>
             )
           )}
-        </List>
+        </SidenavSection>
 
-        <Divider />
+        <Separator />
 
-        <List dense>
-          <ListItem>
-            <ListItemButton
-              sx={{ borderRadius: 2 }}
-              selected={location.pathname.includes("/inventory/settings")}
-              component={NavLink}
-              to="/inventory/settings"
-              disabled={isCubeLoading}
-            >
-              <ListItemIcon>
-                <SettingsIcon fontSize="small" />
-              </ListItemIcon>
-              <ListItemText primary="Settings" />
-            </ListItemButton>
-          </ListItem>
-        </List>
+        <SidenavSection>
+          <SidenavLink
+            to="/inventory/settings"
+            icon={<Settings className="h-4 w-4" />}
+            disabled={isCubeLoading}
+          >
+            Settings
+          </SidenavLink>
+        </SidenavSection>
       </Sidenav>
 
-      <Box
-        component="main"
-        sx={{
-          flexGrow: 1,
-          p: 3,
-          pt: 0,
-          width: { lg: `calc(100% - ${SIDENAV_WIDTH}px)` },
-          minHeight: "100vh",
-        }}
-      >
-        <Toolbar />
-
-        {cube.isCubeLoading ? (
-          <Box mt={4}>
-            <CircularProgress size={20} sx={{ mr: 2 }} />
-            <Typography variant="h5" component={"span"} align="center">
-              Cargando...
-            </Typography>
-          </Box>
+      <main className="flex-1 px-6 pt-20 lg:pl-[calc(240px+1.5rem)]">
+        {isCubeLoading ? (
+          <div className="mt-4 flex items-center gap-2 text-lg">
+            <Loader2 className="h-5 w-5 animate-spin" />
+            <span>Cargando...</span>
+          </div>
         ) : (
           <Outlet />
         )}
-      </Box>
-    </Box>
+      </main>
+    </div>
   );
 }
 

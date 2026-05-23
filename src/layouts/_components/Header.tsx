@@ -1,17 +1,12 @@
-import Brightness4Icon from "@mui/icons-material/Brightness4";
-import Brightness7Icon from "@mui/icons-material/Brightness7";
-import LogoutIcon from "@mui/icons-material/Logout";
-import MenuIcon from "@mui/icons-material/Menu";
-import VisibilityIcon from "@mui/icons-material/Visibility";
-import { AppBar, Toolbar, IconButton, Typography } from "@mui/material";
+import { Eye, LogOut, Menu, Moon, Sun } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "src/context/hooks";
-import { useLocalTheme } from "src/context/hooks";
+import { useAuth, useLocalTheme } from "src/context/hooks";
 import { EThemeType } from "src/enums";
 import { ROUTES } from "src/lib/consts";
 import { logout } from "src/utils";
 
-import { SIDENAV_WIDTH } from "./Sidenav";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 interface Props {
   handleDrawerToggle?: () => void;
@@ -21,7 +16,6 @@ interface Props {
 const Header = ({ handleDrawerToggle, hasDrawer = true }: Props) => {
   const themeContext = useLocalTheme();
   const navigate = useNavigate();
-
   const { isAdmin, customUser, setCustomUser } = useAuth();
 
   function handleLogout() {
@@ -32,67 +26,50 @@ const Header = ({ handleDrawerToggle, hasDrawer = true }: Props) => {
   }
 
   return (
-    <AppBar
-      position="fixed"
-      color="transparent"
-      elevation={0}
-      sx={{
-        width: { lg: `calc(100% - ${hasDrawer ? SIDENAV_WIDTH : 0}px)` },
-        ml: { lg: `${hasDrawer ? SIDENAV_WIDTH : 0}px` },
-        display: "flex",
-        justifyContent: "space-between",
-        bgcolor:
-          themeContext.theme === EThemeType.LIGHT ? "#fafafa" : "grey.900",
-
-        // bgcolor: "hsla(0, 0%, 100%, 0.6)",
-        // backdropFilter: "blur(50px)",
-      }}
+    <header
+      className={cn(
+        "fixed top-0 right-0 z-20 flex h-16 items-center gap-2 border-b bg-background/60 px-4 backdrop-blur",
+        hasDrawer ? "left-0 lg:left-[240px]" : "left-0"
+      )}
     >
-      <Toolbar>
-        {hasDrawer && (
-          <IconButton
-            aria-label="open drawer"
-            edge="start"
-            onClick={handleDrawerToggle}
-            sx={{
-              mr: 2,
-              display: { lg: "none" },
-            }}
-          >
-            <MenuIcon />
-          </IconButton>
-        )}
-        <Typography
-          variant="body2"
-          component="div"
-          flexGrow="1"
-          sx={{ display: "flex", alignItems: "center" }}
+      {hasDrawer && (
+        <Button
+          variant="ghost"
+          size="icon"
+          aria-label="Abrir menú"
+          onClick={handleDrawerToggle}
+          className="lg:hidden"
         >
-          {isAdmin && customUser ? (
-            <>
-              <VisibilityIcon fontSize="small" sx={{ mr: 1 }} />
-              (as {customUser.name})
-            </>
-          ) : null}
-        </Typography>
-        <IconButton sx={{ ml: 2 }} onClick={themeContext.toggleColorMode}>
-          {themeContext.theme === EThemeType.DARK ? (
-            <Brightness4Icon />
-          ) : (
-            <Brightness7Icon />
-          )}
-        </IconButton>
-        <IconButton
-          edge="end"
-          onClick={handleLogout}
-          sx={{
-            ml: 2,
-          }}
-        >
-          <LogoutIcon />
-        </IconButton>
-      </Toolbar>
-    </AppBar>
+          <Menu />
+        </Button>
+      )}
+
+      <div className="flex flex-1 items-center text-sm text-muted-foreground">
+        {isAdmin && customUser ? (
+          <span className="inline-flex items-center gap-1">
+            <Eye className="h-4 w-4" />
+            (as {customUser.name})
+          </span>
+        ) : null}
+      </div>
+
+      <Button
+        variant="ghost"
+        size="icon"
+        aria-label="Cambiar tema"
+        onClick={themeContext.toggleColorMode}
+      >
+        {themeContext.theme === EThemeType.DARK ? <Moon /> : <Sun />}
+      </Button>
+      <Button
+        variant="ghost"
+        size="icon"
+        aria-label="Cerrar sesión"
+        onClick={handleLogout}
+      >
+        <LogOut />
+      </Button>
+    </header>
   );
 };
 

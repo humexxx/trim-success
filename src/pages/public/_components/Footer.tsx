@@ -1,80 +1,49 @@
-import {
-  Box,
-  Container,
-  Grid,
-  Stack,
-  Typography,
-  Toolbar,
-  Link,
-} from "@mui/material";
-import { Logo } from "src/components";
+import { Link } from "react-router-dom";
 
 const Footer = () => {
   return (
-    <Box
-      component={"footer"}
-      sx={{ backgroundColor: "#1A1A1A", py: 4, color: "white", mt: 8 }}
-    >
-      <Toolbar sx={{ display: { xs: "none", sm: "block" } }} />
-      <Container maxWidth="xl">
-        <Stack spacing={8}>
-          <Logo />
-          <Grid container>
-            <Grid size={{ xs: 6, sm: 4, md: 3 }}>
-              <Stack spacing={2}>
-                <Typography color="inherit" variant="body1" gutterBottom>
-                  Compañía
-                </Typography>
-                <Typography
-                  component={Link}
-                  href="/about"
-                  color="inherit"
-                  variant="body2"
-                >
-                  Acerca de nosotros
-                </Typography>
-              </Stack>
-            </Grid>
-            <Grid size={{ xs: 6, sm: 4, md: 3 }}>
-              <Stack spacing={2}>
-                <Typography color="inherit" variant="body1" gutterBottom>
-                  Servicios
-                </Typography>
-                <Typography
-                  component={Link}
-                  href="/features/inventory"
-                  color="inherit"
-                  variant="body2"
-                >
-                  Inventario
-                </Typography>
-                <Typography
-                  component={Link}
-                  href="/features/sales"
-                  color="inherit"
-                  variant="body2"
-                >
-                  Ventas
-                </Typography>
-              </Stack>
-            </Grid>
-          </Grid>
-          <Stack direction="row" justifyContent={"space-between"}>
-            <Stack direction="row" spacing={2}>
-              Socials
-            </Stack>
-            <Typography
-              component={Link}
-              href="/help"
-              color="inherit"
-              variant="body2"
-            >
+    <footer className="mt-16 bg-[#1A1A1A] py-12 text-white">
+      <div className="mx-auto max-w-7xl px-6">
+        <div className="flex flex-col gap-12">
+          <div className="text-lg font-semibold tracking-tight">ScorChain</div>
+
+          <div className="grid grid-cols-2 gap-8 sm:grid-cols-3">
+            <div className="space-y-3">
+              <h3 className="text-sm font-semibold">Compañía</h3>
+              <ul className="space-y-2 text-sm text-white/80">
+                <li>
+                  <Link to="/about" className="hover:text-white">
+                    Acerca de nosotros
+                  </Link>
+                </li>
+              </ul>
+            </div>
+            <div className="space-y-3">
+              <h3 className="text-sm font-semibold">Servicios</h3>
+              <ul className="space-y-2 text-sm text-white/80">
+                <li>
+                  <Link to="/features/inventory" className="hover:text-white">
+                    Inventario
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/features/sales" className="hover:text-white">
+                    Ventas
+                  </Link>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between text-sm text-white/80">
+            <span>Socials</span>
+            <Link to="/help" className="hover:text-white">
               Ayuda
-            </Typography>
-          </Stack>
-        </Stack>
-      </Container>
-    </Box>
+            </Link>
+          </div>
+        </div>
+      </div>
+    </footer>
   );
 };
 

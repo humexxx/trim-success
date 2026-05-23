@@ -1,4 +1,3 @@
-import { Box, Toolbar } from "@mui/material";
 import { Outlet } from "react-router-dom";
 import { PrivateRoute } from "src/components";
 
@@ -6,28 +5,16 @@ import { Header } from "./_components";
 
 function ModuleSelectLayout() {
   return (
-    <Box sx={{ display: "flex" }}>
+    <div className="flex min-h-screen bg-background">
       <Header hasDrawer={false} />
-      <Box
-        component="main"
-        sx={{
-          flexGrow: 1,
-          p: 3,
-          pt: 0,
-          width: "100%",
-          backgroundColor: "background.default",
-          minHeight: "100vh",
-        }}
-      >
-        <Toolbar />
-
+      <main className="w-full px-6 pt-20">
         <Outlet />
-      </Box>
-    </Box>
+      </main>
+    </div>
   );
 }
 
-export default function InventoryLayoutWrapper() {
+export default function ModuleSelectLayoutWrapper() {
   return (
     <PrivateRoute>
       <ModuleSelectLayout />

@@ -1,20 +1,15 @@
-import React from "react";
+import { ReactNode } from "react";
 
-import {
-  Box,
-  Button,
-  Card,
-  Grid,
-  Link,
-  Stack,
-  Typography,
-} from "@mui/material";
+import { Link } from "react-router-dom";
+
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 
 export interface IFeature {
   id: string;
   title: string;
   description: string;
-  icon: React.ReactNode;
+  icon: ReactNode;
   link: string;
 }
 
@@ -26,41 +21,23 @@ const FeatureCard = ({
 }: Omit<IFeature, "id">) => {
   return (
     <Link
-      href={link}
+      to={link}
       aria-label={`Ir a ${title}`}
-      sx={{ textDecoration: "none" }}
+      className="block h-full transition-transform hover:-translate-y-0.5"
     >
-      <Card
-        elevation={0}
-        sx={{ p: 2, bgcolor: "background.paper", height: "100%" }}
-      >
-        <Grid container spacing={2} className="h-full">
-          <Grid size={8}>
-            <Stack
-              spacing={2}
-              justifyContent={"space-between"}
-              className="h-full"
-            >
-              <Stack spacing={2}>
-                <Typography variant="body1" component={"h4"}>
-                  {title}
-                </Typography>
-                <Typography variant="caption" component={"p"}>
-                  {description}
-                </Typography>
-              </Stack>
-              <Box>
-                <Button
-                  variant="contained"
-                  size="small"
-                  sx={{ backgroundColor: "#1A1A1A", mt: 2 }}
-                >
-                  Ver detalles
-                </Button>
-              </Box>
-            </Stack>
-          </Grid>
-        </Grid>
+      <Card className="flex h-full flex-col">
+        <CardContent className="flex flex-1 flex-col justify-between gap-6 p-6">
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              {icon}
+              <h4 className="text-base font-medium">{title}</h4>
+            </div>
+            <p className="text-sm text-muted-foreground">{description}</p>
+          </div>
+          <Button size="sm" className="self-start">
+            Ver detalles
+          </Button>
+        </CardContent>
       </Card>
     </Link>
   );

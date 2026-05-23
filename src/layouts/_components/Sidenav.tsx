@@ -1,45 +1,33 @@
 import { PropsWithChildren } from "react";
 
-import { Toolbar, Divider, Box, Typography, Drawer } from "@mui/material";
-import { useLocalTheme } from "src/context/hooks";
-import { EThemeType } from "src/enums";
+import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
+import { Separator } from "@/components/ui/separator";
 
-const SidenavContent = ({
+export const SIDENAV_WIDTH = 240;
+
+interface SidenavContentProps {
+  title: string;
+  version: string;
+}
+
+const SidenavBody = ({
   title,
   version,
   children,
-}: PropsWithChildren<{
-  title: string;
-  version: string;
-}>) => {
-  const themeContext = useLocalTheme();
-  return (
-    <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
-      <Toolbar>
-        <Typography
-          variant="h6"
-          component="div"
-          sx={{
-            position: "relative",
-          }}
-        >
-          {title}{" "}
-          <Typography
-            mb={2}
-            variant="caption"
-            sx={{ position: "absolute", top: 2, ml: 1 }}
-          >
-            ({version})
-          </Typography>
-        </Typography>
-      </Toolbar>
-
-      {themeContext.theme === EThemeType.LIGHT && <Divider />}
-
-      {children}
-    </Box>
-  );
-};
+}: PropsWithChildren<SidenavContentProps>) => (
+  <div className="flex h-full flex-col">
+    <div className="flex h-16 items-center px-6">
+      <div className="relative font-semibold tracking-tight">
+        {title}
+        <span className="absolute -top-0.5 left-full ml-2 text-[10px] font-normal text-muted-foreground">
+          ({version})
+        </span>
+      </div>
+    </div>
+    <Separator />
+    <div className="flex flex-1 flex-col overflow-y-auto py-2">{children}</div>
+  </div>
+);
 
 interface Props {
   title: string;
@@ -57,61 +45,46 @@ function Sidenav({
   setIsClosing,
   children,
 }: PropsWithChildren<Props>) {
-  const handleDrawerClose = () => {
-    setIsClosing(true);
-    setIsMobileOpen(false);
-  };
-
-  const handleDrawerTransitionEnd = () => {
-    setIsClosing(false);
-  };
-
   return (
-    <Box
-      component="nav"
-      sx={{ width: { lg: SIDENAV_WIDTH }, flexShrink: { sm: 0 } }}
-      aria-label="mailbox folders"
+    <nav
+      aria-label="Navegación principal"
+      className="lg:w-[240px] lg:flex-shrink-0"
+      style={{ ["--sidenav-width" as string]: `${SIDENAV_WIDTH}px` }}
     >
-      <Drawer
-        variant="temporary"
+      {/* Mobile drawer */}
+      <Sheet
         open={isMobileOpen}
-        onTransitionEnd={handleDrawerTransitionEnd}
-        onClose={handleDrawerClose}
-        ModalProps={{
-          keepMounted: true,
-        }}
-        sx={{
-          display: { xs: "block", lg: "none" },
-          "& .MuiDrawer-paper": {
-            boxSizing: "border-box",
-            width: SIDENAV_WIDTH,
-          },
+        onOpenChange={(open) => {
+          if (!open) {
+            setIsClosing(true);
+            setIsMobileOpen(false);
+            // mirror the previous behavior of clearing the closing flag
+            // once the transition would have ended
+            setTimeout(() => setIsClosing(false), 300);
+          } else {
+            setIsMobileOpen(true);
+          }
         }}
       >
-        <SidenavContent title={title} version={version}>
-          {children}
-        </SidenavContent>
-      </Drawer>
-      <Drawer
-        variant="permanent"
-        sx={{
-          display: { xs: "none", lg: "block" },
-          "& .MuiDrawer-paper": {
-            boxSizing: "border-box",
-            width: SIDENAV_WIDTH,
-            bgcolor: "transparent",
-          },
-        }}
-        open
+        <SheetContent side="left" className="w-[240px] p-0">
+          <SheetTitle className="sr-only">{title}</SheetTitle>
+          <SidenavBody title={title} version={version}>
+            {children}
+          </SidenavBody>
+        </SheetContent>
+      </Sheet>
+
+      {/* Desktop permanent sidebar */}
+      <aside
+        className="fixed inset-y-0 left-0 z-30 hidden w-[240px] border-r bg-background lg:block"
+        aria-label="Navegación lateral"
       >
-        <SidenavContent title="Trim Success" version={version}>
+        <SidenavBody title="Trim Success" version={version}>
           {children}
-        </SidenavContent>
-      </Drawer>
-    </Box>
+        </SidenavBody>
+      </aside>
+    </nav>
   );
 }
-
-export const SIDENAV_WIDTH = 240;
 
 export default Sidenav;

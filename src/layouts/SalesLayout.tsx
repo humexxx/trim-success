@@ -1,14 +1,12 @@
 import { useCallback, useState } from "react";
 
-import { Box, Toolbar, Container } from "@mui/material";
 import { Outlet, useNavigate } from "react-router-dom";
 import { PrivateRoute } from "src/components";
-import { LocalThemeProvider, CubeProvider } from "src/context";
+import { CubeProvider, LocalThemeProvider } from "src/context";
 import { useAuth, useCube } from "src/context/hooks";
 import { ROUTES, VERSION } from "src/lib/consts";
 
 import { Header, Sidenav } from "./_components";
-import { SIDENAV_WIDTH } from "./_components/Sidenav";
 
 function SalesLayout() {
   const [isClosing, setIsClosing] = useState(false);
@@ -23,39 +21,27 @@ function SalesLayout() {
   };
 
   return (
-    <Box sx={{ display: "flex" }}>
+    <div className="flex min-h-screen bg-background">
       <Header handleDrawerToggle={handleDrawerToggle} />
 
       <Sidenav
-        title="Inventory"
+        title="Sales"
         version={VERSION}
         isMobileOpen={isMobileOpen}
         setIsMobileOpen={setIsMobileOpen}
         setIsClosing={setIsClosing}
       />
 
-      <Box
-        component="main"
-        sx={{
-          flexGrow: 1,
-          p: 3,
-          pt: 0,
-          width: { lg: `calc(100% - ${SIDENAV_WIDTH}px)` },
-          backgroundColor: "background.default",
-          minHeight: "100vh",
-        }}
-      >
-        <Toolbar />
-
-        <Container maxWidth="xl">
+      <main className="flex-1 px-6 pt-20 lg:pl-[calc(240px+1.5rem)]">
+        <div className="mx-auto max-w-7xl">
           {cube.isCubeLoading ? "Loading..." : <Outlet />}
-        </Container>
-      </Box>
-    </Box>
+        </div>
+      </main>
+    </div>
   );
 }
 
-export default function InventoryLayoutWrapper() {
+export default function SalesLayoutWrapper() {
   const navigate = useNavigate();
   const { isAdmin, customUser } = useAuth();
 
