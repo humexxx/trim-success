@@ -1,6 +1,7 @@
 import { useState } from "react";
 
 import { yupResolver } from "@hookform/resolvers/yup";
+import { ShieldCheck, User2 } from "lucide-react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
 import * as yup from "yup";
@@ -19,6 +20,21 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+
+const DEV_ACCOUNTS = [
+  {
+    label: "Demo",
+    email: "demo@trim-success.test",
+    password: "Demo1234!",
+    Icon: User2,
+  },
+  {
+    label: "Admin",
+    email: "admin@trim-success.test",
+    password: "Admin1234!",
+    Icon: ShieldCheck,
+  },
+] as const;
 
 export interface SignInFormInputs {
   email: string;
@@ -58,6 +74,14 @@ export default function SignIn({ handleOnSubmit }: SignInProps) {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleDevLogin = async (account: (typeof DEV_ACCOUNTS)[number]) => {
+    await onSubmit({
+      email: account.email,
+      password: account.password,
+      persist: true,
+    });
   };
 
   return (
@@ -160,6 +184,36 @@ export default function SignIn({ handleOnSubmit }: SignInProps) {
           </div>
         </form>
       </Form>
+
+      {import.meta.env.DEV && (
+        <div className="mt-6 space-y-2">
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t border-dashed" />
+            </div>
+            <div className="relative flex justify-center text-[11px] uppercase tracking-wider">
+              <span className="bg-background px-2 text-muted-foreground">
+                Solo en dev
+              </span>
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-2">
+            {DEV_ACCOUNTS.map((acc) => (
+              <Button
+                key={acc.email}
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => handleDevLogin(acc)}
+                disabled={isLoading}
+              >
+                <acc.Icon />
+                Entrar como {acc.label}
+              </Button>
+            ))}
+          </div>
+        </div>
+      )}
     </AuthLayout>
   );
 }

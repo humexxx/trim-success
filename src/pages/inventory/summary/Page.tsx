@@ -1,5 +1,13 @@
-import { PageContent, PageHeader } from "src/components/layout";
+import { PageHeader, PageWrapper } from "src/components/layout";
 import { useCube } from "src/context/hooks";
+
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 import { MainGrid, Reports } from "./components";
 
@@ -9,22 +17,29 @@ const Page = () => {
   if (cube.isCubeLoading || !cube.data) return null;
 
   return (
-    <>
+    <PageWrapper title="Resumen" maxWidth="2xl">
       <PageHeader
-        title="Panel"
-        description="Vista general del comportamiento del negocio"
+        title="Resumen general"
+        description="Vista SKU por SKU con filtros y reportes ejecutivos exportables."
       />
-      <PageContent>
-        <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
-          <div className="lg:col-span-9">
+      <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-12">
+        <Card className="lg:col-span-9">
+          <CardHeader className="space-y-1">
+            <CardTitle className="text-base">Detalle por SKU</CardTitle>
+            <CardDescription className="text-xs">
+              Filtra por categoría o por expected value para ver el detalle
+              de cada producto.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="px-2 pb-4 pt-0">
             <MainGrid />
-          </div>
-          <div className="lg:col-span-3">
-            <Reports />
-          </div>
+          </CardContent>
+        </Card>
+        <div className="lg:col-span-3">
+          <Reports />
         </div>
-      </PageContent>
-    </>
+      </div>
+    </PageWrapper>
   );
 };
 

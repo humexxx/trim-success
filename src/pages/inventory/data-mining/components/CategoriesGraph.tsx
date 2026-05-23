@@ -10,30 +10,35 @@ import {
   Legend,
   Pie,
   PieChart,
-  ResponsiveContainer,
-  Tooltip,
   XAxis,
   YAxis,
 } from "recharts";
 
-import { Card, CardContent } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  ChartConfig,
+  ChartContainer,
+  ChartLegend,
+  ChartLegendContent,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "@/components/ui/chart";
 
 interface Props {
   data: IBaseData["categoriesData"];
   drivers: IDriver[];
 }
 
-// Categorical palette derived from the project's monochrome theme so the
-// pie slices stay readable without pulling in a separate chart library
-// palette dependency.
-const PIE_COLORS = [
-  "#0f172a",
-  "#334155",
-  "#64748b",
-  "#94a3b8",
-  "#cbd5e1",
-  "#e2e8f0",
-];
+// Monochrome palette pulled from the shadcn neutral scale so charts
+// read consistently in light + dark mode without needing per-theme
+// color overrides.
+const SERIES_COLORS = ["#0f172a", "#475569", "#94a3b8", "#cbd5e1"];
 
 const CategoriesGraph = ({ data, drivers }: Props) => {
   const sortedRows = useMemo(
@@ -68,100 +73,130 @@ const CategoriesGraph = ({ data, drivers }: Props) => {
     [sortedRows]
   );
 
+  const barConfig: ChartConfig = useMemo(
+    () =>
+      barSeries.reduce<ChartConfig>((acc, driver, idx) => {
+        acc[driver.key] = {
+          label: driver.label,
+          color: SERIES_COLORS[idx % SERIES_COLORS.length],
+        };
+        return acc;
+      }, {}),
+    [barSeries]
+  );
+
+  const pieConfig: ChartConfig = useMemo(
+    () =>
+      pieData.reduce<ChartConfig>((acc, p, idx) => {
+        acc[p.name] = {
+          label: p.name,
+          color: SERIES_COLORS[idx % SERIES_COLORS.length],
+        };
+        return acc;
+      }, {}),
+    [pieData]
+  );
+
   return (
-    <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+    <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
       <Card>
-        <CardContent className="p-6">
-          <div style={{ height: 460 }}>
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart
-                data={barData}
-                margin={{ top: 16, right: 16, bottom: 32, left: 40 }}
-              >
-                <CartesianGrid
-                  strokeDasharray="3 3"
-                  stroke="hsl(var(--border))"
-                />
-                <XAxis
-                  dataKey="category"
-                  fontSize={11}
-                  stroke="hsl(var(--muted-foreground))"
-                />
-                <YAxis
-                  tickFormatter={(v) => formatAmount(v as number)}
-                  fontSize={11}
-                  stroke="hsl(var(--muted-foreground))"
-                />
-                <Tooltip
-                  formatter={(value) => formatAmount(Number(value))}
-                  contentStyle={{
-                    background: "hsl(var(--popover))",
-                    borderColor: "hsl(var(--border))",
-                    borderRadius: 8,
-                    fontSize: 12,
-                  }}
-                />
-                <Legend wrapperStyle={{ fontSize: 12 }} />
-                {barSeries.map((driver, idx) => (
-                  <Bar
-                    key={driver.key}
-                    dataKey={driver.key}
-                    name={driver.label}
-                    fill={PIE_COLORS[idx % PIE_COLORS.length]}
-                    radius={[4, 4, 0, 0]}
+        <CardHeader>
+          <CardTitle className="text-base">Ventas y margen por categoría</CardTitle>
+          <CardDescription className="text-xs">
+            Comparación de ventas totales contra el margen bruto.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="px-2 pb-4 pt-0">
+          <ChartContainer
+            config={barConfig}
+            className="aspect-auto h-[380px] w-full"
+          >
+            <BarChart
+              data={barData}
+              margin={{ top: 16, right: 12, bottom: 24, left: 12 }}
+            >
+              <CartesianGrid
+                vertical={false}
+                strokeDasharray="3 3"
+                stroke="hsl(var(--border))"
+              />
+              <XAxis dataKey="category" tickLine={false} axisLine={false} fontSize={11} />
+              <YAxis
+                tickLine={false}
+                axisLine={false}
+                fontSize={11}
+                tickFormatter={(v) => formatAmount(v as number)}
+                width={64}
+              />
+              <ChartTooltip
+                cursor={{ fill: "hsl(var(--accent))", opacity: 0.4 }}
+                content={
+                  <ChartTooltipContent
+                    valueFormatter={(v) => formatAmount(v)}
+                    indicator="dot"
                   />
-                ))}
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
+                }
+              />
+              <Legend
+                wrapperStyle={{ fontSize: 12 }}
+                content={<ChartLegendContent />}
+              />
+              {barSeries.map((driver) => (
+                <Bar
+                  key={driver.key}
+                  dataKey={driver.key}
+                  name={driver.label}
+                  fill={`var(--color-${driver.key})`}
+                  radius={[4, 4, 0, 0]}
+                />
+              ))}
+            </BarChart>
+          </ChartContainer>
         </CardContent>
       </Card>
 
       <Card>
-        <CardContent className="p-6">
-          <div className="relative" style={{ height: 460 }}>
-            <h3 className="absolute left-0 right-0 top-2 text-center text-base font-semibold">
-              Sku&apos;s
-            </h3>
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={pieData}
-                  dataKey="value"
-                  nameKey="name"
-                  innerRadius={50}
-                  outerRadius={130}
-                  paddingAngle={4}
-                  label={({ value }) =>
-                    formatPercentage((value as number) / skuTotal)
-                  }
-                >
-                  {pieData.map((_, idx) => (
-                    <Cell
-                      key={idx}
-                      fill={PIE_COLORS[idx % PIE_COLORS.length]}
-                    />
-                  ))}
-                </Pie>
-                <Tooltip
-                  formatter={(value, _name, item) => {
-                    const n = Number(value);
-                    return [
-                      `${n} (${formatPercentage(n / skuTotal)})`,
-                      item?.payload?.name,
-                    ];
-                  }}
-                  contentStyle={{
-                    background: "hsl(var(--popover))",
-                    borderColor: "hsl(var(--border))",
-                    borderRadius: 8,
-                    fontSize: 12,
-                  }}
-                />
-                <Legend wrapperStyle={{ fontSize: 11 }} />
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
+        <CardHeader>
+          <CardTitle className="text-base">SKUs por categoría</CardTitle>
+          <CardDescription className="text-xs">
+            Distribución del catálogo activo entre categorías.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="px-2 pb-4 pt-0">
+          <ChartContainer
+            config={pieConfig}
+            className="mx-auto aspect-square h-[380px]"
+          >
+            <PieChart>
+              <ChartTooltip
+                content={
+                  <ChartTooltipContent
+                    hideLabel
+                    valueFormatter={(v) =>
+                      `${v.toLocaleString("en-US")} (${formatPercentage(v / skuTotal)})`
+                    }
+                  />
+                }
+              />
+              <Pie
+                data={pieData}
+                dataKey="value"
+                nameKey="name"
+                innerRadius={60}
+                outerRadius={120}
+                paddingAngle={3}
+                strokeWidth={2}
+              >
+                {pieData.map((_, idx) => (
+                  <Cell
+                    key={idx}
+                    fill={SERIES_COLORS[idx % SERIES_COLORS.length]}
+                  />
+                ))}
+              </Pie>
+              <ChartLegend content={<ChartLegendContent />} />
+            </PieChart>
+          </ChartContainer>
         </CardContent>
       </Card>
     </div>

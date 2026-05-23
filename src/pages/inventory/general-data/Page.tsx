@@ -14,6 +14,13 @@ import { InferType } from "yup";
 
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 import { GeneralParams, InventoryParams, StoringParams } from "./components";
 import { useParamsData } from "./hooks";
@@ -89,52 +96,73 @@ const Page = () => {
   }
 
   return (
-    <PageWrapper title="Datos Generales">
+    <PageWrapper title="Datos Generales" maxWidth="2xl">
       {isSubmitting && <GlobalLoader />}
-      <PageHeader title="Datos Generales" />
-      <PageContent>
-        <form
-          onSubmit={handleSubmit(_handleSubmit)}
-          className="grid grid-cols-1 gap-8 md:grid-cols-3"
-        >
-          <div>
-            <p className="mb-2 text-sm font-medium">Parametros Generales</p>
-            <GeneralParams
-              errors={errors}
-              register={register}
-              control={control}
-            />
-          </div>
-          <div>
-            <p className="mb-2 text-sm font-medium">Parametros de Almacenaje</p>
-            <StoringParams
-              errors={errors}
-              register={register}
-              control={control}
-            />
-          </div>
-          <div>
-            <p className="mb-2 text-sm font-medium">Parametros de Inventario</p>
-            <InventoryParams
-              errors={errors}
-              register={register}
-              control={control}
-            />
-          </div>
-          {error && (
-            <div className="md:col-span-3">
-              <Alert variant="destructive">
-                <AlertDescription>{error}</AlertDescription>
-              </Alert>
-            </div>
-          )}
-          <div className="mt-2 text-right md:col-span-3">
-            <Button type="submit" loading={loading || isSubmitting}>
-              Guardar
-            </Button>
-          </div>
-        </form>
-      </PageContent>
+      <PageHeader
+        title="Datos generales"
+        description="Parámetros financieros, de almacenaje y de inventario que alimentan los cálculos del scorecard."
+      />
+      <form onSubmit={handleSubmit(_handleSubmit)} className="mt-8 space-y-6">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+          <Card>
+            <CardHeader className="space-y-1 pb-3">
+              <CardTitle className="text-base">Generales</CardTitle>
+              <CardDescription className="text-xs">
+                Tasas y supuestos financieros + operacionales.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="pt-0">
+              <GeneralParams
+                errors={errors}
+                register={register}
+                control={control}
+              />
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="space-y-1 pb-3">
+              <CardTitle className="text-base">Almacenaje</CardTitle>
+              <CardDescription className="text-xs">
+                Costos de almacenamiento + inversiones en infraestructura.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="pt-0">
+              <StoringParams
+                errors={errors}
+                register={register}
+                control={control}
+              />
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="space-y-1 pb-3">
+              <CardTitle className="text-base">Inventario</CardTitle>
+              <CardDescription className="text-xs">
+                Costos asociados al inventario + capital invertido.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="pt-0">
+              <InventoryParams
+                errors={errors}
+                register={register}
+                control={control}
+              />
+            </CardContent>
+          </Card>
+        </div>
+
+        {error && (
+          <Alert variant="destructive">
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        )}
+
+        <div className="flex justify-end border-t pt-4">
+          <Button type="submit" loading={loading || isSubmitting}>
+            Guardar cambios
+          </Button>
+        </div>
+      </form>
     </PageWrapper>
   );
 };

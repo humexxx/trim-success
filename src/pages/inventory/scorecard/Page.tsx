@@ -5,7 +5,7 @@ import {
   EDataModelParameterType,
 } from "@shared/enums";
 import { ICubeData, IScorecardData } from "@shared/models";
-import { PageContent, PageHeader, PageWrapper } from "src/components/layout";
+import { PageHeader, PageWrapper } from "src/components/layout";
 import { useCube } from "src/context/hooks";
 import { useDocumentMetadata } from "src/hooks";
 import {
@@ -15,7 +15,13 @@ import {
 } from "src/utils";
 
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Card, CardContent } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 import {
   GrandTotalGrid,
@@ -53,21 +59,17 @@ const Page = () => {
     async (newRow: IScorecardData["storingCosts"]["rows"][number]) => {
       try {
         setIsStoringCostsLoading(true);
-
         const data = updateStoringScorecardDataRow(
           newRow,
           scorecardData?.storingCosts.rows ?? [],
           paramsData!,
           baseData!
         );
-
         const newScorcardData: IScorecardData = {
           ...scorecardData!,
           storingCosts: { ...data },
         };
-
         await update(newScorcardData);
-
         setData(
           (prev) =>
             ({ ...prev, scorecardData: newScorcardData }) as ICubeData
@@ -85,21 +87,17 @@ const Page = () => {
     async (newRow: IScorecardData["inventoryCosts"]["rows"][number]) => {
       try {
         setIsInventoryCostsLoading(true);
-
         const data = updateInventoryScorecardDataRow(
           newRow,
           scorecardData?.inventoryCosts.rows ?? [],
           paramsData!,
           baseData!
         );
-
         const newScorcardData: IScorecardData = {
           ...scorecardData!,
           inventoryCosts: { ...data },
         };
-
         await update(newScorcardData);
-
         setData(
           (prev) =>
             ({ ...prev, scorecardData: newScorcardData }) as ICubeData
@@ -115,55 +113,79 @@ const Page = () => {
 
   if (error) {
     return (
-      <Alert variant="destructive">
-        <AlertDescription>{error}</AlertDescription>
-      </Alert>
+      <PageWrapper title="Scorecard" maxWidth="2xl">
+        <PageHeader title="Scorecard" />
+        <Alert variant="destructive" className="mt-4">
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      </PageWrapper>
     );
   }
 
   return (
-    <PageWrapper title="Scorecard">
+    <PageWrapper title="Scorecard" maxWidth="2xl">
       <PageHeader
-        title="Scorecard"
-        description="Scorecard del Almacén & Inventory"
+        title="Scorecard financiero"
+        description="Costos de almacenaje e inventario por categoría — edita drivers e investment types inline para recalcular en tiempo real."
       />
-      <PageContent>
-        <div className="flex flex-col gap-8">
-          <Card>
-            <CardContent className="p-6">
-              <ScorecardTableWarehouse
-                data={scorecardData?.storingCosts}
-                categories={paramsData?.categories ?? []}
-                investmentTypes={investmentTypes ?? []}
-                updateRow={updateStoringCostsRow}
-                drivers={paramsData?.drivers ?? []}
-                loading={isStoringCostsLoading}
-              />
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-6">
-              <ScorecardTableInventory
-                loading={isInventoryCostsLoading}
-                data={scorecardData?.inventoryCosts}
-                categories={paramsData?.categories ?? []}
-                investmentTypes={investmentTypes ?? []}
-                updateRow={updateInventoryCostsRow}
-                drivers={paramsData?.drivers ?? []}
-              />
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-6">
-              <GrandTotalGrid
-                categories={paramsData?.categories ?? []}
-                loading={isStoringCostsLoading || isInventoryCostsLoading}
-                data={scorecardData}
-              />
-            </CardContent>
-          </Card>
-        </div>
-      </PageContent>
+      <div className="mt-8 flex flex-col gap-6">
+        <Card>
+          <CardHeader className="space-y-1">
+            <CardTitle className="text-base">Warehousing costs</CardTitle>
+            <CardDescription className="text-xs">
+              Costos directos de almacenaje distribuidos por categoría según el
+              driver seleccionado.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="px-2 pb-4 pt-0">
+            <ScorecardTableWarehouse
+              data={scorecardData?.storingCosts}
+              categories={paramsData?.categories ?? []}
+              investmentTypes={investmentTypes ?? []}
+              updateRow={updateStoringCostsRow}
+              drivers={paramsData?.drivers ?? []}
+              loading={isStoringCostsLoading}
+            />
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="space-y-1">
+            <CardTitle className="text-base">Costos del inventario</CardTitle>
+            <CardDescription className="text-xs">
+              Costos asociados al inventario — handling, deterioro, capital
+              invertido.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="px-2 pb-4 pt-0">
+            <ScorecardTableInventory
+              loading={isInventoryCostsLoading}
+              data={scorecardData?.inventoryCosts}
+              categories={paramsData?.categories ?? []}
+              investmentTypes={investmentTypes ?? []}
+              updateRow={updateInventoryCostsRow}
+              drivers={paramsData?.drivers ?? []}
+            />
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="space-y-1">
+            <CardTitle className="text-base">Costo total de inventario (ICC)</CardTitle>
+            <CardDescription className="text-xs">
+              Suma de storing + inventory por categoría. Punto de entrada al
+              análisis de rendimiento.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="px-2 pb-4 pt-0">
+            <GrandTotalGrid
+              categories={paramsData?.categories ?? []}
+              loading={isStoringCostsLoading || isInventoryCostsLoading}
+              data={scorecardData}
+            />
+          </CardContent>
+        </Card>
+      </div>
     </PageWrapper>
   );
 };

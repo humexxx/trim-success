@@ -1,6 +1,7 @@
-import { PageWrapper } from "src/components/layout";
+import { PageHeader, PageWrapper } from "src/components/layout";
 import { useAuth } from "src/context/hooks";
 
+import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import { AdminSettings } from "./Admin";
@@ -18,22 +19,38 @@ const Page = () => {
   const { isAdmin } = useAuth();
 
   return (
-    <PageWrapper title="Configuración">
-      <Tabs defaultValue="user" className="mb-4">
+    <PageWrapper title="Configuración" maxWidth="2xl">
+      <PageHeader
+        title="Configuración"
+        description="Datos de la cuenta, columnas del cubo y, si eres admin, configuración global."
+      />
+      <Tabs defaultValue="user" className="mt-8">
         <TabsList>
           <TabsTrigger value="user">Usuario</TabsTrigger>
           <TabsTrigger value="cube">Cube</TabsTrigger>
           {isAdmin && <TabsTrigger value="admin">Admin</TabsTrigger>}
         </TabsList>
-        <TabsContent value="user" className="mt-4 p-2">
-          <UserSettings />
+        <TabsContent value="user" className="mt-4">
+          <Card>
+            <CardContent className="p-6">
+              <UserSettings />
+            </CardContent>
+          </Card>
         </TabsContent>
-        <TabsContent value="cube" className="mt-4 p-2">
-          <CubeSettings />
+        <TabsContent value="cube" className="mt-4">
+          <Card>
+            <CardContent className="p-6">
+              <CubeSettings />
+            </CardContent>
+          </Card>
         </TabsContent>
         {isAdmin && (
-          <TabsContent value="admin" className="mt-4 p-2">
-            <AdminSettings />
+          <TabsContent value="admin" className="mt-4">
+            <Card>
+              <CardContent className="p-6">
+                <AdminSettings />
+              </CardContent>
+            </Card>
           </TabsContent>
         )}
       </Tabs>
