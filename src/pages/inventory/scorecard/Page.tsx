@@ -31,7 +31,10 @@ import {
 import { useScorecard } from "./hooks";
 
 const Page = () => {
-  useDocumentMetadata("Scorecard - Trim Success");
+  useDocumentMetadata(
+    "Scorecard",
+    "Scorecard editable con drivers de costo de mantener inventario por categoría."
+  );
 
   const { data, setData } = useCube();
   const { update } = useScorecard();

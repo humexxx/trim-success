@@ -96,7 +96,11 @@ const Page = () => {
   }
 
   return (
-    <PageWrapper title="Datos Generales" maxWidth="2xl">
+    <PageWrapper
+      title="Datos generales"
+      description="Configura parámetros generales del cubo: costo de capital, días por periodo y supuestos."
+      maxWidth="2xl"
+    >
       {isSubmitting && <GlobalLoader />}
       <PageHeader
         title="Datos generales"

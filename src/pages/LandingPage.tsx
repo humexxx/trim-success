@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import HeroImage from "src/assets/images/hero.webp";
 import { FEATURES } from "src/consts";
 import { useDocumentMetadata } from "src/hooks";
-import { APP_NAME, ROUTES } from "src/lib/consts";
+import { APP_NAME, APP_TAGLINE, ROUTES } from "src/lib/consts";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,14 +14,20 @@ import Footer from "./public/_components/Footer";
 import Section from "./public/_components/Section";
 
 const LandingPage = () => {
-  useDocumentMetadata(APP_NAME);
+  // Landing page owns the bare brand title — no page-name suffix.
+  useDocumentMetadata({
+    title: `${APP_NAME} · ${APP_TAGLINE}`,
+    description:
+      "Sube tu inventario y obtén scorecard, drivers, rendimiento por categoría y ventas en un solo cubo.",
+    bare: true,
+  });
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-white text-black">
       <header className="bg-[#1A1A1A] text-white">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-3">
           <Link to="/" className="text-lg font-semibold tracking-tight">
-            ScorChain
+            {APP_NAME}
           </Link>
           <Link to={ROUTES.SIGN_IN}>
             <Button

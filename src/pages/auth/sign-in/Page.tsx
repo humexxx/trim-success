@@ -15,7 +15,10 @@ import SignIn from "./components";
 import { SignInFormInputs } from "./components/SignIn";
 
 const SignInPage = () => {
-  useDocumentMetadata("Sign In - Trim Success");
+  useDocumentMetadata(
+    "Iniciar sesión",
+    "Accede a tu cuenta para ver scorecards, drivers y rendimiento de tu inventario."
+  );
   const navigate = useNavigate();
 
   async function handleOnSubmit(form: SignInFormInputs) {

@@ -1,6 +1,13 @@
 import packageJson from "../../package.json";
 
-export const APP_NAME = import.meta.env.VITE_APP_NAME;
+// Brand identity. Single source of truth — the Logo component, page
+// titles, and OG metadata all read from these constants.
+export const APP_NAME = "ScorChain";
+export const APP_TAGLINE = "Análisis inteligente de inventario";
+export const APP_DESCRIPTION =
+  "Plataforma para analizar el costo de mantener inventario: scorecard, drivers, rendimiento por categoría y ventas en un solo cubo.";
+/** Separator between page title and brand in `<title>`. */
+export const TITLE_SEPARATOR = " · ";
 export const VERSION = import.meta.env.VITE_APP_VERSION || packageJson.version;
 
 export const LOCAL_STORAGE_KEYS = {

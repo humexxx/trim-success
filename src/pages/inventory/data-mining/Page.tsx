@@ -14,7 +14,10 @@ import {
 import { CategoriesGraph, CategoriesTable, DriversTable } from "./components";
 
 const Page = () => {
-  useDocumentMetadata("Data Mining - Trim Success");
+  useDocumentMetadata(
+    "Data Mining",
+    "Exploración de patrones y segmentación de SKUs sobre el cubo cargado."
+  );
   const { data, isCubeLoading } = useCube();
 
   const baseData = data?.baseData;

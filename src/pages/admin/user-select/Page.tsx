@@ -5,7 +5,10 @@ import { useDocumentMetadata } from "src/hooks";
 import { AdminClientSelector } from "./components";
 
 export default function Page() {
-  useDocumentMetadata("Seleccionar Usuario - Trim Success");
+  useDocumentMetadata(
+    "Seleccionar usuario",
+    "Cambia el contexto de usuario para inspeccionar su cubo desde admin."
+  );
 
   return (
     <AdminGuard>

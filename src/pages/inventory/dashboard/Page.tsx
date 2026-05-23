@@ -222,7 +222,11 @@ const Page = () => {
   if (cube.isCubeLoading || !cube.data || !kpis) return null;
 
   return (
-    <PageWrapper title="Panel" maxWidth="2xl">
+    <PageWrapper
+      title="Panel"
+      description="Visión general del cubo: scorecard, drivers, rendimiento por categoría y series temporales."
+      maxWidth="2xl"
+    >
       <PageHeader
         title="Panel"
         description="Vista general del comportamiento del inventario y su impacto en el negocio."

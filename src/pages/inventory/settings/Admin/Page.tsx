@@ -5,7 +5,10 @@ import { useDocumentMetadata } from "src/hooks";
 import { AdminColumns } from "./components";
 
 const Page = () => {
-  useDocumentMetadata("Configuración admin - Trim Success");
+  useDocumentMetadata(
+    "Admin",
+    "Herramientas de administración: gestión de columnas, drivers y catálogo."
+  );
 
   return (
     <AdminGuard>

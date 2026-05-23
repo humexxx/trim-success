@@ -16,7 +16,11 @@ const Page = () => {
   const cube = useCube();
 
   return (
-    <PageWrapper title="Rendimiento de Inventario" maxWidth="2xl">
+    <PageWrapper
+      title="Rendimiento de inventario"
+      description="Métricas de rotación, días de inventario y eficiencia operativa por categoría."
+      maxWidth="2xl"
+    >
       <PageHeader
         title="Rendimiento de inventario"
         description="Conjunto de métricas que mide la eficiencia y rentabilidad del inventario: rotación, días-360, ICC, IVA y más."

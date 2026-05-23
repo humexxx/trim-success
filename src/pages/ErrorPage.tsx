@@ -4,7 +4,10 @@ import { useDocumentMetadata } from "src/hooks";
 import { Button } from "@/components/ui/button";
 
 function ErrorPage() {
-  useDocumentMetadata("Error - Trim Success");
+  useDocumentMetadata(
+    "Error",
+    "Algo salió mal. Vuelve al inicio o intenta de nuevo en unos minutos."
+  );
   const error = useRouteError() as ErrorResponse;
   console.error(error);
 

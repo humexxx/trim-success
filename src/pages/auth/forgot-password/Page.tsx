@@ -16,7 +16,10 @@ async function handleOnSubmit(form: ForgotPasswordFormInputs) {
 }
 
 const Page = () => {
-  useDocumentMetadata("Contraseña Olvidada - Trim Success");
+  useDocumentMetadata(
+    "Recuperar contraseña",
+    "Recibe un enlace seguro para restablecer tu contraseña."
+  );
   return (
     <AutoLogRoute>
       <ForgotPassword handleOnSubmit={handleOnSubmit} />

@@ -104,7 +104,10 @@ function KpiCard({ label, value, hint, icon, trend }: KpiCardProps) {
 }
 
 const SalesMainPage = () => {
-  useDocumentMetadata("Ventas - ScorChain");
+  useDocumentMetadata(
+    "Ventas",
+    "Resumen de ventas, margen y comportamiento por categoría sobre el cubo activo."
+  );
   const cube = useCube();
 
   const summary = useMemo(() => {

@@ -1,5 +1,7 @@
 import { Link } from "react-router-dom";
 
+import { APP_NAME } from "src/lib/consts";
+
 import { cn } from "@/lib/utils";
 
 interface LogoProps {
@@ -13,7 +15,7 @@ const Logo = ({ className, to = "/" }: LogoProps) => {
       to={to}
       className={cn("text-lg font-semibold tracking-tight", className)}
     >
-      ScorChain
+      {APP_NAME}
     </Link>
   );
 };

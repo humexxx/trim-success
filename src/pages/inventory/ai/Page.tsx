@@ -8,7 +8,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 const Page = () => {
-  useDocumentMetadata("AI - Trim Success");
+  useDocumentMetadata(
+    "Asistente IA",
+    "Asistente conversacional para responder preguntas sobre tu inventario."
+  );
   const [text, setText] = useState<string>("");
   const [response, setResponse] = useState<string>("");
 

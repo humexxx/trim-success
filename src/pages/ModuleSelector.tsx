@@ -11,7 +11,7 @@ import {
 import { Link } from "react-router-dom";
 import { PageHeader } from "src/components/layout";
 import { useAuth } from "src/context/hooks";
-import { useCubeSummary } from "src/hooks";
+import { useCubeSummary, useDocumentMetadata } from "src/hooks";
 import { ROUTES } from "src/lib/consts";
 
 import { Badge } from "@/components/ui/badge";
@@ -148,6 +148,11 @@ const percentFmt = new Intl.NumberFormat("en-US", {
 const ModuleSelector = () => {
   const { currentUser } = useAuth();
   const probe = useCubeSummary();
+
+  useDocumentMetadata(
+    "Inicio",
+    "Elige el módulo en el que vas a trabajar. Tus datos se mantienen sincronizados entre Inventario y Ventas."
+  );
 
   const displayName =
     currentUser?.displayName?.split(" ")[0] ??

@@ -19,7 +19,11 @@ const Page = () => {
   const { isAdmin } = useAuth();
 
   return (
-    <PageWrapper title="Configuración" maxWidth="2xl">
+    <PageWrapper
+      title="Configuración"
+      description="Ajustes del cubo, preferencias de cuenta y opciones avanzadas."
+      maxWidth="2xl"
+    >
       <PageHeader
         title="Configuración"
         description="Datos de la cuenta, columnas del cubo y, si eres admin, configuración global."

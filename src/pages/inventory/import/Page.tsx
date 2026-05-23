@@ -7,7 +7,11 @@ export default function Page() {
   const cube = useCube();
 
   return (
-    <PageWrapper title="Importar" maxWidth="lg">
+    <PageWrapper
+      title="Importar"
+      description="Sube tu XLSX con la estructura esperada para construir el cubo de inventario y ventas."
+      maxWidth="lg"
+    >
       <PageHeader
         title="Importar datos"
         description={

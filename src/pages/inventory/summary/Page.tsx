@@ -17,7 +17,11 @@ const Page = () => {
   if (cube.isCubeLoading || !cube.data) return null;
 
   return (
-    <PageWrapper title="Resumen" maxWidth="2xl">
+    <PageWrapper
+      title="Resumen"
+      description="Indicadores clave del cubo activo: SKUs, categorías, ventas, margen y costo total."
+      maxWidth="2xl"
+    >
       <PageHeader
         title="Resumen general"
         description="Vista SKU por SKU con filtros y reportes ejecutivos exportables."

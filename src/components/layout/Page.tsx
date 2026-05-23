@@ -1,14 +1,15 @@
 import { PropsWithChildren } from "react";
 
 import { useDocumentMetadata } from "src/hooks";
-import { APP_NAME } from "src/lib/consts";
 
 import { cn } from "@/lib/utils";
 
 type MaxWidth = "sm" | "md" | "lg" | "xl" | "2xl" | "full";
 
 type Props = {
+  /** Sets `<title>` as "{title} · {APP_NAME}". */
   title?: string;
+  /** Sets `<meta name="description">` for the page. */
   description?: string;
   useContainer?: boolean;
   maxWidth?: MaxWidth;
@@ -25,11 +26,12 @@ const maxWidthClass: Record<MaxWidth, string> = {
 
 const Page = ({
   title,
+  description,
   useContainer = true,
   maxWidth = "xl",
   children,
 }: PropsWithChildren<Props>) => {
-  useDocumentMetadata(`${title} | ${APP_NAME}`);
+  useDocumentMetadata({ title: title ?? "", description });
 
   if (useContainer) {
     return (

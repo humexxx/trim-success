@@ -12,7 +12,10 @@ const Page = () => {
 
   return (
     <AdminGuard>
-      <PageWrapper title="Testing">
+      <PageWrapper
+        title="Testing"
+        description="Sandbox de pruebas internas para validar pipelines y migraciones."
+      >
         <PageHeader
           title="Testing"
           description="Diferentes funcionalidades para testear."

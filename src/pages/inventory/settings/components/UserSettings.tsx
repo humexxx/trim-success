@@ -35,7 +35,10 @@ interface FormInputs {
 }
 
 export default function UserPage() {
-  useDocumentMetadata("Usuario - Trim Success");
+  useDocumentMetadata(
+    "Mi cuenta",
+    "Edita tu perfil, cambia tu contraseña y gestiona la sesión."
+  );
   const user = useAuth();
   const [isLoading, setIsLoading] = useState(false);
 

@@ -10,7 +10,10 @@ import { Columns, Drivers } from "./components";
  * the two sub-sections vertically.
  */
 const Page = () => {
-  useDocumentMetadata("Configuración del cubo - Trim Success");
+  useDocumentMetadata(
+    "Configuración del cubo",
+    "Re-procesa el cubo, ajusta drivers y reasigna categorías."
+  );
   const cube = useCube();
 
   return (
