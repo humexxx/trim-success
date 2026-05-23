@@ -34,3 +34,8 @@ cors.json
 service-account*.json
 serviceAccount*.json
 firebase-adminsdk.json
+
+# Playwright
+/test-results/
+/playwright-report/
+/playwright/.cache/
