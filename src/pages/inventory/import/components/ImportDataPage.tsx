@@ -7,6 +7,7 @@ import { ROUTES } from "src/lib/consts";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 
 import DriversStep from "./DriversStep";
@@ -23,6 +24,7 @@ export interface FileResolution {
 
 interface StepDef {
   label: string;
+  shortLabel: string;
   description: string;
   body: (ctx: StepCtx) => ReactNode;
 }
@@ -36,10 +38,12 @@ interface StepCtx {
 }
 
 /**
- * Vercel-style import wizard: horizontal progress strip at the top,
- * a single elevated card for the active step, and a sticky footer
- * with Atrás / Continuar actions. Replaces the previous vertical-
- * numbered MUI-flavored stepper.
+ * Two-column wizard pattern (matches Vercel "New Project" / Stripe
+ * onboarding): the stepper sits as a sticky sidebar on the left and
+ * the active step's content owns the right side. The PageHeader above
+ * provides the page-level context so the card doesn't need to repeat
+ * the "Importar" h1 — keeps the visual rhythm in line with
+ * ModuleSelector / Sales (PageHeader + content area below).
  */
 export default function ImportDataPage() {
   const [activeStep, setActiveStep] = useState(0);
@@ -52,8 +56,9 @@ export default function ImportDataPage() {
 
   const steps: StepDef[] = [
     {
-      label: "Importar archivo",
-      description: "Sube el Excel con los datos del cubo (.xlsx o .xls).",
+      label: "Subir archivo Excel",
+      shortLabel: "Archivo",
+      description: "Sube el .xlsx o .xls con los datos del cubo.",
       body: ({ setFileResolution, goNext }) => (
         <DropzoneStep
           handleNext={(file: File) => {
@@ -65,14 +70,16 @@ export default function ImportDataPage() {
     },
     {
       label: "Verificar drivers",
+      shortLabel: "Drivers",
       description:
-        "Selecciona los drivers de negocio que se van a usar en el análisis.",
+        "Selecciona qué drivers de negocio entran al análisis.",
       body: () => <DriversStep />,
     },
     {
-      label: "Carga de datos",
+      label: "Cargar y procesar",
+      shortLabel: "Cargar",
       description:
-        "Procesamos el archivo y generamos los reportes. Toma un par de minutos.",
+        "Subimos el archivo y generamos los reportes. Toma un par de minutos.",
       body: ({ fileResolution, finish }) => (
         <FileUploadStep
           fileResolution={fileResolution!}
@@ -96,25 +103,71 @@ export default function ImportDataPage() {
   const current = steps[activeStep]!;
   const isFirst = activeStep === 0;
   const isLast = activeStep === steps.length - 1;
-  const canAdvance =
-    activeStep === 0
-      ? Boolean(fileResolution?.file)
-      : activeStep === 1
-        ? true
-        : false; // last step has its own submit button
+  const canAdvance = activeStep === 0 ? Boolean(fileResolution?.file) : true;
 
   return (
-    <div className="mx-auto w-full max-w-2xl">
-      <Stepper
-        steps={steps.map((s) => s.label)}
-        activeStep={activeStep}
-      />
+    <Card className="overflow-hidden">
+      <div className="grid grid-cols-1 md:grid-cols-[260px_minmax(0,1fr)]">
+        {/* Left: step list, sticky on tall content */}
+        <aside className="border-b bg-muted/30 p-6 md:border-b-0 md:border-r">
+          <ol className="space-y-1" aria-label="Pasos">
+            {steps.map((s, idx) => {
+              const completed = idx < activeStep;
+              const active = idx === activeStep;
+              return (
+                <li key={s.label}>
+                  <div
+                    aria-current={active ? "step" : undefined}
+                    className={cn(
+                      "flex items-start gap-3 rounded-md px-2.5 py-2 text-sm transition-colors",
+                      active && "bg-background shadow-sm"
+                    )}
+                  >
+                    <span
+                      className={cn(
+                        "mt-0.5 flex h-5 w-5 flex-none items-center justify-center rounded-full border text-[11px] font-semibold",
+                        completed &&
+                          "border-foreground bg-foreground text-background",
+                        active &&
+                          "border-foreground bg-background text-foreground",
+                        !active &&
+                          !completed &&
+                          "border-border bg-background text-muted-foreground"
+                      )}
+                    >
+                      {completed ? (
+                        <Check className="h-3 w-3" />
+                      ) : (
+                        idx + 1
+                      )}
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <div
+                        className={cn(
+                          "font-medium leading-tight",
+                          !active && !completed && "text-muted-foreground"
+                        )}
+                      >
+                        {s.label}
+                      </div>
+                      {active && (
+                        <div className="mt-0.5 text-xs text-muted-foreground">
+                          {s.description}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </li>
+              );
+            })}
+          </ol>
+        </aside>
 
-      <Card className="mt-6">
-        <CardContent className="space-y-6 p-6 md:p-8">
+        {/* Right: active step body + footer */}
+        <CardContent className="flex flex-col gap-6 p-6 md:p-8">
           <header className="space-y-1">
             <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-              Paso {activeStep + 1} de {steps.length}
+              Paso {activeStep + 1} de {steps.length} · {current.shortLabel}
             </p>
             <h2 className="text-xl font-semibold tracking-tight">
               {current.label}
@@ -122,90 +175,36 @@ export default function ImportDataPage() {
             <p className="text-sm text-muted-foreground">{current.description}</p>
           </header>
 
-          <div>{current.body(ctx)}</div>
+          <Separator />
+
+          <div className="min-h-[260px]">{current.body(ctx)}</div>
 
           {!isLast && (
-            <footer className="flex items-center justify-between border-t pt-4">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={ctx.goBack}
-                disabled={isFirst}
-                className="gap-1"
-              >
-                <ChevronLeft />
-                Atrás
-              </Button>
-              <Button
-                size="sm"
-                onClick={ctx.goNext}
-                disabled={!canAdvance}
-              >
-                Continuar
-              </Button>
-            </footer>
+            <>
+              <Separator />
+              <footer className="flex items-center justify-between">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={ctx.goBack}
+                  disabled={isFirst}
+                  className="gap-1"
+                >
+                  <ChevronLeft />
+                  Atrás
+                </Button>
+                <Button
+                  size="sm"
+                  onClick={ctx.goNext}
+                  disabled={!canAdvance}
+                >
+                  Continuar
+                </Button>
+              </footer>
+            </>
           )}
         </CardContent>
-      </Card>
-    </div>
-  );
-}
-
-interface StepperProps {
-  steps: string[];
-  activeStep: number;
-}
-
-function Stepper({ steps, activeStep }: StepperProps) {
-  return (
-    <ol className="flex w-full items-center gap-2">
-      {steps.map((label, idx) => {
-        const isCompleted = idx < activeStep;
-        const isActive = idx === activeStep;
-        const showConnector = idx < steps.length - 1;
-        return (
-          <li key={label} className="flex flex-1 items-center gap-2">
-            <div className="flex flex-1 items-center gap-3">
-              <span
-                aria-current={isActive ? "step" : undefined}
-                className={cn(
-                  "flex h-7 w-7 items-center justify-center rounded-full border text-xs font-semibold transition-colors",
-                  isCompleted &&
-                    "border-foreground bg-foreground text-background",
-                  isActive &&
-                    "border-foreground bg-background text-foreground ring-4 ring-foreground/5",
-                  !isActive &&
-                    !isCompleted &&
-                    "border-border bg-muted text-muted-foreground"
-                )}
-              >
-                {isCompleted ? <Check className="h-3.5 w-3.5" /> : idx + 1}
-              </span>
-              <span
-                className={cn(
-                  "hidden text-sm font-medium md:inline",
-                  isActive
-                    ? "text-foreground"
-                    : isCompleted
-                      ? "text-foreground"
-                      : "text-muted-foreground"
-                )}
-              >
-                {label}
-              </span>
-            </div>
-            {showConnector && (
-              <span
-                aria-hidden="true"
-                className={cn(
-                  "h-px flex-1 transition-colors",
-                  idx < activeStep ? "bg-foreground" : "bg-border"
-                )}
-              />
-            )}
-          </li>
-        );
-      })}
-    </ol>
+      </div>
+    </Card>
   );
 }
