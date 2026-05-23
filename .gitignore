@@ -39,3 +39,6 @@ firebase-adminsdk.json
 /test-results/
 /playwright-report/
 /playwright/.cache/
+
+# Temp seed files (used by manual testing only)
+public/_seed.*
