@@ -3,11 +3,6 @@ import animate from "tailwindcss-animate";
 
 export default {
   darkMode: ["class"],
-  // Coexistence with MUI: disable preflight so Tailwind's base reset
-  // does not fight MUI's CssBaseline. Re-enable in Phase 6 once MUI is gone.
-  corePlugins: {
-    preflight: false,
-  },
   content: [
     "./index.html",
     "./src/**/*.{ts,tsx}",

@@ -3,18 +3,6 @@
 @tailwind utilities;
 
 /*
- * Minimal reset for elements Tailwind's preflight would normally cover.
- * Preflight is disabled so MUI's CssBaseline keeps owning the global reset
- * during migration. Re-enable in Phase 6 once MUI is removed.
- */
-@layer base {
-  a {
-    color: inherit;
-    text-decoration: inherit;
-  }
-}
-
-/*
  * Palette ported from src/context/LocalThemeContext.tsx (monochrome).
  * Primary #1A1A1A, secondary #424242, bg #F1F1F1, paper #FFFFFF,
  * text-primary #1A1A1A, text-secondary #4F4F4F, divider #D6D6D6.
