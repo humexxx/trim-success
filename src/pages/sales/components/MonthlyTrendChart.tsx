@@ -8,6 +8,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import { colorForCategory } from "src/lib/categoryColors";
 
 import {
   Card,
@@ -91,16 +92,23 @@ export function MonthlyTrendChart({ byCategory }: Props) {
     });
   }, [months, monthOffset, sortedCategories]);
 
+  // Use the shared category→color helper so categories show the same
+  // tone here as on the inventory dashboard, donut, and bar charts.
+  const allCategoryNames = useMemo(
+    () => byCategory.map((c) => c.category),
+    [byCategory]
+  );
+
   const config: ChartConfig = useMemo(
     () =>
-      sortedCategories.reduce<ChartConfig>((acc, c, i) => {
+      sortedCategories.reduce<ChartConfig>((acc, c) => {
         acc[c.category] = {
           label: c.category,
-          color: `hsl(var(--chart-${i + 1}))`,
+          color: colorForCategory(c.category, allCategoryNames),
         };
         return acc;
       }, {}),
-    [sortedCategories]
+    [sortedCategories, allCategoryNames]
   );
 
   const fmt = new Intl.NumberFormat("en-US", {
@@ -146,27 +154,26 @@ export function MonthlyTrendChart({ byCategory }: Props) {
         <ChartContainer config={config} className="aspect-auto h-[300px] w-full">
           <AreaChart data={data} margin={{ top: 10, right: 12, bottom: 0, left: 12 }}>
             <defs>
-              {sortedCategories.map((c, i) => (
-                <linearGradient
-                  key={c.category}
-                  id={`fillArea-${i + 1}`}
-                  x1="0"
-                  y1="0"
-                  x2="0"
-                  y2="1"
-                >
-                  <stop
-                    offset="5%"
-                    stopColor={`hsl(var(--chart-${i + 1}))`}
-                    stopOpacity={0.8}
-                  />
-                  <stop
-                    offset="95%"
-                    stopColor={`hsl(var(--chart-${i + 1}))`}
-                    stopOpacity={0.05}
-                  />
-                </linearGradient>
-              ))}
+              {/* One gradient per category — keyed off the category name
+                  so the gradient id is stable + the color comes from
+                  the shared category palette. */}
+              {sortedCategories.map((c) => {
+                const color = colorForCategory(c.category, allCategoryNames);
+                const id = `fillArea-${c.category.replace(/\s+/g, "-")}`;
+                return (
+                  <linearGradient
+                    key={c.category}
+                    id={id}
+                    x1="0"
+                    y1="0"
+                    x2="0"
+                    y2="1"
+                  >
+                    <stop offset="5%" stopColor={color} stopOpacity={0.85} />
+                    <stop offset="95%" stopColor={color} stopOpacity={0.15} />
+                  </linearGradient>
+                );
+              })}
             </defs>
             <CartesianGrid vertical={false} strokeDasharray="3 3" />
             <XAxis
@@ -193,18 +200,22 @@ export function MonthlyTrendChart({ byCategory }: Props) {
               }
             />
             <Legend content={<ChartLegendContent />} />
-            {sortedCategories.map((c, i) => (
-              <Area
-                key={c.category}
-                dataKey={c.category}
-                type="natural"
-                fill={`url(#fillArea-${i + 1})`}
-                fillOpacity={1}
-                stroke={`hsl(var(--chart-${i + 1}))`}
-                strokeWidth={2}
-                stackId="stack"
-              />
-            ))}
+            {sortedCategories.map((c) => {
+              const color = colorForCategory(c.category, allCategoryNames);
+              const id = `fillArea-${c.category.replace(/\s+/g, "-")}`;
+              return (
+                <Area
+                  key={c.category}
+                  dataKey={c.category}
+                  type="natural"
+                  fill={`url(#${id})`}
+                  fillOpacity={1}
+                  stroke={color}
+                  strokeWidth={2}
+                  stackId="stack"
+                />
+              );
+            })}
           </AreaChart>
         </ChartContainer>
       </CardContent>

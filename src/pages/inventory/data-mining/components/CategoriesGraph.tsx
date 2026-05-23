@@ -13,6 +13,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import { colorForCategory } from "src/lib/categoryColors";
 
 import {
   Card,
@@ -35,15 +36,11 @@ interface Props {
   drivers: IDriver[];
 }
 
-// Canonical shadcn chart palette — wired via CSS vars so light/dark
-// themes are handled automatically. Indexes wrap if there are more
-// series/slices than tokens.
-const SERIES_COLORS = [
+// Drivers in the multi-series bar chart use the shared palette tokens
+// so the two series read as distinct but harmonious.
+const DRIVER_COLORS = [
   "hsl(var(--chart-1))",
   "hsl(var(--chart-2))",
-  "hsl(var(--chart-3))",
-  "hsl(var(--chart-4))",
-  "hsl(var(--chart-5))",
 ];
 
 const CategoriesGraph = ({ data, drivers }: Props) => {
@@ -84,23 +81,31 @@ const CategoriesGraph = ({ data, drivers }: Props) => {
       barSeries.reduce<ChartConfig>((acc, driver, idx) => {
         acc[driver.key] = {
           label: driver.label,
-          color: SERIES_COLORS[idx % SERIES_COLORS.length],
+          color: DRIVER_COLORS[idx % DRIVER_COLORS.length],
         };
         return acc;
       }, {}),
     [barSeries]
   );
 
+  // Donut slices key off the SAME category→color map used elsewhere
+  // (sales bar chart, inventory dashboard, portfolio radar), so a
+  // category keeps its identity wherever it appears.
+  const allCategories = useMemo(
+    () => sortedRows.map((r) => r.category),
+    [sortedRows]
+  );
+
   const pieConfig: ChartConfig = useMemo(
     () =>
-      pieData.reduce<ChartConfig>((acc, p, idx) => {
+      pieData.reduce<ChartConfig>((acc, p) => {
         acc[p.name] = {
           label: p.name,
-          color: SERIES_COLORS[idx % SERIES_COLORS.length],
+          color: colorForCategory(p.name, allCategories),
         };
         return acc;
       }, {}),
-    [pieData]
+    [pieData, allCategories]
   );
 
   return (
@@ -153,6 +158,7 @@ const CategoriesGraph = ({ data, drivers }: Props) => {
                   dataKey={driver.key}
                   name={driver.label}
                   fill={`var(--color-${driver.key})`}
+                  fillOpacity={0.85}
                   radius={[4, 4, 0, 0]}
                 />
               ))}
@@ -193,10 +199,11 @@ const CategoriesGraph = ({ data, drivers }: Props) => {
                 paddingAngle={3}
                 strokeWidth={2}
               >
-                {pieData.map((_, idx) => (
+                {pieData.map((slice) => (
                   <Cell
-                    key={idx}
-                    fill={SERIES_COLORS[idx % SERIES_COLORS.length]}
+                    key={slice.name}
+                    fill={colorForCategory(slice.name, allCategories)}
+                    fillOpacity={0.85}
                   />
                 ))}
               </Pie>

@@ -7,6 +7,8 @@ import {
   RadialBarChart,
 } from "recharts";
 
+import { colorForCategory } from "src/lib/categoryColors";
+
 import {
   ChartConfig,
   ChartContainer,
@@ -53,20 +55,18 @@ export function MetricRadialChart({
   const { rings, total } = useMemo(() => {
     const totalRow = dataset.find((d) => d.category === "Total");
     const categoryRows = dataset.filter((d) => d.category !== "Total");
-    // Each ring needs an explicit fill — RadialBarChart honors the
-    // `fill` property on the data point. We step opacity from 100→55
-    // across categories so the rings read as a layered stack instead
-    // of a solid block.
-    const max = Math.max(0.0001, ...categoryRows.map((d) => Math.abs(d.value)));
+    const allCategories = categoryRows.map((d) => d.category);
+    // Each ring picks up its category's canonical color, so a category
+    // reads the same here as in any other chart on the page. Slight
+    // transparency softens the stack visually.
     return {
-      rings: categoryRows.map((d, i) => ({
+      rings: categoryRows.map((d) => ({
         category: d.category,
         value: d.value,
-        fill: "var(--color-value)",
-        fillOpacity: 1 - (i / Math.max(1, categoryRows.length - 1)) * 0.45,
+        fill: colorForCategory(d.category, allCategories),
+        fillOpacity: 0.85,
       })),
       total: totalRow ?? null,
-      max,
     };
   }, [dataset]);
 

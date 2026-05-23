@@ -10,6 +10,8 @@ import {
   YAxis,
 } from "recharts";
 
+import { colorForCategory } from "src/lib/categoryColors";
+
 import {
   ChartConfig,
   ChartContainer,
@@ -28,10 +30,11 @@ interface Props {
   /** Visible series name (legend + tooltip). */
   label: string;
   /**
-   * Series color via the canonical shadcn chart palette token name
-   * (1-5). The fill is wired through `var(--color-value)` which
-   * ChartContainer generates from this config — keeps theme awareness
-   * + dark-mode friendly contrast without per-chart overrides.
+   * Fallback color token when the chart is showing a single aggregate
+   * series (e.g. "Ventas" on the Sales page, where the breakdown is
+   * NOT per-category-of-interest). Per-category bars use
+   * `colorForCategory` instead so a category keeps its identity across
+   * the app.
    */
   chartColor: 1 | 2 | 3 | 4 | 5;
   /** Format a numeric value into the user-facing string (e.g. `$1.2M`). */
@@ -54,6 +57,13 @@ export function MetricBarChart({
   formatValue,
   isExpanded,
 }: Props) {
+  // List of real categories (Total excluded) — the color helper needs
+  // this to assign a stable shade per category across the whole app.
+  const allCategories = useMemo(
+    () => dataset.map((d) => d.category).filter((c) => c !== "Total"),
+    [dataset]
+  );
+
   const data = useMemo(
     () =>
       dataset.map(({ category, value }) => ({
@@ -64,8 +74,9 @@ export function MetricBarChart({
         value,
         rawCategory: category,
         isTotal: category === "Total",
+        fill: colorForCategory(category, allCategories),
       })),
-    [dataset, isExpanded]
+    [dataset, isExpanded, allCategories]
   );
 
   const config: ChartConfig = {
@@ -85,28 +96,6 @@ export function MetricBarChart({
         data={data}
         margin={{ top: 24, right: 12, bottom: isExpanded ? 24 : 56, left: 12 }}
       >
-        {/* shadcn area/bar chart gradient pattern: id is unique per
-            chart instance via the chartColor token. */}
-        <defs>
-          <linearGradient
-            id={`fillBar-${chartColor}`}
-            x1="0"
-            y1="0"
-            x2="0"
-            y2="1"
-          >
-            <stop
-              offset="5%"
-              stopColor="var(--color-value)"
-              stopOpacity={0.95}
-            />
-            <stop
-              offset="95%"
-              stopColor="var(--color-value)"
-              stopOpacity={0.5}
-            />
-          </linearGradient>
-        </defs>
         <CartesianGrid
           vertical={false}
           stroke="hsl(var(--border))"
@@ -146,19 +135,17 @@ export function MetricBarChart({
         />
         <Bar
           dataKey="value"
-          fill={`url(#fillBar-${chartColor})`}
           radius={[6, 6, 0, 0]}
           maxBarSize={68}
         >
+          {/* Per-category coloring: each Cell gets its category's
+              canonical color (Total stays muted). Slight transparency
+              keeps the chart feeling soft and modern. */}
           {data.map((d, i) => (
             <Cell
               key={i}
-              fill={
-                d.isTotal
-                  ? "hsl(var(--muted-foreground))"
-                  : `url(#fillBar-${chartColor})`
-              }
-              fillOpacity={d.isTotal ? 0.55 : 1}
+              fill={d.fill}
+              fillOpacity={d.isTotal ? 0.55 : 0.85}
             />
           ))}
           {isExpanded && (

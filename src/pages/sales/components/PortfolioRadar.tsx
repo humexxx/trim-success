@@ -7,6 +7,7 @@ import {
   Radar,
   RadarChart,
 } from "recharts";
+import { colorForCategory } from "src/lib/categoryColors";
 
 import {
   Card,
@@ -88,16 +89,24 @@ export function PortfolioRadar({ byCategory }: Props) {
     });
   }, [ranked, max]);
 
+  // Share the same category→color map used by the rest of the app —
+  // a category's radar polygon picks up the exact same hue as its
+  // bar, donut slice, area, etc.
+  const allCategoryNames = useMemo(
+    () => byCategory.map((c) => c.category),
+    [byCategory]
+  );
+
   const config: ChartConfig = useMemo(
     () =>
-      ranked.reduce<ChartConfig>((acc, c, i) => {
+      ranked.reduce<ChartConfig>((acc, c) => {
         acc[c.category] = {
           label: c.category,
-          color: `hsl(var(--chart-${i + 1}))`,
+          color: colorForCategory(c.category, allCategoryNames),
         };
         return acc;
       }, {}),
-    [ranked]
+    [ranked, allCategoryNames]
   );
 
   return (
@@ -136,16 +145,19 @@ export function PortfolioRadar({ byCategory }: Props) {
               }
             />
             <Legend content={<ChartLegendContent />} />
-            {ranked.map((c, i) => (
-              <Radar
-                key={c.category}
-                name={c.category}
-                dataKey={c.category}
-                stroke={`hsl(var(--chart-${i + 1}))`}
-                fill={`hsl(var(--chart-${i + 1}))`}
-                fillOpacity={0.2}
-              />
-            ))}
+            {ranked.map((c) => {
+              const color = colorForCategory(c.category, allCategoryNames);
+              return (
+                <Radar
+                  key={c.category}
+                  name={c.category}
+                  dataKey={c.category}
+                  stroke={color}
+                  fill={color}
+                  fillOpacity={0.2}
+                />
+              );
+            })}
           </RadarChart>
         </ChartContainer>
       </CardContent>
