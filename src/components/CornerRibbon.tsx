@@ -29,11 +29,11 @@ export function CornerRibbon({ label, tone = "amber" }: Props) {
   return (
     <div
       aria-hidden="true"
-      className="pointer-events-none absolute right-0 top-0 z-10 h-24 w-24 overflow-hidden"
+      className="pointer-events-none absolute right-0 top-0 z-10 h-16 w-16 overflow-hidden"
     >
       <div
         className={cn(
-          "absolute right-[-46px] top-[20px] w-[160px] rotate-45 py-1 text-center text-[11px] font-semibold uppercase tracking-[0.18em] shadow-md ring-1",
+          "absolute right-[-40px] top-[6px] w-[130px] rotate-45 py-0.5 text-center text-[9px] font-semibold uppercase tracking-[0.18em] shadow-md ring-1",
           TONES[tone]
         )}
       >
