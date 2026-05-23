@@ -81,4 +81,10 @@
     font-family: "Roboto", system-ui, -apple-system, BlinkMacSystemFont,
       "Segoe UI", sans-serif;
   }
+  /* Tailwind v3 preflight does not reset link colors; opt in so anchor
+     tags don't fall back to the browser-blue default. */
+  a {
+    color: inherit;
+    text-decoration: inherit;
+  }
 }
