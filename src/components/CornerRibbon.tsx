@@ -33,7 +33,7 @@ export function CornerRibbon({ label, tone = "amber" }: Props) {
     >
       <div
         className={cn(
-          "absolute right-[-28px] top-[26px] w-[120px] rotate-45 py-0.5 text-center text-[9px] font-semibold uppercase tracking-[0.18em] shadow-md ring-1",
+          "absolute right-[-30px] top-[21px] w-[120px] rotate-45 py-0.5 text-center text-[9px] font-semibold uppercase tracking-[0.18em] shadow-md ring-1",
           TONES[tone]
         )}
       >
