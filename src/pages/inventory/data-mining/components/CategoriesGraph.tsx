@@ -35,10 +35,16 @@ interface Props {
   drivers: IDriver[];
 }
 
-// Monochrome palette pulled from the shadcn neutral scale so charts
-// read consistently in light + dark mode without needing per-theme
-// color overrides.
-const SERIES_COLORS = ["#0f172a", "#475569", "#94a3b8", "#cbd5e1"];
+// Canonical shadcn chart palette — wired via CSS vars so light/dark
+// themes are handled automatically. Indexes wrap if there are more
+// series/slices than tokens.
+const SERIES_COLORS = [
+  "hsl(var(--chart-1))",
+  "hsl(var(--chart-2))",
+  "hsl(var(--chart-3))",
+  "hsl(var(--chart-4))",
+  "hsl(var(--chart-5))",
+];
 
 const CategoriesGraph = ({ data, drivers }: Props) => {
   const sortedRows = useMemo(

@@ -2,7 +2,6 @@ import { PageHeader, PageWrapper } from "src/components/layout";
 import { useCube } from "src/context/hooks";
 import { useDocumentMetadata } from "src/hooks";
 
-import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
   Card,
   CardContent,
@@ -10,6 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 
 import { CategoriesGraph, CategoriesTable, DriversTable } from "./components";
 
@@ -24,12 +24,47 @@ const Page = () => {
   const cubeParameters = data?.cubeParameters;
 
   if (!cubeParameters || isCubeLoading) {
+    // Skeleton mirrors the final layout — table card, two-chart row,
+    // drivers card — so the page doesn't reflow when data lands.
     return (
       <PageWrapper title="Data Mining" maxWidth="2xl">
-        <PageHeader title="Data Mining" />
-        <Alert className="mt-4">
-          <AlertDescription>Cargando...</AlertDescription>
-        </Alert>
+        <PageHeader
+          title="Data Mining"
+          description="Categorización por driver: cómo se distribuye cada métrica entre las categorías del catálogo."
+        />
+        <div className="mt-8 flex flex-col gap-6">
+          <Card>
+            <CardHeader className="space-y-2">
+              <Skeleton className="h-4 w-32" />
+              <Skeleton className="h-3 w-72" />
+            </CardHeader>
+            <CardContent>
+              <Skeleton className="h-48 w-full" />
+            </CardContent>
+          </Card>
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+            {[0, 1].map((i) => (
+              <Card key={i}>
+                <CardHeader className="space-y-2">
+                  <Skeleton className="h-4 w-44" />
+                  <Skeleton className="h-3 w-64" />
+                </CardHeader>
+                <CardContent>
+                  <Skeleton className="h-[300px] w-full" />
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+          <Card>
+            <CardHeader className="space-y-2">
+              <Skeleton className="h-4 w-24" />
+              <Skeleton className="h-3 w-80" />
+            </CardHeader>
+            <CardContent>
+              <Skeleton className="h-32 w-full" />
+            </CardContent>
+          </Card>
+        </div>
       </PageWrapper>
     );
   }
