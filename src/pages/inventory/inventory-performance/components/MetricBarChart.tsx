@@ -85,6 +85,28 @@ export function MetricBarChart({
         data={data}
         margin={{ top: 24, right: 12, bottom: isExpanded ? 24 : 56, left: 12 }}
       >
+        {/* shadcn area/bar chart gradient pattern: id is unique per
+            chart instance via the chartColor token. */}
+        <defs>
+          <linearGradient
+            id={`fillBar-${chartColor}`}
+            x1="0"
+            y1="0"
+            x2="0"
+            y2="1"
+          >
+            <stop
+              offset="5%"
+              stopColor="var(--color-value)"
+              stopOpacity={0.95}
+            />
+            <stop
+              offset="95%"
+              stopColor="var(--color-value)"
+              stopOpacity={0.5}
+            />
+          </linearGradient>
+        </defs>
         <CartesianGrid
           vertical={false}
           stroke="hsl(var(--border))"
@@ -124,7 +146,7 @@ export function MetricBarChart({
         />
         <Bar
           dataKey="value"
-          fill="var(--color-value)"
+          fill={`url(#fillBar-${chartColor})`}
           radius={[6, 6, 0, 0]}
           maxBarSize={68}
         >
@@ -134,7 +156,7 @@ export function MetricBarChart({
               fill={
                 d.isTotal
                   ? "hsl(var(--muted-foreground))"
-                  : "var(--color-value)"
+                  : `url(#fillBar-${chartColor})`
               }
               fillOpacity={d.isTotal ? 0.55 : 1}
             />

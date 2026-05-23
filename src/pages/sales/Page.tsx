@@ -10,15 +10,21 @@ import {
   TrendingUp,
 } from "lucide-react";
 import { Link } from "react-router-dom";
-import { PageContent, PageHeader, PageWrapper } from "src/components/layout";
+import { PageHeader, PageWrapper } from "src/components/layout";
 import { useCube } from "src/context/hooks";
-import { ROUTES } from "src/lib/consts";
 import { useDocumentMetadata } from "src/hooks";
+import { ROUTES } from "src/lib/consts";
 
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -27,8 +33,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { cn } from "@/lib/utils";
 
 import { MetricBarChart } from "../inventory/inventory-performance/components/MetricBarChart";
+
+import { MonthlyTrendChart, PortfolioRadar } from "./components";
 
 const currencyFmt = new Intl.NumberFormat("en-US", {
   style: "currency",
@@ -80,7 +89,7 @@ function KpiCard({ label, value, hint, icon, trend }: KpiCardProps) {
                   className="gap-0.5 font-medium"
                 >
                   <ArrowUpRight
-                    className={trend.positive ? "h-3 w-3" : "h-3 w-3 rotate-180"}
+                    className={cn("h-3 w-3", !trend.positive && "rotate-180")}
                   />
                   {trend.value}
                 </Badge>
@@ -131,9 +140,9 @@ const SalesMainPage = () => {
 
   if (cube.isCubeLoading) {
     return (
-      <PageWrapper title="Ventas">
+      <PageWrapper title="Ventas" maxWidth="2xl">
         <PageHeader title="Ventas" />
-        <Alert>
+        <Alert className="mt-4">
           <AlertDescription>Cargando datos del cubo...</AlertDescription>
         </Alert>
       </PageWrapper>
@@ -142,37 +151,35 @@ const SalesMainPage = () => {
 
   if (!summary || summary.totalSales === 0) {
     return (
-      <PageWrapper title="Ventas">
+      <PageWrapper title="Ventas" maxWidth="2xl">
         <PageHeader
           title="Ventas"
           description="Resumen del comportamiento comercial por categoría"
         />
-        <PageContent>
-          <Card className="border-dashed">
-            <CardContent className="flex flex-col items-center gap-4 py-12 text-center">
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-muted">
-                <ShoppingCart className="h-6 w-6 text-muted-foreground" />
-              </div>
-              <div className="space-y-1">
-                <h2 className="text-lg font-semibold">Aún no hay datos de ventas</h2>
-                <p className="max-w-md text-sm text-muted-foreground">
-                  El módulo de ventas usa la misma fuente de datos que
-                  inventario. Sube un archivo Excel desde el importador para
-                  desbloquear el resumen.
-                </p>
-              </div>
-              <Link to={ROUTES.INVENTORY.IMPORT}>
-                <Button>Ir al importador</Button>
-              </Link>
-            </CardContent>
-          </Card>
-        </PageContent>
+        <Card className="mt-8 border-dashed">
+          <CardContent className="flex flex-col items-center gap-4 py-12 text-center">
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-muted">
+              <ShoppingCart className="h-6 w-6 text-muted-foreground" />
+            </div>
+            <div className="space-y-1">
+              <h2 className="text-lg font-semibold">
+                Aún no hay datos de ventas
+              </h2>
+              <p className="max-w-md text-sm text-muted-foreground">
+                El módulo de ventas usa la misma fuente de datos que
+                inventario. Sube un archivo Excel desde el importador para
+                desbloquear el resumen.
+              </p>
+            </div>
+            <Link to={ROUTES.INVENTORY.IMPORT}>
+              <Button>Ir al importador</Button>
+            </Link>
+          </CardContent>
+        </Card>
       </PageWrapper>
     );
   }
 
-  // Chart dataset: sales per category + a Total row at the end (consistent
-  // with the existing MetricBarChart pattern used in inventory).
   const chartDataset = [
     ...summary.byCategory.map((c) => ({
       category: c.category,
@@ -182,99 +189,119 @@ const SalesMainPage = () => {
   ];
 
   return (
-    <PageWrapper title="Ventas">
+    <PageWrapper title="Ventas" maxWidth="2xl">
       <PageHeader
-        title="Ventas"
-        description="Resumen del comportamiento comercial por categoría"
+        title="Resumen de ventas"
+        description="Comportamiento comercial por categoría — KPIs, tendencia mensual y portafolio."
       />
-      <PageContent>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <KpiCard
-            label="Ventas totales"
-            value={compactCurrencyFmt.format(summary.totalSales)}
-            hint={`${summary.byCategory.length} categorías`}
-            icon={<DollarSign className="h-4 w-4" />}
-          />
-          <KpiCard
-            label="Margen bruto"
-            value={compactCurrencyFmt.format(summary.totalGrossMargin)}
-            hint={`${percentFmt.format(summary.grossMarginPct)} del total`}
-            icon={<TrendingUp className="h-4 w-4" />}
-          />
-          <KpiCard
-            label="Costo de ventas"
-            value={compactCurrencyFmt.format(summary.totalCost)}
-            hint={`${percentFmt.format(
+
+      <section
+        aria-label="Indicadores clave"
+        className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4"
+      >
+        <KpiCard
+          label="Ventas totales"
+          value={compactCurrencyFmt.format(summary.totalSales)}
+          hint={`${summary.byCategory.length} categorías`}
+          icon={<DollarSign className="h-4 w-4" />}
+        />
+        <KpiCard
+          label="Margen bruto"
+          value={compactCurrencyFmt.format(summary.totalGrossMargin)}
+          hint="del total"
+          trend={{
+            value: percentFmt.format(summary.grossMarginPct),
+            positive: true,
+          }}
+          icon={<TrendingUp className="h-4 w-4" />}
+        />
+        <KpiCard
+          label="Costo de ventas"
+          value={compactCurrencyFmt.format(summary.totalCost)}
+          hint="del total"
+          trend={{
+            value: percentFmt.format(
               summary.totalSales > 0
                 ? summary.totalCost / summary.totalSales
                 : 0
-            )} del total`}
-            icon={<Percent className="h-4 w-4" />}
-          />
-          <KpiCard
-            label="SKUs activos"
-            value={summary.totalSkus.toLocaleString("en-US")}
-            hint={`Promedio ${currencyFmt.format(summary.avgPerSku)} / SKU`}
-            icon={<Package className="h-4 w-4" />}
-          />
-        </div>
+            ),
+            positive: false,
+          }}
+          icon={<Percent className="h-4 w-4" />}
+        />
+        <KpiCard
+          label="SKUs activos"
+          value={summary.totalSkus.toLocaleString("en-US")}
+          hint={`Promedio ${currencyFmt.format(summary.avgPerSku)} / SKU`}
+          icon={<Package className="h-4 w-4" />}
+        />
+      </section>
 
-        <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-5">
-          <Card className="lg:col-span-3">
-            <CardContent className="p-6">
-              <div className="mb-4 flex items-baseline justify-between">
-                <h3 className="text-base font-semibold">Ventas por categoría</h3>
-                <span className="text-xs text-muted-foreground">USD</span>
-              </div>
-              <MetricBarChart
-                dataset={chartDataset}
-                label="Ventas"
-                chartColor={1}
-                formatValue={(v) => compactCurrencyFmt.format(v)}
-                isExpanded={false}
-              />
-            </CardContent>
-          </Card>
-
-          <Card className="lg:col-span-2">
-            <CardContent className="p-6">
-              <div className="mb-4 flex items-baseline justify-between">
-                <h3 className="text-base font-semibold">Top categorías</h3>
-                <span className="text-xs text-muted-foreground">
-                  por ventas
-                </span>
-              </div>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Categoría</TableHead>
-                    <TableHead className="text-right">Ventas</TableHead>
-                    <TableHead className="text-right">Margen %</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {summary.byCategory.map((c) => {
-                    const marginPct = c.sales > 0 ? c.grossMargin / c.sales : 0;
-                    return (
-                      <TableRow key={c.category}>
-                        <TableCell className="font-medium">
-                          {c.category}
-                        </TableCell>
-                        <TableCell className="text-right tabular-nums">
-                          {compactCurrencyFmt.format(c.sales)}
-                        </TableCell>
-                        <TableCell className="text-right tabular-nums">
-                          {percentFmt.format(marginPct)}
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
+      <section className="mt-6 grid grid-cols-1 gap-6 xl:grid-cols-3">
+        <div className="xl:col-span-2">
+          <MonthlyTrendChart byCategory={summary.byCategory} />
         </div>
-      </PageContent>
+        <PortfolioRadar byCategory={summary.byCategory} />
+      </section>
+
+      <section className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-5">
+        <Card className="lg:col-span-3">
+          <CardHeader className="space-y-1">
+            <CardTitle className="text-base">Ventas por categoría</CardTitle>
+            <CardDescription className="text-xs">
+              Ventas totales del año actual por categoría, ordenadas de mayor a
+              menor.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="px-2 pb-4 pt-0">
+            <MetricBarChart
+              dataset={chartDataset}
+              label="Ventas"
+              chartColor={1}
+              formatValue={(v) => compactCurrencyFmt.format(v)}
+              isExpanded={false}
+            />
+          </CardContent>
+        </Card>
+
+        <Card className="lg:col-span-2">
+          <CardHeader className="space-y-1">
+            <CardTitle className="text-base">Top categorías</CardTitle>
+            <CardDescription className="text-xs">
+              Ranking por ventas con margen porcentual.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="px-2 pb-4 pt-0">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Categoría</TableHead>
+                  <TableHead className="text-right">Ventas</TableHead>
+                  <TableHead className="text-right">Margen %</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {summary.byCategory.map((c) => {
+                  const marginPct = c.sales > 0 ? c.grossMargin / c.sales : 0;
+                  return (
+                    <TableRow key={c.category}>
+                      <TableCell className="font-medium">
+                        {c.category}
+                      </TableCell>
+                      <TableCell className="text-right tabular-nums">
+                        {compactCurrencyFmt.format(c.sales)}
+                      </TableCell>
+                      <TableCell className="text-right tabular-nums">
+                        {percentFmt.format(marginPct)}
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+      </section>
     </PageWrapper>
   );
 };
