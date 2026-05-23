@@ -64,7 +64,14 @@ function ModuleCard({
     >
       {ribbon && <CornerRibbon label={ribbon.label} tone={ribbon.tone} />}
       <CardContent className="flex h-full flex-col gap-4 p-6">
-        <div className="flex items-start justify-between gap-3">
+        <div
+          className={cn(
+            "flex items-start justify-between gap-3",
+            // Reserve room for the diagonal ribbon so the status badge
+            // doesn't get clipped underneath it.
+            ribbon && "pr-10"
+          )}
+        >
           <div className="flex h-10 w-10 items-center justify-center rounded-md border bg-muted/40 text-foreground">
             {icon}
           </div>
