@@ -35,7 +35,7 @@ const ICCGraph = ({ scorecard, categories, isExpanded }: Props) => {
     <MetricBarChart
       dataset={dataset}
       label="Inventory Carry Cost (ICC)"
-      color="#b91c1c"
+      chartColor={2}
       formatValue={(v) => formatAmount(v, EAmountType.MILLIS)}
       isExpanded={isExpanded}
     />

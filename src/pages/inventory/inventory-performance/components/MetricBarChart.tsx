@@ -4,11 +4,18 @@ import {
   Bar,
   BarChart,
   CartesianGrid,
-  ResponsiveContainer,
-  Tooltip,
+  Cell,
+  LabelList,
   XAxis,
   YAxis,
 } from "recharts";
+
+import {
+  ChartConfig,
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "@/components/ui/chart";
 
 interface DatasetItem {
   category: string;
@@ -20,24 +27,30 @@ interface Props {
   dataset: DatasetItem[];
   /** Visible series name (legend + tooltip). */
   label: string;
-  /** Bar fill color (any CSS color). */
-  color: string;
+  /**
+   * Series color via the canonical shadcn chart palette token name
+   * (1-5). The fill is wired through `var(--color-value)` which
+   * ChartContainer generates from this config — keeps theme awareness
+   * + dark-mode friendly contrast without per-chart overrides.
+   */
+  chartColor: 1 | 2 | 3 | 4 | 5;
   /** Format a numeric value into the user-facing string (e.g. `$1.2M`). */
   formatValue: (value: number) => string;
-  /** When true, taller chart + horizontal x labels. */
+  /** When true, taller chart + horizontal x labels + value labels on bars. */
   isExpanded: boolean;
 }
 
 /**
- * Recharts replacement for the BarChart pattern that ICRGraph/ICCGraph/
- * ICCvsSalesGraph/InventoryValueAddedGraph/InventoryValueOverSalesGraph
- * shared on @mui/x-charts. Truncates long category labels when collapsed
- * to keep the axis readable.
+ * shadcn canonical bar chart wrapper. The series fill is driven by
+ * `var(--color-value)` which ChartContainer injects from the config —
+ * matches the bar-chart example at https://ui.shadcn.com/charts. The
+ * synthetic "Total" bar uses the muted-foreground variable so the
+ * aggregate visually separates from per-category bars.
  */
 export function MetricBarChart({
   dataset,
   label,
-  color,
+  chartColor,
   formatValue,
   isExpanded,
 }: Props) {
@@ -45,49 +58,98 @@ export function MetricBarChart({
     () =>
       dataset.map(({ category, value }) => ({
         category:
-          !isExpanded && category.length > 15
-            ? `${category.slice(0, 15)}…`
+          !isExpanded && category.length > 14
+            ? `${category.slice(0, 13)}…`
             : category,
         value,
         rawCategory: category,
+        isTotal: category === "Total",
       })),
     [dataset, isExpanded]
   );
 
+  const config: ChartConfig = {
+    value: {
+      label,
+      color: `hsl(var(--chart-${chartColor}))`,
+    },
+  };
+
   return (
-    <div style={{ height: isExpanded ? 600 : 350, width: "100%" }}>
-      <ResponsiveContainer width="100%" height="100%">
-        <BarChart data={data} margin={{ top: 16, right: 24, bottom: 64, left: 16 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-          <XAxis
-            dataKey="category"
-            angle={isExpanded ? 0 : -35}
-            textAnchor={isExpanded ? "middle" : "end"}
-            fontSize={isExpanded ? 13 : 11}
-            interval={0}
-            stroke="hsl(var(--muted-foreground))"
-            height={isExpanded ? 60 : 80}
-          />
-          <YAxis
-            tickFormatter={formatValue}
-            fontSize={11}
-            stroke="hsl(var(--muted-foreground))"
-          />
-          <Tooltip
-            formatter={(value) => [formatValue(Number(value)), label]}
-            labelFormatter={(_label, payload) =>
-              payload?.[0]?.payload?.rawCategory ?? _label
-            }
-            contentStyle={{
-              background: "hsl(var(--popover))",
-              borderColor: "hsl(var(--border))",
-              borderRadius: 8,
-              fontSize: 12,
-            }}
-          />
-          <Bar dataKey="value" name={label} fill={color} radius={[4, 4, 0, 0]} />
-        </BarChart>
-      </ResponsiveContainer>
-    </div>
+    <ChartContainer
+      config={config}
+      className="aspect-auto w-full"
+      style={{ height: isExpanded ? 600 : 320 }}
+    >
+      <BarChart
+        data={data}
+        margin={{ top: 24, right: 12, bottom: isExpanded ? 24 : 56, left: 12 }}
+      >
+        <CartesianGrid
+          vertical={false}
+          stroke="hsl(var(--border))"
+          strokeDasharray="3 3"
+        />
+        <XAxis
+          dataKey="category"
+          tickLine={false}
+          axisLine={false}
+          angle={isExpanded ? 0 : -25}
+          textAnchor={isExpanded ? "middle" : "end"}
+          height={isExpanded ? 32 : 56}
+          fontSize={11}
+          interval={0}
+        />
+        <YAxis
+          tickFormatter={(v) => formatValue(v as number)}
+          tickLine={false}
+          axisLine={false}
+          fontSize={11}
+          width={56}
+        />
+        <ChartTooltip
+          cursor={{ fill: "hsl(var(--accent))", opacity: 0.4 }}
+          content={
+            <ChartTooltipContent
+              labelFormatter={(_, payload) => {
+                const p = payload?.[0] as
+                  | { payload?: { rawCategory?: string } }
+                  | undefined;
+                return p?.payload?.rawCategory ?? _;
+              }}
+              valueFormatter={(value) => formatValue(value)}
+              indicator="dot"
+            />
+          }
+        />
+        <Bar
+          dataKey="value"
+          fill="var(--color-value)"
+          radius={[6, 6, 0, 0]}
+          maxBarSize={68}
+        >
+          {data.map((d, i) => (
+            <Cell
+              key={i}
+              fill={
+                d.isTotal
+                  ? "hsl(var(--muted-foreground))"
+                  : "var(--color-value)"
+              }
+              fillOpacity={d.isTotal ? 0.55 : 1}
+            />
+          ))}
+          {isExpanded && (
+            <LabelList
+              dataKey="value"
+              position="top"
+              formatter={(value) => formatValue(Number(value))}
+              fill="hsl(var(--foreground))"
+              fontSize={11}
+            />
+          )}
+        </Bar>
+      </BarChart>
+    </ChartContainer>
   );
 }

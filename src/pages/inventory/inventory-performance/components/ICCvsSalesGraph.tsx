@@ -27,7 +27,7 @@ const ICCvsSalesGraph = ({ data, categories, isExpanded }: Props) => {
     <MetricBarChart
       dataset={dataset}
       label="Inventory Carrying Cost vs. Sales"
-      color="#1f2937"
+      chartColor={3}
       formatValue={(v) => formatPercentage(v)}
       isExpanded={isExpanded}
     />

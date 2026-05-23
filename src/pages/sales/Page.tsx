@@ -229,7 +229,7 @@ const SalesMainPage = () => {
               <MetricBarChart
                 dataset={chartDataset}
                 label="Ventas"
-                color="#0f172a"
+                chartColor={1}
                 formatValue={(v) => compactCurrencyFmt.format(v)}
                 isExpanded={false}
               />

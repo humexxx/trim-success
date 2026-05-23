@@ -31,7 +31,7 @@ const InventoryValueOverSalesGraph = ({
     <MetricBarChart
       dataset={dataset}
       label="Inventory Value vs. Sales"
-      color="#475569"
+      chartColor={4}
       formatValue={(v) => formatPercentage(v)}
       isExpanded={isExpanded}
     />

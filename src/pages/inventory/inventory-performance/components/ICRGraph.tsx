@@ -27,7 +27,7 @@ const ICRGraph = ({ data, categories, isExpanded }: Props) => {
     <MetricBarChart
       dataset={dataset}
       label="Inventory Carry Rate (ICR)"
-      color="#9ca3af"
+      chartColor={1}
       formatValue={(v) => formatPercentage(v)}
       isExpanded={isExpanded}
     />

@@ -28,7 +28,7 @@ const InventoryValueAddedGraph = ({ data, categories, isExpanded }: Props) => {
     <MetricBarChart
       dataset={dataset}
       label="Inventory Value Added™ (IVA)"
-      color="#0f172a"
+      chartColor={5}
       formatValue={(v) => formatAmount(v, EAmountType.MILLIS)}
       isExpanded={isExpanded}
     />
