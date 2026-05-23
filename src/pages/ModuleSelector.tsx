@@ -57,7 +57,10 @@ function ModuleCard({
   const inner = (
     <Card
       className={cn(
-        "group relative h-full overflow-hidden transition-all",
+        "group relative h-full transition-all",
+        // Only clip overflow when there's NO ribbon — the ribbon
+        // intentionally extends past the corner to wrap around the card.
+        !ribbon && "overflow-hidden",
         !disabled && "hover:border-foreground/40 hover:shadow-md",
         disabled && "opacity-60"
       )}
