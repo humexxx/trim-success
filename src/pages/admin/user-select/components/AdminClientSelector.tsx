@@ -1,17 +1,21 @@
 import { useEffect } from "react";
 
-import {
-  Autocomplete,
-  Box,
-  Button,
-  CircularProgress,
-  TextField,
-} from "@mui/material";
 import { IUser } from "@shared/models";
+import { Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "src/context/hooks";
 import { useLocalStorage } from "src/hooks";
 import { LOCAL_STORAGE_KEYS, ROUTES } from "src/lib/consts";
+
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 import { useUsers } from "../hooks";
 
@@ -27,9 +31,7 @@ const AdminClientSelector = () => {
   useEffect(() => {
     if (customUser?.uid && users.length > 0) {
       const user = users.find((u) => u.uid === customUser.uid);
-      if (user) {
-        setSelectedUser(user);
-      }
+      if (user) setSelectedUser(user);
     }
   }, [customUser?.uid, setSelectedUser, users]);
 
@@ -40,50 +42,46 @@ const AdminClientSelector = () => {
     }
   }
 
-  const handleUserChange = (_: React.SyntheticEvent, value: IUser | null) => {
-    setSelectedUser(value);
+  const handleUserChange = (uid: string) => {
+    const next = users.find((u) => u.uid === uid) ?? null;
+    setSelectedUser(next);
   };
 
   return (
-    <>
-      <Autocomplete
-        options={users}
-        getOptionLabel={(option: IUser) => option.name ?? option.email}
-        loading={loading}
-        onChange={handleUserChange}
-        disableClearable
-        value={selectedUser as any}
-        renderInput={(params) => (
-          <TextField
-            {...params}
-            disabled={loading}
-            label="Select User"
-            variant="outlined"
-            InputProps={{
-              ...params.InputProps,
-              endAdornment: (
-                <>
-                  {loading ? (
-                    <CircularProgress color="inherit" size={20} />
-                  ) : null}
-                  {params.InputProps.endAdornment}
-                </>
-              ),
-            }}
-          />
-        )}
-      />
-      <Box sx={{ my: 2 }}>
-        <Button
-          variant="contained"
-          onClick={handleOnClick}
-          sx={{ mt: 1, mr: 1 }}
-          disabled={!selectedUser || loading}
+    <div className="space-y-4">
+      <div className="space-y-1.5">
+        <Label htmlFor="client-select">Select User</Label>
+        <Select
+          value={selectedUser?.uid}
+          onValueChange={handleUserChange}
+          disabled={loading}
         >
-          Cargar
-        </Button>
-      </Box>
-    </>
+          <SelectTrigger id="client-select">
+            <SelectValue placeholder="Selecciona un usuario">
+              {loading ? (
+                <span className="inline-flex items-center gap-2">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Cargando...
+                </span>
+              ) : (
+                selectedUser?.name ?? selectedUser?.email
+              )}
+            </SelectValue>
+          </SelectTrigger>
+          <SelectContent>
+            {users.map((user) => (
+              <SelectItem key={user.uid} value={user.uid}>
+                {user.name ?? user.email}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
+      <Button onClick={handleOnClick} disabled={!selectedUser || loading}>
+        Cargar
+      </Button>
+    </div>
   );
 };
 

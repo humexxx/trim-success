@@ -1,7 +1,4 @@
-import Filter1OutlinedIcon from "@mui/icons-material/Filter1Outlined";
-import Filter2OutlinedIcon from "@mui/icons-material/Filter2Outlined";
-import Filter3OutlinedIcon from "@mui/icons-material/Filter3Outlined";
-import { Grid } from "@mui/material";
+import { Beaker, ChartLine, Filter } from "lucide-react";
 import { AdminGuard, CardButton } from "src/components";
 import { PageContent, PageHeader, PageWrapper } from "src/components/layout";
 import { useBaseData } from "src/pages/inventory/data-mining/hooks";
@@ -21,56 +18,42 @@ const Page = () => {
           description="Diferentes funcionalidades para testear."
         />
         <PageContent>
-          <Grid container spacing={4}>
-            <Grid size={{ xs: 12, md: 6, lg: 4 }}>
-              <CardButton
-                icon={<Filter1OutlinedIcon />}
-                label="Data Mining"
-                description={"Calcular las metricas de categoria y de drivers."}
-                onClick={baseData.calculate}
-                loading={baseData.loading}
-                error={baseData.error}
-              />
-            </Grid>
-            <Grid size={{ xs: 12, md: 6, lg: 4 }}>
-              <CardButton
-                icon={<Filter2OutlinedIcon />}
-                label="Scorecard"
-                description={
-                  "Calcular el scorecard en base a los datos de categoria y drivers."
-                }
-                onClick={scorecard.calculate}
-                loading={scorecard.loading}
-                error={scorecard.error}
-              />
-            </Grid>
-            <Grid size={{ xs: 12, md: 6, lg: 4 }}>
-              <CardButton
-                icon={<Filter3OutlinedIcon />}
-                label="Rendimiento de Inventario"
-                description={
-                  "Calcular el rendimiento de inventario en base al scorecard."
-                }
-                onClick={inventoryPerformance.calculateInventoryPerformance}
-                loading={inventoryPerformance.loading}
-                error={inventoryPerformance.error}
-              />
-            </Grid>
-            <Grid size={{ xs: 12, md: 6, lg: 4 }}>
-              <CardButton
-                icon={<Filter3OutlinedIcon />}
-                label="Rendimiento de Inventario (Cubo)"
-                description={
-                  "Calcular el rendimiento de inventario para cada articulo del cubo."
-                }
-                onClick={
-                  inventoryPerformance.calculateDataModelInventoryPerformance
-                }
-                loading={inventoryPerformance.loading}
-                error={inventoryPerformance.error}
-              />
-            </Grid>
-          </Grid>
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <CardButton
+              icon={<Filter className="h-5 w-5 text-muted-foreground" />}
+              label="Data Mining"
+              description="Calcular las metricas de categoria y de drivers."
+              onClick={baseData.calculate}
+              loading={baseData.loading}
+              error={baseData.error}
+            />
+            <CardButton
+              icon={<ChartLine className="h-5 w-5 text-muted-foreground" />}
+              label="Scorecard"
+              description="Calcular el scorecard en base a los datos de categoria y drivers."
+              onClick={scorecard.calculate}
+              loading={scorecard.loading}
+              error={scorecard.error}
+            />
+            <CardButton
+              icon={<Beaker className="h-5 w-5 text-muted-foreground" />}
+              label="Rendimiento de Inventario"
+              description="Calcular el rendimiento de inventario en base al scorecard."
+              onClick={inventoryPerformance.calculateInventoryPerformance}
+              loading={inventoryPerformance.loading}
+              error={inventoryPerformance.error}
+            />
+            <CardButton
+              icon={<Beaker className="h-5 w-5 text-muted-foreground" />}
+              label="Rendimiento de Inventario (Cubo)"
+              description="Calcular el rendimiento de inventario para cada articulo del cubo."
+              onClick={
+                inventoryPerformance.calculateDataModelInventoryPerformance
+              }
+              loading={inventoryPerformance.loading}
+              error={inventoryPerformance.error}
+            />
+          </div>
         </PageContent>
       </PageWrapper>
     </AdminGuard>
