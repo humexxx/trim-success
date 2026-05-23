@@ -44,3 +44,8 @@ firebase-adminsdk.json
 
 # Temp seed files (used by manual testing only)
 public/_seed.*
+
+# Agent skills — regenerable from skills-lock.json (same pattern as
+# node_modules + package-lock.json). The lockfile IS committed so
+# everyone on the project resolves to the same skill versions.
+.agents/skills/
