@@ -25,7 +25,7 @@ const FeatureCard = ({
       aria-label={`Ir a ${title}`}
       className="block h-full transition-transform hover:-translate-y-0.5"
     >
-      <Card className="flex h-full flex-col">
+      <Card className="flex h-full flex-col border-2 transition-shadow hover:shadow-md">
         <CardContent className="flex flex-1 flex-col justify-between gap-6 p-6">
           <div className="space-y-2">
             <div className="flex items-center gap-2">

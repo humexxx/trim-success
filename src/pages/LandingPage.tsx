@@ -25,9 +25,8 @@ const LandingPage = () => {
           </Link>
           <Link to={ROUTES.SIGN_IN}>
             <Button
-              variant="ghost"
               size="sm"
-              className="text-white hover:bg-white/10 hover:text-white"
+              className="bg-white text-[#1A1A1A] hover:bg-white/90"
             >
               Inicia sesión
             </Button>
