@@ -120,7 +120,7 @@ const CategoriesGraph = ({ data, drivers }: Props) => {
         <CardContent className="px-2 pb-4 pt-0">
           <ChartContainer
             config={barConfig}
-            className="aspect-auto h-[380px] w-full"
+            className="aspect-auto h-[280px] w-full sm:h-[380px]"
           >
             <BarChart
               data={barData}
@@ -177,7 +177,7 @@ const CategoriesGraph = ({ data, drivers }: Props) => {
         <CardContent className="px-2 pb-4 pt-0">
           <ChartContainer
             config={pieConfig}
-            className="mx-auto aspect-square h-[380px]"
+            className="mx-auto aspect-square h-[280px] sm:h-[380px]"
           >
             <PieChart>
               <ChartTooltip

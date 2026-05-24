@@ -1,7 +1,7 @@
 import { useCallback, useState } from "react";
 
 import { Outlet, useNavigate } from "react-router-dom";
-import { PageTransition, PrivateRoute } from "src/components";
+import { ImpersonationBanner, PageTransition, PrivateRoute } from "src/components";
 import { CubeProvider, LocalThemeProvider } from "src/context";
 import { useAuth, useCube } from "src/context/hooks";
 import { ROUTES, VERSION } from "src/lib/consts";
@@ -33,7 +33,8 @@ function SalesLayout() {
       />
 
       {/* Nav flex-1 already reserves 240px; no lg:pl override here. */}
-      <main className="flex-1 px-6 pt-20">
+      <main className="flex-1 px-4 pt-20 sm:px-6">
+        <ImpersonationBanner />
         {cube.isCubeLoading ? (
           "Loading..."
         ) : (

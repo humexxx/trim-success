@@ -7,7 +7,7 @@ function ModuleSelectLayout() {
   return (
     <div className="flex min-h-screen bg-background">
       <Header hasDrawer={false} />
-      <main className="w-full px-6 pt-20">
+      <main className="w-full px-4 pt-20 sm:px-6">
         <PageTransition>
           <Outlet />
         </PageTransition>

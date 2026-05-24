@@ -61,7 +61,7 @@ const GraphContainer = ({
             type="button"
             variant="ghost"
             size="icon"
-            className="-mt-1 -mr-1 h-7 w-7"
+            className="-mt-1 -mr-1 h-9 w-9"
             aria-label={isExpanded ? "Reducir gráfico" : "Expandir gráfico"}
             onClick={() => setIsExpanded(!isExpanded)}
           >

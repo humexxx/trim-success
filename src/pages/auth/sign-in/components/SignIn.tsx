@@ -4,6 +4,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { ShieldCheck, User2 } from "lucide-react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
+import { DEV_ACCOUNTS } from "src/lib/consts";
 import * as yup from "yup";
 
 import { AuthLayout } from "@/components/auth/AuthLayout";
@@ -21,20 +22,13 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-const DEV_ACCOUNTS = [
-  {
-    label: "Demo",
-    email: "demo@trim-success.test",
-    password: "Demo1234!",
-    Icon: User2,
-  },
-  {
-    label: "Admin",
-    email: "admin@trim-success.test",
-    password: "Admin1234!",
-    Icon: ShieldCheck,
-  },
-] as const;
+// Icon for each dev account, matched by label. Kept local because
+// importing JSX into a constants file would force everyone importing
+// consts.ts to pay the lucide cost.
+const DEV_ACCOUNT_ICONS: Record<string, typeof User2> = {
+  Demo: User2,
+  Admin: ShieldCheck,
+};
 
 export interface SignInFormInputs {
   email: string;
@@ -190,20 +184,23 @@ export default function SignIn({ handleOnSubmit }: SignInProps) {
               </span>
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-2">
-            {DEV_ACCOUNTS.map((acc) => (
-              <Button
-                key={acc.email}
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => handleDevLogin(acc)}
-                disabled={isLoading}
-              >
-                <acc.Icon />
-                Entrar como {acc.label}
-              </Button>
-            ))}
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+            {DEV_ACCOUNTS.map((acc) => {
+              const Icon = DEV_ACCOUNT_ICONS[acc.label] ?? User2;
+              return (
+                <Button
+                  key={acc.email}
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleDevLogin(acc)}
+                  disabled={isLoading}
+                >
+                  <Icon />
+                  Entrar como {acc.label}
+                </Button>
+              );
+            })}
           </div>
         </div>
       )}

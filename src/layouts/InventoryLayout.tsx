@@ -14,7 +14,7 @@ import {
   Users,
 } from "lucide-react";
 import { Outlet, useNavigate } from "react-router-dom";
-import { PageTransition, PrivateRoute } from "src/components";
+import { ImpersonationBanner, PageTransition, PrivateRoute } from "src/components";
 import { CubeProvider, LocalThemeProvider } from "src/context";
 import { useAuth, useCube } from "src/context/hooks";
 import { ROUTES, VERSION } from "src/lib/consts";
@@ -210,8 +210,10 @@ function InventoryLayout() {
 
       {/* main is flex-1 after Sidenav (which reserves lg:w-[240px]),
           so no extra left padding is needed. Adding pl-[240px] here
-          would double-offset and push content off-center on desktop. */}
-      <main className="flex-1 px-6 pt-20">
+          would double-offset and push content off-center on desktop.
+          Mobile uses px-4 to claim 16px more usable width. */}
+      <main className="flex-1 px-4 pt-20 sm:px-6">
+        <ImpersonationBanner />
         {isCubeLoading ? (
           <div className="mt-4 flex items-center gap-2 text-lg">
             <Loader2 className="h-5 w-5 animate-spin" />

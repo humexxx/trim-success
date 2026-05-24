@@ -182,7 +182,7 @@ const ImportedDataPage = () => {
               )}
 
               <div
-                className={`grid grid-cols-3 gap-4 ${
+                className={`grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4 ${
                   hasFiles ? "mt-5 border-t pt-4" : ""
                 }`}
               >

@@ -6,7 +6,10 @@ const Table = React.forwardRef<
   HTMLTableElement,
   React.HTMLAttributes<HTMLTableElement>
 >(({ className, ...props }, ref) => (
-  <div className="relative w-full overflow-auto">
+  // `overflow-x-auto` + `touch-pan-x` give wide tables a real
+  // horizontal scroll on mobile (native momentum on iOS). Without
+  // these the column cells just get squished into illegibility.
+  <div className="relative w-full overflow-x-auto [touch-action:pan-x]">
     <table
       ref={ref}
       className={cn("w-full caption-bottom text-sm", className)}
