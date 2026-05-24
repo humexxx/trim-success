@@ -1,14 +1,20 @@
 {
+  "//": "standard-version config. Reads Conventional Commit history, bumps the version, regenerates CHANGELOG.md, and creates a git tag. `hidden: true` types still affect the bump if applicable but don't appear in the changelog (style/test/build/chore/ci are noise for end users). `chore` here is intentionally NOT a release trigger — only feat/fix/perf/revert and BREAKING CHANGE bump the version.",
+  "preset": "conventionalcommits",
   "types": [
     { "type": "feat", "section": "✨ Features" },
     { "type": "fix", "section": "🐛 Bug Fixes" },
-    { "type": "chore", "section": "📦 Chores" },
-    { "type": "docs", "section": "📝 Documentation" }
+    { "type": "perf", "section": "⚡ Performance" },
+    { "type": "revert", "section": "⏪ Reverts" },
+    { "type": "refactor", "section": "♻️ Refactors" },
+    { "type": "docs", "section": "📚 Documentation" },
+    { "type": "style", "hidden": true },
+    { "type": "test", "hidden": true },
+    { "type": "build", "hidden": true },
+    { "type": "ci", "hidden": true },
+    { "type": "chore", "hidden": true }
   ],
-  "releaseRules": [
-    { "type": "feat", "release": "minor" },
-    { "type": "fix", "release": "patch" },
-    { "type": "chore", "release": "patch" }
-  ],
-  "preset": "conventionalcommits"
+  "commitUrlFormat": "https://github.com/humexxx/trim-success/commit/{{hash}}",
+  "compareUrlFormat": "https://github.com/humexxx/trim-success/compare/{{previousTag}}...{{currentTag}}",
+  "issueUrlFormat": "https://github.com/humexxx/trim-success/issues/{{id}}"
 }

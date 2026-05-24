@@ -7,27 +7,39 @@ on:
 
 jobs:
   release:
+    # Skip the run when this push IS the release commit standard-version
+    # just made — otherwise we get an infinite "chore(release): X.Y.Z"
+    # → push → workflow → release → push loop.
+    if: "!startsWith(github.event.head_commit.message, 'chore(release):')"
     runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
-      - name: Checkout Repository
+      - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          # Need full history so standard-version can read commits
+          # back to the previous tag for the changelog diff.
+          fetch-depth: 0
 
       - name: Set up Git user
         run: |
-          git config --global user.email "github-actions@github.com"
-          git config --global user.name "GitHub Actions"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name  "github-actions[bot]"
 
-      - uses: actions/checkout@v4
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18
-      - run: npm install
+          node-version: 20
+          cache: npm
 
-      - name: Run release script (Without Tagging)
+      - run: npm ci
+
+      - name: Bump version + regenerate CHANGELOG + tag
+        # `standard-version` exits 0 (no-op) when there's nothing
+        # release-worthy between HEAD and the last tag, so this step
+        # is a safe no-op on tag-irrelevant pushes.
         run: npm run release
 
-      - name: Push changes
-        run: git push origin main
+      - name: Push commit + tag
+        run: git push --follow-tags origin main
