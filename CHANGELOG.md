@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.0.0](https://github.com/humexxx/trim-success/compare/v0.50.2...v1.0.0) (2026-05-24)
+
+
+### ⚠ BREAKING CHANGES
+
+* Material UI removed completely. Downstream code
+depending on @mui/* packages or the old theme tokens must migrate
+to the shadcn/ui equivalents under src/components/ui/**. The chart
+color mapping is also new — read colorForCategory() from
+src/lib/categoryColors.ts instead of hardcoded hex.
+
+### Features
+
+* ship v1.0 — complete MUI → shadcn migration ([6320fdc](https://github.com/humexxx/trim-success/commit/6320fdc5870a61378246aab61db01bdf07e84156)), closes [#244](https://github.com/humexxx/trim-success/issues/244) [#244](https://github.com/humexxx/trim-success/issues/244)
+
 ### 0.50.2 (2025-02-14)
 
 ### 0.50.1 (2025-02-14)
