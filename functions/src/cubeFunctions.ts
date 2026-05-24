@@ -26,10 +26,15 @@ export const getCubeData = functions.https.onCall<ICallableRequest>(
     const uid = req.auth.token.admin ? req.data.uid : req.auth?.uid;
 
     try {
-      const cubeParameters = await getCubeParamteres(uid);
-      const dataMining = await getDataMining(uid);
-      const scorecard = await getScorecardData(uid);
-      const inventoryPerformance = await getInventoryPerformanceData(uid);
+      // Four independent reads — `Promise.all` cuts the worst-case
+      // latency from sum-of-four to the slowest single read.
+      const [cubeParameters, dataMining, scorecard, inventoryPerformance] =
+        await Promise.all([
+          getCubeParamteres(uid),
+          getDataMining(uid),
+          getScorecardData(uid),
+          getInventoryPerformanceData(uid),
+        ]);
 
       return {
         success: true,
@@ -40,8 +45,9 @@ export const getCubeData = functions.https.onCall<ICallableRequest>(
           inventoryPerformanceData: inventoryPerformance,
         },
       };
-    } catch (e: any) {
-      return { success: false, error: e.message ?? e };
+    } catch (e: unknown) {
+      const message = e instanceof Error ? e.message : String(e);
+      return { success: false, error: message };
     }
   }
 );
@@ -110,8 +116,9 @@ export const initCube = functions.https.onCall<ICallableRequest<IInitCube>>(
           inventoryPerformanceData: inventoryPerformance,
         },
       };
-    } catch (e: any) {
-      return { success: false, error: e.message ?? e };
+    } catch (e: unknown) {
+      const message = e instanceof Error ? e.message : String(e);
+      return { success: false, error: message };
     }
   }
 );
@@ -125,12 +132,19 @@ export const calculateDataMining = functions.https.onCall<ICallableRequest>(
     const uid = req.auth.token.admin ? req.data.uid : req.auth?.uid;
 
     try {
-      const { dataModel } = await getCubeDataModel(uid);
-      const cubeParameters = await getCubeParamteres(uid);
+      // Parallelize independent reads — they don't depend on each other.
+      const [{ dataModel }, cubeParameters] = await Promise.all([
+        getCubeDataModel(uid),
+        getCubeParamteres(uid),
+      ]);
 
-      generateDataMining(uid, dataModel.rows, cubeParameters);
-    } catch (e: any) {
-      return { success: false, error: e.message ?? e };
+      // Missing await — without it the function returned success while
+      // the generation was still running, so the client thought the
+      // mining was ready when it wasn't.
+      await generateDataMining(uid, dataModel.rows, cubeParameters);
+    } catch (e: unknown) {
+      const message = e instanceof Error ? e.message : String(e);
+      return { success: false, error: message };
     }
     return { success: true };
   }
@@ -142,12 +156,15 @@ export const calculateScorecardData = functions.https.onCall<ICallableRequest>(
     const uid = req.auth.token.admin ? req.data.uid : req.auth?.uid;
 
     try {
-      const cubeParameters = await getCubeParamteres(uid);
-      const dadtaMining = await getDataMining(uid);
+      const [cubeParameters, dataMining] = await Promise.all([
+        getCubeParamteres(uid),
+        getDataMining(uid),
+      ]);
 
-      await generateScorecard(uid, cubeParameters, dadtaMining);
-    } catch (e: any) {
-      return { success: false, error: e };
+      await generateScorecard(uid, cubeParameters, dataMining);
+    } catch (e: unknown) {
+      const message = e instanceof Error ? e.message : String(e);
+      return { success: false, error: message };
     }
     return { success: true };
   }
@@ -160,9 +177,12 @@ export const calculateInventoryPerformance =
       const uid = req.auth.token.admin ? req.data.uid : req.auth?.uid;
 
       try {
-        const cubeParameters = await getCubeParamteres(uid);
-        const dataMining = await getDataMining(uid);
-        const scorecardData = await getScorecardData(uid);
+        // Three independent reads → fire them in parallel.
+        const [cubeParameters, dataMining, scorecardData] = await Promise.all([
+          getCubeParamteres(uid),
+          getDataMining(uid),
+          getScorecardData(uid),
+        ]);
 
         await generateInventoryPerformance(
           uid,
@@ -170,8 +190,9 @@ export const calculateInventoryPerformance =
           dataMining,
           scorecardData
         );
-      } catch (e: any) {
-        return { success: false, error: e };
+      } catch (e: unknown) {
+        const message = e instanceof Error ? e.message : String(e);
+        return { success: false, error: message };
       }
       return { success: true };
     }
@@ -187,8 +208,11 @@ export const calculateDataModelInventoryPerformance =
       const uid = req.auth.token.admin ? req.data.uid : req.auth?.uid;
 
       try {
-        const { dataModel, fileUid } = await getCubeDataModel(uid);
-        const inventoryPerformance = await getInventoryPerformanceData(uid);
+        const [{ dataModel, fileUid }, inventoryPerformance] =
+          await Promise.all([
+            getCubeDataModel(uid),
+            getInventoryPerformanceData(uid),
+          ]);
 
         await generateDataModelInventoryPerformance(
           uid,
@@ -196,8 +220,9 @@ export const calculateDataModelInventoryPerformance =
           dataModel,
           inventoryPerformance
         );
-      } catch (e: any) {
-        return { success: false, error: e };
+      } catch (e: unknown) {
+        const message = e instanceof Error ? e.message : String(e);
+        return { success: false, error: message };
       }
       return { success: true };
     }
@@ -218,8 +243,10 @@ export const getFiles = functions.https.onCall<ICallableRequest>(
           type: file.metadata.contentType as EFileType,
         })),
       };
-    } catch (e: any) {
-      return { success: false, error: e };
+    } catch (e: unknown) {
+      const message = e instanceof Error ? e.message : String(e);
+      functions.logger.error("getFiles failed", e);
+      return { success: false, error: message };
     }
   }
 );

@@ -1,24 +1,21 @@
-import { Box } from "@mui/material";
 import { AdminGuard } from "src/components";
-import { PageHeader, PageContent, PageWrapper } from "src/components/layout";
-import { useDocumentMetadata } from "src/hooks";
+import { PageContent, PageHeader, PageWrapper } from "src/components/layout";
 
 import { AdminClientSelector } from "./components";
 
 export default function Page() {
-  useDocumentMetadata("Seleccionar Usuario - Trim Success");
-
   return (
     <AdminGuard>
-      <PageWrapper title="Seleccionar Usuario">
+      <PageWrapper
+        title="Impersonar usuario"
+        description="Asume la sesión de un usuario para inspeccionar su cubo desde admin."
+      >
         <PageHeader
-          title="Cargar Archivo de Usuario"
-          description="Como eres administrador, puedes cargar un archivo de usuario"
+          title="Impersonar usuario"
+          description="Selecciona un usuario para ver sus datos como si estuvieras conectado con su cuenta. Tus acciones aplican sobre su cubo."
         />
         <PageContent>
-          <Box maxWidth={450}>
-            <AdminClientSelector />
-          </Box>
+          <AdminClientSelector />
         </PageContent>
       </PageWrapper>
     </AdminGuard>

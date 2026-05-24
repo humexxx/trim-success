@@ -2,24 +2,24 @@ import { sendPasswordResetEmail } from "firebase/auth";
 import { AutoLogRoute } from "src/components";
 import { useDocumentMetadata } from "src/hooks";
 import { auth } from "src/lib/firebase";
+import { getError } from "src/utils";
 
 import ForgotPassword from "./components";
 import { ForgotPasswordFormInputs } from "./components/ForgotPassword";
 
 async function handleOnSubmit(form: ForgotPasswordFormInputs) {
-  await sendPasswordResetEmail(auth, form.email)
-    .then(() => {
-      console.log("Password reset email sent");
-    })
-    .catch((error) => {
-      const errorCode = error.code;
-      const errorMessage = error.message;
-      console.log(errorCode, errorMessage);
-    });
+  try {
+    await sendPasswordResetEmail(auth, form.email);
+  } catch (error) {
+    throw new Error(getError(error));
+  }
 }
 
 const Page = () => {
-  useDocumentMetadata("Contraseña Olvidada - Trim Success");
+  useDocumentMetadata(
+    "Recuperar contraseña",
+    "Recibe un enlace seguro para restablecer tu contraseña."
+  );
   return (
     <AutoLogRoute>
       <ForgotPassword handleOnSubmit={handleOnSubmit} />

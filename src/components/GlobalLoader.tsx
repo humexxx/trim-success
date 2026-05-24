@@ -1,13 +1,13 @@
-import Backdrop from "@mui/material/Backdrop";
-import CircularProgress from "@mui/material/CircularProgress";
+import { Loader2 } from "lucide-react";
 
 export default function GlobalLoader() {
   return (
-    <Backdrop
-      sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-      open
+    <div
+      role="status"
+      aria-label="Cargando"
+      className="fixed inset-0 z-[1400] flex items-center justify-center bg-black/50 text-white"
     >
-      <CircularProgress color="inherit" />
-    </Backdrop>
+      <Loader2 className="h-10 w-10 animate-spin" />
+    </div>
   );
 }

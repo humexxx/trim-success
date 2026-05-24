@@ -1,10 +1,12 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 
-import { Box } from "@mui/material";
-import { GridColDef } from "@mui/x-data-grid";
 import { IBaseData, IDriver } from "@shared/models";
 import { formatAmount } from "@shared/utils";
-import { StripedDataGrid } from "src/components";
+import { ColumnDef } from "@tanstack/react-table";
+
+import { DataTable, DataTableTotalCell } from "@/components/DataTable";
+
+type Row = IBaseData["categoriesData"]["rows"][number];
 
 interface Props {
   data?: IBaseData["categoriesData"];
@@ -12,83 +14,59 @@ interface Props {
 }
 
 const CategoriesTable = ({ data, drivers }: Props) => {
-  const [rows, setRows] = useState<IBaseData["categoriesData"]["rows"]>([]);
+  const rows = useMemo(() => data?.rows ?? [], [data]);
 
-  const columns: GridColDef[] = useMemo(
-    () => [
+  const columns = useMemo<ColumnDef<Row>[]>(() => {
+    return [
       {
-        field: "category",
-        headerName: "Rotulos de fila",
-        flex: 1,
+        accessorKey: "category",
+        header: "Rotulos de fila",
       },
       ...drivers
         .filter((x) => !x.xcatHidden)
-        .map(
-          (driver, index) =>
-            ({
-              field: driver.key,
-              headerName: `${index === 0 ? "Count of" : "Sum of"} ${driver.label}`,
-              valueFormatter: (value) =>
-                index === 0 ? value : formatAmount(value as number),
-              type: "number",
-              minWidth: 175,
-            }) as GridColDef
-        ),
-    ],
-    [drivers]
-  );
+        .map<ColumnDef<Row>>((driver, index) => ({
+          accessorKey: driver.key,
+          header: `${index === 0 ? "Count of" : "Sum of"} ${driver.label}`,
+          cell: ({ getValue }) => {
+            const raw = getValue() as number | undefined;
+            if (raw == null) return "-";
+            return index === 0 ? String(raw) : formatAmount(raw);
+          },
+        })),
+    ];
+  }, [drivers]);
 
-  const totalColumns: GridColDef[] = useMemo(
-    () => [
+  const totals = useMemo<DataTableTotalCell<Row>[]>(() => {
+    const out: DataTableTotalCell<Row>[] = [
       {
-        field: "1",
-        headerName: "Totales",
-        flex: 1,
-        headerClassName: "bold",
+        key: "label",
+        value: () => "Totales",
       },
-      ...drivers
-        .filter((x) => -1 !== x.columnIndexReference)
-        .map(
-          (driver) =>
-            ({
-              field: driver.key,
-              headerName: formatAmount(
-                (data?.rows ?? []).reduce(
-                  (acc, row) => acc + (row[driver.key] as number),
-                  0
-                )
-              ),
-              type: "number",
-              minWidth: 175,
-            }) as GridColDef
-        ),
-    ],
-    [data?.rows, drivers]
-  );
-
-  useEffect(() => {
-    if (data?.rows) {
-      setRows(data.rows);
-    }
-  }, [data]);
+    ];
+    drivers
+      .filter((x) => x.columnIndexReference !== -1)
+      .forEach((driver) => {
+        out.push({
+          key: driver.key,
+          value: (allRows) =>
+            formatAmount(
+              allRows.reduce(
+                (acc, row) => acc + ((row[driver.key] as number) ?? 0),
+                0
+              )
+            ),
+        });
+      });
+    return out;
+  }, [drivers]);
 
   return (
-    <>
-      <Box>
-        <StripedDataGrid
-          getRowId={(row) => row.category}
-          aria-label="Categories Table"
-          columns={columns}
-          rows={rows}
-          totalColumns={totalColumns}
-          initialState={{
-            sorting: {
-              sortModel: [{ field: "category", sort: "asc" }],
-            },
-          }}
-        />
-      </Box>
-    </>
+    <DataTable
+      data={rows}
+      columns={columns}
+      totals={totals}
+      initialSorting={[{ id: "category", desc: false }]}
+    />
   );
 };
 

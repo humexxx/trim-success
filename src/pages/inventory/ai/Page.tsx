@@ -1,33 +1,45 @@
 import { useState } from "react";
 
-import { Button, TextField } from "@mui/material";
 import { httpsCallable } from "firebase/functions";
-import { functions } from "src/lib/firebase";
 import { useDocumentMetadata } from "src/hooks";
+import { functions } from "src/lib/firebase";
+
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 const Page = () => {
-  useDocumentMetadata("AI - Trim Success");
+  useDocumentMetadata(
+    "Asistente IA",
+    "Asistente conversacional para responder preguntas sobre tu inventario."
+  );
   const [text, setText] = useState<string>("");
   const [response, setResponse] = useState<string>("");
 
   async function callAi() {
-    const addMessage = httpsCallable(functions, "aiGetMessage");
+    const addMessage = httpsCallable<{ question: string }, { reply: string }>(
+      functions,
+      "aiGetMessage"
+    );
     try {
-      const response = await addMessage({
-        question: text,
-      });
-      console.log(response);
+      const result = await addMessage({ question: text });
+      setResponse(result.data?.reply ?? "");
     } catch (e) {
       console.error(e);
     }
   }
 
   return (
-    <>
-      <TextField value={text} onChange={(e) => setText(e.target.value)} />
-      <Button onClick={callAi}>Call AI</Button>
-      <p>{response}</p>
-    </>
+    <div className="flex max-w-2xl flex-col gap-3">
+      <Input
+        value={text}
+        onChange={(e) => setText(e.target.value)}
+        placeholder="Pregunta algo..."
+      />
+      <Button onClick={callAi} className="self-start">
+        Call AI
+      </Button>
+      {response && <p className="text-sm">{response}</p>}
+    </div>
   );
 };
 

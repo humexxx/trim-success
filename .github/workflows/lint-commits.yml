@@ -1,0 +1,41 @@
+name: Lint commits
+
+# Belt-and-suspenders pair to the local husky `commit-msg` hook. Anyone
+# can bypass husky with `git commit --no-verify`, but they can't bypass
+# this — the PR check fails and the merge button greys out until every
+# commit message in the PR follows Conventional Commits.
+on:
+  pull_request:
+    branches: [main, master]
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  commitlint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout PR
+        uses: actions/checkout@v4
+        with:
+          # commitlint needs the full commit range, not just the merge
+          # commit — depth 0 fetches everything.
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
+      - name: Validate commits in this PR
+        # Lints every commit between the PR base and HEAD against the
+        # rules in commitlint.config.js.
+        run: |
+          npx commitlint \
+            --from "${{ github.event.pull_request.base.sha }}" \
+            --to   "${{ github.event.pull_request.head.sha }}" \
+            --verbose

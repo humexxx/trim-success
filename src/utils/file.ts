@@ -23,7 +23,7 @@ export function updateStoringScorecardDataRow(
               )![category]
             );
           return acc;
-        }, {} as any),
+        }, {} as Record<string, number>),
       };
     }
     return r;
@@ -47,7 +47,7 @@ export function updateStoringScorecardDataRow(
           0
         );
         return acc;
-      }, {} as any),
+      }, {} as Record<string, number>),
     },
   };
 }
@@ -75,7 +75,7 @@ export function updateInventoryScorecardDataRow(
               )![category]
             );
           return acc;
-        }, {} as any),
+        }, {} as Record<string, number>),
       };
     }
     return r;
@@ -99,7 +99,7 @@ export function updateInventoryScorecardDataRow(
           0
         );
         return acc;
-      }, {} as any),
+      }, {} as Record<string, number>),
     },
   };
 }

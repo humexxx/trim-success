@@ -9,10 +9,17 @@ interface AutoLogRouteProps {
 }
 
 const AutoLogRoute: React.FC<AutoLogRouteProps> = ({ children }) => {
-  const { currentUser } = useAuth();
+  const { currentUser, isAdmin } = useAuth();
 
   if (currentUser) {
-    return <Navigate to={ROUTES.MODULE_SELECTOR} replace />;
+    return (
+      <Navigate
+        to={
+          isAdmin ? ROUTES.INVENTORY.ADMIN.IMPERSONATE : ROUTES.MODULE_SELECTOR
+        }
+        replace
+      />
+    );
   }
 
   return children;

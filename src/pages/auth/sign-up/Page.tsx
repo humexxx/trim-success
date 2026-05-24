@@ -15,7 +15,10 @@ import SignUp from "./components";
 import { SignUpFormInputs } from "./components/SignUp";
 
 const Page = () => {
-  useDocumentMetadata("Sign Up - Trim Success");
+  useDocumentMetadata(
+    "Crear cuenta",
+    "Crea tu cuenta en segundos y sube tu primer cubo de datos para empezar a analizar."
+  );
   const navigate = useNavigate();
 
   async function handleOnSubmit(form: SignUpFormInputs) {

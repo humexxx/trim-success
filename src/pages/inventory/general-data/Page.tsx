@@ -1,15 +1,13 @@
 import { useEffect, useState } from "react";
 
 import { yupResolver } from "@hookform/resolvers/yup";
-import { LoadingButton } from "@mui/lab";
-import { Alert, Grid, Typography } from "@mui/material";
 import { JSON_FILE_NAME } from "@shared/consts";
 import { EValueType } from "@shared/enums";
 import { ICubeParameters } from "@shared/models";
 import { roundToDecimals } from "@shared/utils";
 import { useForm } from "react-hook-form";
 import { GlobalLoader } from "src/components";
-import { PageContent, PageHeader, PageWrapper } from "src/components/layout";
+import { PageHeader, PageWrapper } from "src/components/layout";
 import { useCube } from "src/context/hooks";
 import { getError } from "src/utils";
 import { InferType } from "yup";
@@ -17,6 +15,16 @@ import { InferType } from "yup";
 import { GeneralParams, InventoryParams, StoringParams } from "./components";
 import { useParamsData } from "./hooks";
 import { parametersScheme } from "./schema";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+
 
 const Page = () => {
   const cube = useCube();
@@ -33,24 +41,20 @@ const Page = () => {
     control,
   } = useForm<InferType<typeof parametersScheme>>({
     resolver: yupResolver(parametersScheme),
-    defaultValues: {
-      parameters: [],
-    },
+    defaultValues: { parameters: [] },
   });
 
   useEffect(() => {
     if (cubeParameters) {
-      const _data = cubeParameters.parameters.map((x) => {
-        return {
-          ...x,
-          value:
-            x.valueType === EValueType.PERCENTAGE
-              ? x.value * 100
-              : x.valueType === EValueType.AMOUNT
-                ? roundToDecimals(x.value, 2)
-                : x.value,
-        };
-      });
+      const _data = cubeParameters.parameters.map((x) => ({
+        ...x,
+        value:
+          x.valueType === EValueType.PERCENTAGE
+            ? x.value * 100
+            : x.valueType === EValueType.AMOUNT
+              ? roundToDecimals(x.value, 2)
+              : x.value,
+      }));
       setValue("parameters", _data);
     }
   }, [cubeParameters, setValue]);
@@ -67,15 +71,13 @@ const Page = () => {
       if (x.autoCalculated) return x;
       return {
         ...x,
-        value: x.valueType === EValueType.PERCENTAGE ? x.value / 100 : x.value,
+        value:
+          x.valueType === EValueType.PERCENTAGE ? x.value / 100 : x.value,
       };
     });
 
     try {
-      await update({
-        ...cubeParameters!,
-        parameters: formattedData,
-      });
+      await update({ ...cubeParameters!, parameters: formattedData });
 
       const files = await cube.getFiles();
       const jsonFile = files?.find((file) =>
@@ -94,70 +96,76 @@ const Page = () => {
   }
 
   return (
-    <PageWrapper title="Datos Generales">
+    <PageWrapper
+      title="Datos generales"
+      description="Configura parámetros generales del cubo: costo de capital, días por periodo y supuestos."
+    >
       {isSubmitting && <GlobalLoader />}
-      <PageHeader title="Datos Generales" />
-      <PageContent>
-        <Grid
-          component="form"
-          onSubmit={handleSubmit(_handleSubmit)}
-          onInvalid={console.log}
-          container
-          spacing={4}
-        >
-          <Grid item xs={12} sm={6} md={4}>
-            <Grid item xs={12} mb={2}>
-              <Typography color="text.primary" variant="body1">
-                Parametros Generales
-              </Typography>
-            </Grid>
-            <GeneralParams
-              errors={errors}
-              register={register}
-              control={control}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6} md={4}>
-            <Grid item xs={12} mb={2}>
-              <Typography color="text.primary" variant="body1">
-                Parametros de Almacenaje
-              </Typography>
-            </Grid>
-            <StoringParams
-              errors={errors}
-              register={register}
-              control={control}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6} md={4}>
-            <Grid item xs={12} mb={2}>
-              <Typography color="text.primary" variant="body1">
-                Parametros de Inventario
-              </Typography>
-            </Grid>
-            <InventoryParams
-              errors={errors}
-              register={register}
-              control={control}
-            />
-          </Grid>
-          {error && (
-            <Grid item xs={12}>
-              <Alert severity="error">{error}</Alert>
-            </Grid>
-          )}
-          <Grid item xs={12} mt={2} textAlign="right">
-            <LoadingButton
-              loading={loading || isSubmitting}
-              type="submit"
-              variant="contained"
-              color="primary"
-            >
-              Guardar
-            </LoadingButton>
-          </Grid>
-        </Grid>
-      </PageContent>
+      <PageHeader
+        title="Datos generales"
+        description="Parámetros financieros, de almacenaje y de inventario que alimentan los cálculos del scorecard."
+      />
+      <form onSubmit={handleSubmit(_handleSubmit)} className="mt-8 space-y-6">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+          <Card>
+            <CardHeader className="space-y-1 pb-3">
+              <CardTitle className="text-base">Generales</CardTitle>
+              <CardDescription className="text-xs">
+                Tasas y supuestos financieros + operacionales.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="pt-0">
+              <GeneralParams
+                errors={errors}
+                register={register}
+                control={control}
+              />
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="space-y-1 pb-3">
+              <CardTitle className="text-base">Almacenaje</CardTitle>
+              <CardDescription className="text-xs">
+                Costos de almacenamiento + inversiones en infraestructura.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="pt-0">
+              <StoringParams
+                errors={errors}
+                register={register}
+                control={control}
+              />
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="space-y-1 pb-3">
+              <CardTitle className="text-base">Inventario</CardTitle>
+              <CardDescription className="text-xs">
+                Costos asociados al inventario + capital invertido.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="pt-0">
+              <InventoryParams
+                errors={errors}
+                register={register}
+                control={control}
+              />
+            </CardContent>
+          </Card>
+        </div>
+
+        {error && (
+          <Alert variant="destructive">
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        )}
+
+        <div className="flex justify-end border-t pt-4">
+          <Button type="submit" loading={loading || isSubmitting}>
+            Guardar cambios
+          </Button>
+        </div>
+      </form>
     </PageWrapper>
   );
 };

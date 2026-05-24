@@ -22,7 +22,16 @@ module.exports = {
   ignorePatterns: ["/lib/**/*", "/generated/**/*", "/.eslintrc.js"],
   plugins: ["@typescript-eslint", "import"],
   rules: {
-    "@typescript-eslint/no-unused-vars": "warn",
+    "@typescript-eslint/no-unused-vars": [
+      "warn",
+      {
+        // Allow `_`-prefixed args (positional callback params we need
+        // to declare but intentionally don't use — e.g. pdfmake
+        // `fillColor(rowIndex, _node, _columnIndex)`).
+        argsIgnorePattern: "^_",
+        varsIgnorePattern: "^_",
+      },
+    ],
     "no-debugger": "warn",
     "@typescript-eslint/no-explicit-any": "warn",
     "no-constant-condition": "warn",

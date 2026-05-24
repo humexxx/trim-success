@@ -1,81 +1,69 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 
-import { Alert, Stack } from "@mui/material";
-import { GridColDef, useGridApiRef } from "@mui/x-data-grid";
 import { STORAGE_PATH } from "@shared/consts";
 import { EColumnType } from "@shared/enums";
 import { ESystemColumnType } from "@shared/enums/ESystemColumnType";
-import { IColumn, IDataModel, IDataModelCubeRow } from "@shared/models";
+import { IDataModel, IDataModelCubeRow } from "@shared/models";
 import { formatAmount, formatPercentage, getColumn } from "@shared/utils";
-import { listAll, getMetadata, getDownloadURL, ref } from "firebase/storage";
-import StripedGrid from "src/components/StripedDataGrid";
+import { ColumnDef } from "@tanstack/react-table";
+import { getDownloadURL, getMetadata, listAll, ref } from "firebase/storage";
 import { useAuth } from "src/context/hooks";
 import { storage } from "src/lib/firebase";
 import { getError } from "src/utils";
 
 import Filters, { IFilterCriteria } from "./Filters";
+import { DataTable } from "@/components/DataTable";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
-function getColumns(columns?: string[]): GridColDef[] {
-  if (!columns) {
-    return [];
-  }
+function getColumns(
+  columns?: string[]
+): ColumnDef<IDataModelCubeRow>[] {
+  if (!columns) return [];
 
-  const skuColumn: IColumn = getColumn(EColumnType.SKU)!;
-  const categoryColumn: IColumn = getColumn(EColumnType.CATEGORY)!;
-  const grossMarginColumn: IColumn = getColumn(EColumnType.GROSS_MARGIN)!;
-
-  const ircColumn: IColumn = getColumn(ESystemColumnType.ICR_PERCENTAGE)!;
-  const iccColumn: IColumn = getColumn(ESystemColumnType.ICC)!;
-  const evColumn: IColumn = getColumn(ESystemColumnType.EV)!;
+  const skuColumn = getColumn(EColumnType.SKU)!;
+  const categoryColumn = getColumn(EColumnType.CATEGORY)!;
+  const grossMarginColumn = getColumn(EColumnType.GROSS_MARGIN)!;
+  const ircColumn = getColumn(ESystemColumnType.ICR_PERCENTAGE)!;
+  const iccColumn = getColumn(ESystemColumnType.ICC)!;
+  const evColumn = getColumn(ESystemColumnType.EV)!;
 
   return [
     {
-      field: columns[skuColumn.index!],
-      headerName: skuColumn.name,
-      flex: 1,
-      minWidth: 200,
+      accessorKey: columns[skuColumn.index!],
+      header: skuColumn.name,
     },
     {
-      field: columns[categoryColumn.index!],
-      headerName: categoryColumn.name,
-      width: 200,
+      accessorKey: columns[categoryColumn.index!],
+      header: categoryColumn.name,
     },
     {
-      field: columns[grossMarginColumn.index!],
-      headerName: grossMarginColumn.name,
-      width: 125,
-      valueGetter: (value: string) => parseFloat(value),
-      valueFormatter: (value: number) => formatAmount(value),
+      accessorKey: columns[grossMarginColumn.index!],
+      header: grossMarginColumn.name,
+      cell: ({ getValue }) => formatAmount(parseFloat(getValue() as string)),
     },
     {
-      field: ircColumn.code,
-      headerName: ircColumn.name,
-      width: 125,
-      valueFormatter: (value: number) => formatPercentage(value),
+      accessorKey: ircColumn.code,
+      header: ircColumn.name,
+      cell: ({ getValue }) => formatPercentage(getValue() as number),
     },
     {
-      field: iccColumn.code,
-      headerName: iccColumn.name,
-      width: 125,
-      valueFormatter: (value: number) => formatAmount(value),
+      accessorKey: iccColumn.code,
+      header: iccColumn.name,
+      cell: ({ getValue }) => formatAmount(getValue() as number),
     },
     {
-      field: evColumn.code,
-      headerName: evColumn.name,
-      width: 125,
-      valueFormatter: (value: number) => formatAmount(value),
+      accessorKey: evColumn.code,
+      header: evColumn.name,
+      cell: ({ getValue }) => formatAmount(getValue() as number),
     },
-  ];
+  ] satisfies ColumnDef<IDataModelCubeRow>[];
 }
 
 const MainGrid = () => {
   const { isAdmin, customUser, currentUser } = useAuth();
-  const apiRef = useGridApiRef();
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const [filters, setFilters] = useState<IFilterCriteria>({
-    category: "",
-  });
+  const [filters, setFilters] = useState<IFilterCriteria>({ category: "" });
   const [dataModel, setDataModel] =
     useState<IDataModel<IDataModelCubeRow> | null>(null);
   const originalDataModel = useRef<IDataModel<IDataModelCubeRow> | null>(null);
@@ -92,21 +80,17 @@ const MainGrid = () => {
 
         for (const itemRef of result.items) {
           const metadata = await getMetadata(itemRef);
-
           if (metadata.contentType === "application/json") {
             const downloadURL = await getDownloadURL(itemRef);
-
             const response = await fetch(downloadURL);
-            const dataModel =
-              (await response.json()) as IDataModel<IDataModelCubeRow>;
-
-            setDataModel(dataModel);
-            originalDataModel.current = dataModel;
+            const dm = (await response.json()) as IDataModel<IDataModelCubeRow>;
+            setDataModel(dm);
+            originalDataModel.current = dm;
             break;
           }
         }
-      } catch (error) {
-        setError(getError(error));
+      } catch (e) {
+        setError(getError(e));
       } finally {
         setLoading(false);
       }
@@ -115,11 +99,9 @@ const MainGrid = () => {
   }, [currentUser?.uid, customUser?.uid, isAdmin]);
 
   useEffect(() => {
-    if (!originalDataModel.current) {
-      return;
-    }
+    if (!originalDataModel.current) return;
 
-    let _rows = [...originalDataModel.current!.rows];
+    let _rows = [...originalDataModel.current.rows];
     if (filters.category) {
       _rows = _rows.filter(
         (row) =>
@@ -130,10 +112,10 @@ const MainGrid = () => {
           ] === filters.category
       );
     }
-    if (filters.expetedValue) {
+    if (filters.expectedValue) {
       _rows = _rows.filter((row) => {
         const ev = row[getColumn(ESystemColumnType.EV)!.code!] as number;
-        return filters.expetedValue === "positive" ? ev > 0 : ev < 0;
+        return filters.expectedValue === "positive" ? ev > 0 : ev < 0;
       });
     }
 
@@ -146,31 +128,30 @@ const MainGrid = () => {
   );
 
   if (error) {
-    return <Alert severity="error">{error}</Alert>;
+    return (
+      <Alert variant="destructive">
+        <AlertDescription>{error}</AlertDescription>
+      </Alert>
+    );
   }
 
   if (loading || !dataModel) {
-    return <Alert severity="info">Cargando...</Alert>;
+    return (
+      <Alert>
+        <AlertDescription>Cargando...</AlertDescription>
+      </Alert>
+    );
   }
 
   return (
-    <Stack spacing={2}>
+    <div className="flex flex-col gap-4">
       <Filters filters={filters} setFilters={setFilters} />
-      <StripedGrid
-        apiRef={apiRef}
-        rows={dataModel.rows}
+      <DataTable
+        data={dataModel.rows}
         columns={columns}
-        hideFooter={false}
-        initialState={{
-          pagination: {
-            paginationModel: {
-              pageSize: 20,
-            },
-          },
-        }}
-        pageSizeOptions={[10, 20, 50, 100]}
+        pagination={{ initialPageSize: 20, pageSizeOptions: [10, 20, 50, 100] }}
       />
-    </Stack>
+    </div>
   );
 };
 

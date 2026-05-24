@@ -1,5 +1,3 @@
-import { Box, Typography } from "@mui/material";
-
 type Props = {
   title?: string;
   description?: string;
@@ -7,23 +5,16 @@ type Props = {
 
 const PageHeader = ({ title, description }: Props) => {
   return (
-    <Box component={"header"} pt={4}>
-      {Boolean(title) && (
-        <Typography
-          color="text.primary"
-          variant="h4"
-          component="h1"
-          fontWeight={600}
-        >
-          <strong>{title}</strong>
-        </Typography>
+    <header className="pt-4">
+      {title && (
+        <h1 className="text-3xl font-semibold tracking-tight text-foreground">
+          {title}
+        </h1>
       )}
-      {Boolean(description) && (
-        <Typography color="text.secondary" variant="body1">
-          {description}
-        </Typography>
+      {description && (
+        <p className="text-base text-muted-foreground">{description}</p>
       )}
-    </Box>
+    </header>
   );
 };
 
