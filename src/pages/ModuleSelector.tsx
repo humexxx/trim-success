@@ -8,7 +8,7 @@ import {
   ShoppingCart,
   Upload,
 } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import { PageHeader } from "src/components/layout";
 import { useAuth } from "src/context/hooks";
 import { useCubeSummary, useDocumentMetadata } from "src/hooks";
@@ -137,13 +137,20 @@ function ModuleCard({
 const compactCurrency = compactCurrencyFmt;
 
 const ModuleSelector = () => {
-  const { currentUser } = useAuth();
+  const { currentUser, isAdmin, customUser } = useAuth();
   const probe = useCubeSummary();
 
   useDocumentMetadata(
     "Inicio",
     "Elige el módulo en el que vas a trabajar. Tus datos se mantienen sincronizados entre Inventario y Ventas."
   );
+
+  // Admins viewing this page without an active impersonation have
+  // nothing meaningful to load (the cube summary is per-user), so
+  // bounce them to the picker rather than show empty modules.
+  if (isAdmin && !customUser) {
+    return <Navigate to={ROUTES.INVENTORY.ADMIN.IMPERSONATE} replace />;
+  }
 
   const displayName =
     currentUser?.displayName?.split(" ")[0] ??

@@ -388,7 +388,7 @@ export function AuthChartSlideshow() {
       <div className="relative z-10 flex flex-1 flex-col items-center justify-center gap-5">
         <div
           className={cn(
-            "aspect-[5/4] w-full max-w-[360px] transition-all duration-500 ease-out",
+            "aspect-[16/9] w-full max-w-[520px] transition-all duration-500 ease-out",
             entered ? "translate-x-0 opacity-100" : "translate-x-6 opacity-0"
           )}
         >
@@ -401,7 +401,7 @@ export function AuthChartSlideshow() {
         </div>
         <p
           className={cn(
-            "max-w-[420px] text-balance text-center text-xs leading-relaxed text-muted-foreground transition-all duration-500 ease-out",
+            "max-w-[560px] text-balance text-center text-xs leading-relaxed text-muted-foreground transition-all duration-500 ease-out",
             entered ? "translate-y-0 opacity-100" : "translate-y-2 opacity-0"
           )}
         >

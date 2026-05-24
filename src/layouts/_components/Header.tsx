@@ -5,7 +5,9 @@ import {
   LogOut,
   Menu,
   Moon,
+  Repeat2,
   Sun,
+  X,
 } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth, useLocalTheme } from "src/context/hooks";
@@ -61,16 +63,30 @@ const Header = ({ handleDrawerToggle, hasDrawer = true }: Props) => {
         </Button>
       )}
 
-      {/* Breadcrumb-style back-nav: Modulos / <current module> */}
+      {/* Breadcrumb-style back-nav: Modulos / <current module>.
+          The "Módulos" link is disabled for admins who haven't picked
+          a user yet, since the module selector itself would just
+          bounce them back to the impersonation picker. */}
       {moduleLabel && (
         <nav aria-label="Breadcrumb" className="flex items-center text-sm">
-          <Link
-            to={ROUTES.MODULE_SELECTOR}
-            className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
-          >
-            <ArrowLeft className="h-3.5 w-3.5" />
-            Módulos
-          </Link>
+          {isAdmin && !customUser?.uid ? (
+            <span
+              aria-disabled="true"
+              title="Selecciona un usuario primero"
+              className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-muted-foreground/60"
+            >
+              <ArrowLeft className="h-3.5 w-3.5" />
+              Módulos
+            </span>
+          ) : (
+            <Link
+              to={ROUTES.MODULE_SELECTOR}
+              className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+            >
+              <ArrowLeft className="h-3.5 w-3.5" />
+              Módulos
+            </Link>
+          )}
           <ChevronRight
             className="h-3.5 w-3.5 text-muted-foreground/60"
             aria-hidden="true"
@@ -79,12 +95,36 @@ const Header = ({ handleDrawerToggle, hasDrawer = true }: Props) => {
         </nav>
       )}
 
-      <div className="flex flex-1 items-center text-sm text-muted-foreground">
+      <div className="flex flex-1 items-center justify-end text-sm text-muted-foreground sm:justify-start">
         {isAdmin && customUser ? (
-          <span className="ml-2 inline-flex items-center gap-1">
-            <Eye className="h-4 w-4" />
-            (as {customUser.name})
-          </span>
+          <div
+            className="ml-2 inline-flex items-center gap-1 rounded-full border border-amber-500/40 bg-amber-50 pl-2 pr-1 py-0.5 text-xs text-amber-900 dark:border-amber-400/40 dark:bg-amber-500/10 dark:text-amber-200"
+            role="status"
+            aria-label={`Impersonando a ${customUser.name ?? customUser.email}`}
+          >
+            <Eye className="h-3.5 w-3.5" />
+            <span className="max-w-[160px] truncate font-medium">
+              {customUser.name ?? customUser.email}
+            </span>
+            <button
+              type="button"
+              onClick={() => navigate(ROUTES.INVENTORY.ADMIN.IMPERSONATE)}
+              className="rounded-full p-1 transition-colors hover:bg-amber-500/20 dark:hover:bg-amber-400/20"
+              aria-label="Cambiar de usuario"
+              title="Cambiar de usuario"
+            >
+              <Repeat2 className="h-3.5 w-3.5" />
+            </button>
+            <button
+              type="button"
+              onClick={() => setCustomUser(null)}
+              className="rounded-full p-1 transition-colors hover:bg-amber-500/20 dark:hover:bg-amber-400/20"
+              aria-label="Salir de impersonación"
+              title="Salir de impersonación"
+            >
+              <X className="h-3.5 w-3.5" />
+            </button>
+          </div>
         ) : null}
       </div>
 

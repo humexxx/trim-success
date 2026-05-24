@@ -27,10 +27,18 @@ const SignInPage = () => {
         auth,
         form.persist ? browserLocalPersistence : browserSessionPersistence
       );
-      await signInWithEmailAndPassword(auth, form.email, form.password).then(
-        () => {
-          navigate(ROUTES.MODULE_SELECTOR);
-        }
+      const credential = await signInWithEmailAndPassword(
+        auth,
+        form.email,
+        form.password
+      );
+      // Read the admin claim directly off the fresh token so we route
+      // before AuthContext finishes its own onAuthStateChanged pass —
+      // otherwise admins would briefly land on /module-selector first.
+      const token = await credential.user.getIdTokenResult();
+      const isAdmin = Boolean(token.claims.admin);
+      navigate(
+        isAdmin ? ROUTES.INVENTORY.ADMIN.IMPERSONATE : ROUTES.MODULE_SELECTOR
       );
     } catch (error) {
       throw new Error(getError(error));

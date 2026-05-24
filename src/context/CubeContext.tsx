@@ -11,7 +11,6 @@ import { ICubeData, IInitCube, IDriver, IFileData } from "@shared/models";
 import { ICallableRequest, ICallableResponse } from "@shared/models/functions";
 import { httpsCallable } from "firebase/functions";
 import { GlobalLoader } from "src/components";
-import { LOCAL_STORAGE_KEYS } from "src/lib/consts";
 import { functions } from "src/lib/firebase";
 
 import { useAuth } from "./hooks";
@@ -51,7 +50,7 @@ interface Props {
 }
 
 export function CubeProvider({ children, onCubeLoadError }: Props) {
-  const { isAdmin, customUser, currentUser, setCustomUser } = useAuth();
+  const { isAdmin, customUser, currentUser } = useAuth();
   const [hasInitialData, setHasInitialData] = useState(false);
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<ICubeData | undefined>(undefined);
@@ -110,25 +109,13 @@ export function CubeProvider({ children, onCubeLoadError }: Props) {
   }, [currentUser, customUser, isAdmin, onCubeLoadError]);
 
   useEffect(() => {
+    // AuthContext now hydrates `customUser` from localStorage on
+    // mount, so we just need to react to its presence: load the cube
+    // when we have a target uid, or bubble up if an admin still has
+    // nobody selected.
     if (isAdmin ? customUser?.uid : true) loadCubeData();
-    else {
-      const localStorageCustomUser = localStorage.getItem(
-        LOCAL_STORAGE_KEYS.CUSTOM_USER
-      );
-      if (localStorageCustomUser) {
-        setCustomUser(JSON.parse(localStorageCustomUser));
-      } else {
-        onCubeLoadError();
-      }
-    }
-  }, [
-    currentUser,
-    customUser?.uid,
-    isAdmin,
-    loadCubeData,
-    onCubeLoadError,
-    setCustomUser,
-  ]);
+    else onCubeLoadError();
+  }, [currentUser, customUser?.uid, isAdmin, loadCubeData, onCubeLoadError]);
 
   const initCube = useCallback(
     async (fileUid: string, drivers: IDriver[]) => {

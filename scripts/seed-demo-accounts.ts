@@ -1,6 +1,8 @@
 /**
  * Idempotent seed script: creates a demo + admin Firebase Auth user in
- * the production "trim-success" project and sets the admin custom claim.
+ * the production "trim-success" project, sets the admin custom claim,
+ * and upserts matching Firestore `/users/{uid}` profile docs so the
+ * admin impersonation picker can list them.
  *
  * Usage (uses gcloud Application Default Credentials by default):
  *   npx tsx scripts/seed-demo-accounts.ts
@@ -13,14 +15,15 @@
  *   1. Creates demo@trim-success.test (or updates the password).
  *   2. Creates admin@trim-success.test (or updates the password).
  *   3. Sets {admin: true} custom claim on the admin user.
+ *   4. Upserts /users/{uid} Firestore docs with name + description so
+ *      the impersonation picker has metadata to render.
  *
  * What it does NOT do:
- *   - Touch Firestore. No documents are written.
  *   - Seed any cube data, drivers, or settings.
  *   - Charge anything beyond the Firebase Auth free tier (50k MAU).
  *
  * If you want to wipe these users, delete them in Firebase Console
- * → Authentication, then re-run.
+ * → Authentication AND Firestore /users, then re-run.
  */
 
 import admin from "firebase-admin";
@@ -29,6 +32,7 @@ interface SeedUser {
   email: string;
   password: string;
   displayName: string;
+  description: string;
   isAdmin: boolean;
 }
 
@@ -37,12 +41,16 @@ const USERS: SeedUser[] = [
     email: "demo@trim-success.test",
     password: "Demo1234!",
     displayName: "Demo User",
+    description:
+      "Cuenta de demostración sin privilegios. Úsala para probar el flujo de un usuario regular.",
     isAdmin: false,
   },
   {
     email: "admin@trim-success.test",
     password: "Admin1234!",
     displayName: "Admin User",
+    description:
+      "Cuenta administradora. Acceso a impersonación y herramientas internas.",
     isAdmin: true,
   },
 ];
@@ -87,6 +95,33 @@ async function setAdminClaim(uid: string, isAdmin: boolean) {
   console.log(`  ✓ Set admin claim to ${isAdmin}`);
 }
 
+/**
+ * Upsert the Firestore profile doc the impersonation picker reads.
+ * `createdAt` is only written on insert so re-running this script
+ * doesn't keep bumping the "Creado <date>" the picker shows.
+ */
+async function upsertUserDoc(uid: string, user: SeedUser) {
+  const db = admin.firestore();
+  const ref = db.collection("users").doc(uid);
+  const existing = await ref.get();
+
+  const data: Record<string, unknown> = {
+    uid,
+    email: user.email,
+    name: user.displayName,
+    description: user.description,
+  };
+
+  if (!existing.exists) {
+    data.createdAt = new Date().toISOString();
+    await ref.set(data);
+    console.log(`  + Created Firestore /users/${uid}`);
+  } else {
+    await ref.set(data, { merge: true });
+    console.log(`  ↻ Updated Firestore /users/${uid}`);
+  }
+}
+
 const PROJECT_ID = process.env.FIREBASE_PROJECT_ID ?? "trim-success";
 
 async function main() {
@@ -104,6 +139,7 @@ async function main() {
     console.log(`\n${user.email} (admin=${user.isAdmin})`);
     const uid = await getOrCreateUser(user);
     await setAdminClaim(uid, user.isAdmin);
+    await upsertUserDoc(uid, user);
   }
 
   console.log("\n✓ Done. You can now sign in at /login with either user.");

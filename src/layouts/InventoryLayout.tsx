@@ -126,6 +126,7 @@ function InventoryLayout() {
           <SidenavLink
             to={ROUTES.MODULE_SELECTOR}
             icon={<LayoutDashboard className="h-4 w-4" />}
+            disabled={isAdmin && !customUser?.uid}
           >
             Modulos
           </SidenavLink>
