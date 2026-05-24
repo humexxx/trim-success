@@ -1,10 +1,16 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <!-- Fallback favicon used by index.html before the app shell mounts.
+       Adapts to the OS `prefers-color-scheme` so the icon matches
+       the system theme: light OS → light badge, dark OS → dark badge.
+       Once the user enters the app shell, LocalThemeProvider takes
+       over and points at favicon-light.svg / favicon-dark.svg
+       explicitly. -->
   <style>
-    .bg { fill: #0a0a0a; }
-    .fg { fill: #fafafa; }
+    .bg { fill: #fafafa; }
+    .fg { fill: #0a0a0a; }
     @media (prefers-color-scheme: dark) {
-      .bg { fill: #fafafa; }
-      .fg { fill: #0a0a0a; }
+      .bg { fill: #0a0a0a; }
+      .fg { fill: #fafafa; }
     }
   </style>
   <rect class="bg" width="32" height="32" rx="7"/>
