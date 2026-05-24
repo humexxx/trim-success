@@ -11,55 +11,62 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useDocumentMetadata } from "src/hooks";
-import { APP_NAME, APP_TAGLINE, ROUTES } from "src/lib/consts";
+import { APP_NAME, APP_TAGLINE, CONTACT_EMAIL, ROUTES } from "src/lib/consts";
 
 import Footer from "./public/_components/Footer";
 import { Button } from "@/components/ui/button";
 
 
+// Nav anchors — only sections that actually exist on the page.
 const NAV_LINKS = [
   { label: "Producto", href: "#producto" },
-  { label: "Soluciones", href: "#soluciones" },
-  { label: "Recursos", href: "#recursos" },
-  { label: "Precios", href: "#precios" },
+  { label: "Cómo funciona", href: "#soluciones" },
 ];
 
+// USE_CASES — every entry here maps to a real screen in the app.
+// Audit done against the route table in src/lib/routes.tsx:
+//   Inventario   → /inventory/dashboard
+//   Ventas       → /sales
+//   Performance  → /inventory/inventory-performance (radial + bar)
+//   Data mining  → /inventory/data-mining
+//   AI assistant → /inventory/ai
+//   Scorecard    → /inventory/scorecard (editable drivers)
 const USE_CASES = [
   {
     icon: Boxes,
     title: "Inventario",
     description:
-      "Scorecard, drivers y rendimiento por categoría en un solo cubo accionable.",
+      "Dashboard con KPIs, scorecard editable, drivers y métricas de rendimiento por categoría.",
   },
   {
     icon: LineChart,
     title: "Ventas",
     description:
-      "Tendencia mensual, portafolio por categoría y métricas comparables al instante.",
+      "Tendencia mensual, portafolio por categoría y ranking — sobre la misma fuente que inventario.",
   },
   {
     icon: BarChart3,
-    title: "Performance",
+    title: "Rendimiento",
     description:
-      "Radial charts y métricas de inventario para identificar oportunidades en segundos.",
+      "Radial charts e indicadores (ICR, ICC, IVA) para detectar oportunidades en segundos.",
   },
   {
     icon: Database,
     title: "Data mining",
     description:
-      "Explora categorías, segmenta tu catálogo y descubre patrones ocultos.",
+      "Explora categorías y la distribución de tu catálogo con tablas pivote y donut charts.",
   },
   {
     icon: Sparkles,
-    title: "AI insights",
+    title: "Asistente IA",
     description:
-      "Recomendaciones automáticas sobre qué optimizar primero en tu cubo.",
+      "Chat para hacerle preguntas a tu inventario en lenguaje natural (en beta).",
   },
   {
     icon: ShieldCheck,
-    title: "Seguridad",
+    title: "Acceso seguro",
     description:
-      "Tus datos quedan protegidos, con control de acceso por organización.",
+      "Firebase Auth con email + password. Acceso por invitación, sin registro público abierto.",
   },
 ];
 
@@ -100,18 +107,12 @@ const LandingPage = () => {
             </nav>
           </div>
           <div className="flex items-center gap-2">
-            <Link
-              to={ROUTES.SIGN_IN}
-              className="hidden text-sm text-neutral-500 transition-colors hover:text-neutral-900 sm:inline-flex sm:px-3"
-            >
-              Inicia sesión
-            </Link>
             <Link to={ROUTES.SIGN_IN}>
               <Button
                 size="sm"
                 className="h-8 rounded-full bg-neutral-900 px-4 text-[13px] font-medium text-white hover:bg-neutral-800"
               >
-                Empieza ahora
+                Iniciar sesión
                 <ArrowRight className="ml-1 !h-3 !w-3" />
               </Button>
             </Link>
@@ -149,8 +150,8 @@ const LandingPage = () => {
               to="#producto"
               className="mx-auto mb-8 inline-flex items-center gap-2 rounded-full border border-neutral-200 bg-white/70 px-3 py-1 text-xs text-neutral-600 backdrop-blur transition-colors hover:border-neutral-300 hover:text-neutral-900"
             >
-              <span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-500" />
-              Nuevo · AI insights en cada cubo
+              <span className="inline-block h-1.5 w-1.5 rounded-full bg-amber-500" />
+              Beta · asistente IA dentro del cubo
               <ArrowRight className="h-3 w-3" />
             </Link>
 
@@ -172,7 +173,7 @@ const LandingPage = () => {
                   size="lg"
                   className="h-11 rounded-full bg-neutral-900 px-6 text-[14px] font-medium text-white hover:bg-neutral-800"
                 >
-                  Empieza gratis
+                  Iniciar sesión
                   <ArrowRight className="ml-1 h-4 w-4" />
                 </Button>
               </Link>
@@ -182,13 +183,20 @@ const LandingPage = () => {
                   variant="outline"
                   className="h-11 rounded-full border-neutral-200 bg-white px-6 text-[14px] font-medium text-neutral-900 hover:bg-neutral-50 hover:text-neutral-900"
                 >
-                  Ver demo
+                  Conoce el producto
                 </Button>
               </a>
             </div>
 
             <p className="mt-6 text-xs text-neutral-400">
-              Listo en menos de 5 minutos · Sin tarjeta de crédito
+              Acceso por invitación. ¿Te interesa probarlo?{" "}
+              <a
+                href={`mailto:${CONTACT_EMAIL}`}
+                className="text-neutral-700 underline-offset-4 hover:underline"
+              >
+                Escríbenos
+              </a>
+              .
             </p>
           </div>
 
@@ -212,9 +220,9 @@ const LandingPage = () => {
 
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
                   {[
-                    { label: "Cubo activo", value: "$24.8M", delta: "+12.4%" },
-                    { label: "SKUs activos", value: "1,284", delta: "+3.1%" },
-                    { label: "Rotación", value: "5.2x", delta: "+0.8x" },
+                    { label: "Ventas totales", value: "$595M", delta: "+12.4%" },
+                    { label: "SKUs activos", value: "45,151", delta: "+3.1%" },
+                    { label: "Margen bruto", value: "40.5%", delta: "+0.8%" },
                   ].map((kpi) => (
                     <div
                       key={kpi.label}
@@ -358,8 +366,8 @@ const LandingPage = () => {
                   Tu data, tu control.
                 </h3>
                 <p className="mt-3 text-sm text-neutral-500">
-                  Aislamiento por organización, autenticación moderna y backups
-                  diarios desde el día cero.
+                  Encriptado en reposo y en tránsito sobre Firebase + Google
+                  Cloud. Acceso por invitación, sin registro abierto.
                 </p>
                 <div className="mt-6 flex items-center gap-2 text-xs text-neutral-500">
                   <ShieldCheck className="h-4 w-4 text-emerald-500" />
@@ -371,10 +379,7 @@ const LandingPage = () => {
         </section>
 
         {/* Closing CTA */}
-        <section
-          id="precios"
-          className="relative overflow-hidden border-b border-neutral-200/80 bg-white"
-        >
+        <section className="relative overflow-hidden border-b border-neutral-200/80 bg-white">
           <div
             aria-hidden
             className="pointer-events-none absolute inset-0"
@@ -388,7 +393,8 @@ const LandingPage = () => {
               Empieza a ver tu inventario claro.
             </h2>
             <p className="mt-4 text-neutral-500">
-              Crea tu cubo gratis y pruébalo con tu propia data hoy mismo.
+              Si ya tienes cuenta, entra y abre tu cubo. Si no, escríbenos y te
+              damos acceso.
             </p>
             <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
               <Link to={ROUTES.SIGN_IN}>
@@ -396,17 +402,17 @@ const LandingPage = () => {
                   size="lg"
                   className="h-11 rounded-full bg-neutral-900 px-6 text-[14px] font-medium text-white hover:bg-neutral-800"
                 >
-                  Empieza gratis
+                  Iniciar sesión
                   <ArrowRight className="ml-1 h-4 w-4" />
                 </Button>
               </Link>
-              <a href="#recursos">
+              <a href={`mailto:${CONTACT_EMAIL}`}>
                 <Button
                   size="lg"
                   variant="outline"
                   className="h-11 rounded-full border-neutral-200 bg-white px-6 text-[14px] font-medium text-neutral-900 hover:bg-neutral-50 hover:text-neutral-900"
                 >
-                  Hablar con ventas
+                  Pedir acceso
                 </Button>
               </a>
             </div>

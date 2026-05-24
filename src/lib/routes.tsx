@@ -40,6 +40,13 @@ const UserSelectPage = lazy(() => import("../pages/admin/user-select/Page"));
 
 const SalesPage = lazy(() => import("../pages/sales/Page"));
 
+// Public marketing / legal pages — anonymous-friendly, route-split so
+// they don't pull the inventory bundle along.
+const AboutPage = lazy(() => import("../pages/public/AboutPage"));
+const ChangelogPage = lazy(() => import("../pages/public/ChangelogPage"));
+const TermsPage = lazy(() => import("../pages/public/TermsPage"));
+const PrivacyPage = lazy(() => import("../pages/public/PrivacyPage"));
+
 /**
  * Spinner shown briefly while a route chunk is loaded over the network.
  * Centered + full-viewport so it never causes layout shift inside any
@@ -75,6 +82,12 @@ export const router = createBrowserRouter([
   { path: ROUTES.SIGN_IN, element: <Navigate replace to="/login" /> },
   { path: "/login", element: <SignInPage /> },
   { path: "/forgot-password", element: <ForgotPasswordPage /> },
+
+  // Public footer pages.
+  { path: ROUTES.PUBLIC.ABOUT, element: lazyRoute(AboutPage) },
+  { path: ROUTES.PUBLIC.CHANGELOG, element: lazyRoute(ChangelogPage) },
+  { path: ROUTES.PUBLIC.TERMS, element: lazyRoute(TermsPage) },
+  { path: ROUTES.PUBLIC.PRIVACY, element: lazyRoute(PrivacyPage) },
   {
     path: ROUTES.MODULE_SELECTOR,
     element: lazyRoute(ModuleSelectLayout),

@@ -1,32 +1,37 @@
 import { Zap } from "lucide-react";
 import { Link } from "react-router-dom";
-import { APP_NAME } from "src/lib/consts";
+import { APP_NAME, CONTACT_EMAIL, ROUTES } from "src/lib/consts";
 
-const FOOTER_COLS = [
+/**
+ * Footer columns. Every link here resolves to a real page or a real
+ * mailto — no marketing placeholders. The Producto column points at
+ * in-page anchors on the landing instead of fake feature pages.
+ */
+const FOOTER_COLS: {
+  title: string;
+  links: { label: string; to: string; external?: boolean }[];
+}[] = [
   {
     title: "Producto",
     links: [
-      { label: "Inventario", to: "/features/inventory" },
-      { label: "Ventas", to: "/features/sales" },
-      { label: "Data mining", to: "/features/data-mining" },
-      { label: "AI insights", to: "/features/ai" },
+      { label: "Características", to: "/#producto" },
+      { label: "Importar a 5 min", to: "/#soluciones" },
+      { label: "Iniciar sesión", to: ROUTES.SIGN_IN },
     ],
   },
   {
     title: "Recursos",
     links: [
-      { label: "Documentación", to: "/docs" },
-      { label: "Changelog", to: "/changelog" },
-      { label: "Ayuda", to: "/help" },
+      { label: "Acerca", to: ROUTES.PUBLIC.ABOUT },
+      { label: "Changelog", to: ROUTES.PUBLIC.CHANGELOG },
     ],
   },
   {
     title: "Compañía",
     links: [
-      { label: "Acerca", to: "/about" },
-      { label: "Contacto", to: "/contact" },
-      { label: "Términos", to: "/terms" },
-      { label: "Privacidad", to: "/privacy" },
+      { label: "Contacto", to: `mailto:${CONTACT_EMAIL}`, external: true },
+      { label: "Términos", to: ROUTES.PUBLIC.TERMS },
+      { label: "Privacidad", to: ROUTES.PUBLIC.PRIVACY },
     ],
   },
 ];
@@ -57,16 +62,27 @@ const Footer = () => {
                 {col.title}
               </h3>
               <ul className="mt-4 space-y-3 text-sm">
-                {col.links.map((link) => (
-                  <li key={link.label}>
-                    <Link
-                      to={link.to}
-                      className="text-neutral-500 transition-colors hover:text-neutral-900"
-                    >
-                      {link.label}
-                    </Link>
-                  </li>
-                ))}
+                {col.links.map((link) =>
+                  link.external ? (
+                    <li key={link.label}>
+                      <a
+                        href={link.to}
+                        className="text-neutral-500 transition-colors hover:text-neutral-900"
+                      >
+                        {link.label}
+                      </a>
+                    </li>
+                  ) : (
+                    <li key={link.label}>
+                      <Link
+                        to={link.to}
+                        className="text-neutral-500 transition-colors hover:text-neutral-900"
+                      >
+                        {link.label}
+                      </Link>
+                    </li>
+                  )
+                )}
               </ul>
             </div>
           ))}
@@ -78,14 +94,11 @@ const Footer = () => {
             reservados.
           </span>
           <div className="flex items-center gap-5">
-            <Link to="/terms" className="hover:text-neutral-900">
+            <Link to={ROUTES.PUBLIC.TERMS} className="hover:text-neutral-900">
               Términos
             </Link>
-            <Link to="/privacy" className="hover:text-neutral-900">
+            <Link to={ROUTES.PUBLIC.PRIVACY} className="hover:text-neutral-900">
               Privacidad
-            </Link>
-            <Link to="/status" className="hover:text-neutral-900">
-              Estado
             </Link>
           </div>
         </div>

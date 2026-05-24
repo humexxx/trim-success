@@ -38,7 +38,7 @@ const Header = ({ handleDrawerToggle, hasDrawer = true }: Props) => {
   function handleLogout() {
     logout(() => {
       setCustomUser(null);
-      navigate(ROUTES.SIGN_IN);
+      navigate("/");
     });
   }
 

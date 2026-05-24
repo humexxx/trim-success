@@ -32,33 +32,78 @@ const MONTHS = [
   "Jul", "Ago", "Sep", "Oct", "Nov", "Dic",
 ];
 
-const CATEGORIES = ["Ropa", "Tejido", "Producto", "Estampado", "Punto"];
+const CATEGORIES = [
+  "Categoría 1",
+  "Categoría 2",
+  "Categoría 3",
+  "Categoría 4",
+  "Categoría 5",
+];
 
-const SLIDE_MS = 30000;
-const CHART_ANIM_MS = 900;
+const SLIDE_MS = 5500;
+const CHART_ANIM_MS = 700;
+// How many times to re-randomize the chart's data WITHIN a single
+// slide cycle (in addition to the initial value on entry). Refreshes
+// are spaced evenly between slide-in and slide-out, so the user sees
+// the chart morph N+1 times before the next slide takes over.
+const MID_SLIDE_REFRESHES = 3;
 
 const rand = (min: number, max: number) =>
   Math.round(min + Math.random() * (max - min));
 
-// Theme-aware grayscale palette derived from --foreground. Five tints
-// give every chart series a distinct contrast level in both light and
-// dark mode without bringing in hue.
+// Lighter five-stop monochrome ramp — soft mid-grays so the chart
+// recedes behind the form rather than dominating the screen.
 const palette = [
-  "hsl(var(--foreground) / 0.92)",
-  "hsl(var(--foreground) / 0.72)",
-  "hsl(var(--foreground) / 0.52)",
-  "hsl(var(--foreground) / 0.34)",
-  "hsl(var(--foreground) / 0.2)",
+  "hsl(0 0% 42%)",
+  "hsl(0 0% 55%)",
+  "hsl(0 0% 67%)",
+  "hsl(0 0% 78%)",
+  "hsl(0 0% 86%)",
 ];
 
 type SlideKey = "area" | "bar" | "radial" | "donut" | "radar";
 
-const SLIDES: { key: SlideKey; title: string; subtitle: string }[] = [
-  { key: "area", title: "Tendencia mensual", subtitle: "Ventas estimadas por categoría" },
-  { key: "bar", title: "Ventas por categoría", subtitle: "Comparativa del periodo activo" },
-  { key: "radial", title: "Indicadores clave", subtitle: "Cumplimiento por driver" },
-  { key: "donut", title: "Portafolio", subtitle: "Participación por categoría" },
-  { key: "radar", title: "Perfil de inventario", subtitle: "Forma del portafolio actual" },
+const SLIDES: {
+  key: SlideKey;
+  title: string;
+  subtitle: string;
+  description: string;
+}[] = [
+  {
+    key: "area",
+    title: "Tendencia mensual",
+    subtitle: "Ventas estimadas por categoría",
+    description:
+      "Curva mensual de ventas por categoría para identificar estacionalidad y picos.",
+  },
+  {
+    key: "bar",
+    title: "Ventas por categoría",
+    subtitle: "Comparativa del periodo activo",
+    description:
+      "Total de ventas de cada categoría en el rango — ideal para detectar líderes y rezagados.",
+  },
+  {
+    key: "radial",
+    title: "Indicadores clave",
+    subtitle: "Cumplimiento por driver",
+    description:
+      "Cumplimiento de los drivers críticos del negocio sobre el objetivo definido.",
+  },
+  {
+    key: "donut",
+    title: "Portafolio",
+    subtitle: "Participación por categoría",
+    description:
+      "Peso relativo de cada categoría sobre el total para entender la concentración del portafolio.",
+  },
+  {
+    key: "radar",
+    title: "Perfil de inventario",
+    subtitle: "Forma del portafolio actual",
+    description:
+      "Forma multidimensional del portafolio: ventas, margen, costo, SKUs y rotación normalizados.",
+  },
 ];
 
 function useAreaData(seed: number) {
@@ -285,6 +330,9 @@ const EXIT_MS = 450;
 
 export function AuthChartSlideshow() {
   const [index, setIndex] = useState(0);
+  // `seed` bumps both on slide change AND mid-slide so recharts gets a
+  // second data refresh inside each cycle — the user sees the chart
+  // animate from value A → value B without the slide type changing.
   const [seed, setSeed] = useState(0);
   // Two-phase rotation: first `entered` flips to false so the chart
   // fades + slides out; after EXIT_MS we swap to the next slide and
@@ -305,6 +353,18 @@ export function AuthChartSlideshow() {
     return () => clearInterval(tick);
   }, []);
 
+  // Mid-slide data refreshes: schedule MID_SLIDE_REFRESHES seed bumps
+  // evenly between slide-in and slide-out. Each bump leaves `index`
+  // untouched so the wrapper key doesn't change — recharts keeps the
+  // instance and animates from the current values to the new ones.
+  useEffect(() => {
+    const step = SLIDE_MS / (MID_SLIDE_REFRESHES + 1);
+    const timers = Array.from({ length: MID_SLIDE_REFRESHES }, (_, i) =>
+      setTimeout(() => setSeed((s) => s + 1), step * (i + 1))
+    );
+    return () => timers.forEach(clearTimeout);
+  }, [index]);
+
   const current = SLIDES[index]!;
 
   return (
@@ -313,40 +373,40 @@ export function AuthChartSlideshow() {
         aria-hidden
         className="pointer-events-none absolute inset-0 bg-gradient-to-br from-foreground/[0.03] via-transparent to-foreground/[0.06]"
       />
-      <div className="relative z-10 flex items-baseline justify-between gap-4">
-        <div
-          className={cn(
-            "transition-all duration-500 ease-out",
-            entered
-              ? "translate-x-0 opacity-100"
-              : "-translate-x-3 opacity-0"
-          )}
-        >
-          <h2 className="text-lg font-semibold tracking-tight">
-            {current.title}
-          </h2>
-          <p className="text-sm text-muted-foreground">{current.subtitle}</p>
-        </div>
-        <span className="rounded-full border bg-background/60 px-2.5 py-0.5 text-[10px] uppercase tracking-wider text-muted-foreground backdrop-blur">
-          Demo
-        </span>
+      <div
+        className={cn(
+          "relative z-10 transition-all duration-500 ease-out",
+          entered ? "translate-x-0 opacity-100" : "-translate-x-3 opacity-0"
+        )}
+      >
+        <h2 className="text-lg font-semibold tracking-tight">
+          {current.title}
+        </h2>
+        <p className="text-sm text-muted-foreground">{current.subtitle}</p>
       </div>
 
-      <div className="relative z-10 flex flex-1 items-center justify-center">
+      <div className="relative z-10 flex flex-1 flex-col items-center justify-center gap-5">
         <div
           className={cn(
-            "aspect-[5/4] w-full max-w-[460px] transition-all duration-500 ease-out",
-            entered
-              ? "translate-x-0 opacity-100"
-              : "translate-x-6 opacity-0"
+            "aspect-[5/4] w-full max-w-[360px] transition-all duration-500 ease-out",
+            entered ? "translate-x-0 opacity-100" : "translate-x-6 opacity-0"
           )}
         >
-          {/* Keying the chart by slide+seed remounts it so recharts
-              replays its from-0 entry animation on every rotation. */}
-          <div key={`${current.key}-${seed}`} className="h-full w-full">
+          {/* Key only on slide type — remounts on rotation (recharts
+              plays its from-0 entry) but stays put when `seed` changes
+              mid-slide, so the data refresh interpolates instead. */}
+          <div key={current.key} className="h-full w-full">
             {renderSlide(current.key, seed)}
           </div>
         </div>
+        <p
+          className={cn(
+            "max-w-[420px] text-balance text-center text-xs leading-relaxed text-muted-foreground transition-all duration-500 ease-out",
+            entered ? "translate-y-0 opacity-100" : "translate-y-2 opacity-0"
+          )}
+        >
+          {current.description}
+        </p>
       </div>
 
       <div className="relative z-10 mt-6 flex items-center gap-1.5">

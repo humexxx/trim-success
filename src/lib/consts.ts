@@ -27,4 +27,15 @@ export const ROUTES = {
     },
   },
   SALES: "/sales",
+  /** Public marketing / legal pages — reachable from the landing footer. */
+  PUBLIC: {
+    ABOUT: "/about",
+    CHANGELOG: "/changelog",
+    TERMS: "/terms",
+    PRIVACY: "/privacy",
+  },
 };
+
+/** Public contact channel. Centralized so the landing CTA, footer, and
+ * any "report a bug" link all point to the same place. */
+export const CONTACT_EMAIL = "jahume92@gmail.com";
