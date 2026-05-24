@@ -1,9 +1,12 @@
 import { IBaseData, ICubeParameters } from "@shared/models";
 import { formatAmount, formatPercentage } from "@shared/utils";
-import { TableLayout, TDocumentDefinitions } from "pdfmake/interfaces";
+import { Content, TableLayout, TDocumentDefinitions } from "pdfmake/interfaces";
 
 const COMMON_TABLE_LAYOUT: TableLayout = {
-  fillColor: function (rowIndex, node, columnIndex) {
+  // pdfmake's `fillColor` signature passes (rowIndex, node, columnIndex);
+  // only the row index matters here, so the other two are prefixed with
+  // `_` to satisfy the unused-vars lint rule while keeping the right arity.
+  fillColor: function (rowIndex, _node, _columnIndex) {
     return rowIndex === 0 ? "#f0f0f0" : null;
   },
 };
@@ -130,11 +133,15 @@ export function generateGeneralReport(
   cubeParameters: ICubeParameters,
   baseData: IBaseData
 ): TDocumentDefinitions {
+  // pdfmake's Content union is wide; cast each sub-report's content
+  // to Content[] once instead of inline-`as any` on each spread.
+  const categoriesContent = generateCategoriesReport(cubeParameters, baseData)
+    .content as Content[];
+  const driversContent = generateDriversReport(cubeParameters, baseData)
+    .content as Content[];
+
   return {
-    content: [
-      ...(generateCategoriesReport(cubeParameters, baseData).content as any),
-      ...(generateDriversReport(cubeParameters, baseData).content as any),
-    ],
+    content: [...categoriesContent, ...driversContent],
     styles: {
       header: {
         fontSize: 20,

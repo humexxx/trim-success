@@ -1,0 +1,15 @@
+# Force LF line endings for all text files across all platforms
+* text=auto eol=lf
+
+# Explicit binary types so git never tries to normalize them
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.gif   binary
+*.ico   binary
+*.webp  binary
+*.pdf   binary
+*.xlsx  binary
+*.xls   binary
+*.woff  binary
+*.woff2 binary

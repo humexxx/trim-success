@@ -10,14 +10,19 @@ export const generateGeneralReport = functions.https.onCall<ICallableRequest>(
     const uid = req.auth.token.admin ? req.data.uid : req.auth?.uid;
 
     try {
-      const cubeParameters = await getCubeParamteres(uid);
-      const dataMining = await getDataMining(uid);
+      // Two independent reads — run them in parallel.
+      const [cubeParameters, dataMining] = await Promise.all([
+        getCubeParamteres(uid),
+        getDataMining(uid),
+      ]);
 
       const data = _generateGeneralReport(cubeParameters, dataMining);
 
       return { success: true, data: JSON.stringify(data) };
-    } catch (e: any) {
-      return { success: false, error: e.message ?? e };
+    } catch (e: unknown) {
+      const message = e instanceof Error ? e.message : String(e);
+      functions.logger.error("generateGeneralReport failed", e);
+      return { success: false, error: message };
     }
   }
 );

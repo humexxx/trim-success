@@ -1,28 +1,21 @@
-import * as React from "react";
-import { useEffect } from "react";
+import { ReactNode, useEffect, useState } from "react";
 
-import Button from "@mui/material/Button";
-import Card from "@mui/material/Card";
-import CardHeader from "@mui/material/CardHeader";
-import Checkbox from "@mui/material/Checkbox";
-import Divider from "@mui/material/Divider";
-import Grid from "@mui/material/Grid";
-import List from "@mui/material/List";
-import ListItemButton from "@mui/material/ListItemButton";
-import ListItemIcon from "@mui/material/ListItemIcon";
-import ListItemText from "@mui/material/ListItemText";
 import { DEFAULT_DRIVERS } from "@shared/consts";
 import { ICubeData, ICubeParameters, IDriver } from "@shared/models";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useCube } from "src/context/hooks";
+
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Separator } from "@/components/ui/separator";
 
 function not(a: readonly IDriver[], b: readonly IDriver[]) {
   return a.filter((value) => !b.includes(value));
 }
-
 function intersection(a: readonly IDriver[], b: readonly IDriver[]) {
   return a.filter((value) => b.includes(value));
 }
-
 function union(a: readonly IDriver[], b: readonly IDriver[]) {
   return [...a, ...not(b, a)];
 }
@@ -30,8 +23,8 @@ function union(a: readonly IDriver[], b: readonly IDriver[]) {
 export default function DriversStep() {
   const cube = useCube();
 
-  const [checked, setChecked] = React.useState<readonly IDriver[]>([]);
-  const [left, setLeft] = React.useState<readonly IDriver[]>([]);
+  const [checked, setChecked] = useState<readonly IDriver[]>([]);
+  const [left, setLeft] = useState<readonly IDriver[]>([]);
   const right = cube.data?.cubeParameters?.drivers || [];
   const setRight = (value: readonly IDriver[]) =>
     cube.setData({
@@ -44,13 +37,8 @@ export default function DriversStep() {
   const handleToggle = (value: IDriver) => () => {
     const currentIndex = checked.indexOf(value);
     const newChecked = [...checked];
-
-    if (currentIndex === -1) {
-      newChecked.push(value);
-    } else {
-      newChecked.splice(currentIndex, 1);
-    }
-
+    if (currentIndex === -1) newChecked.push(value);
+    else newChecked.splice(currentIndex, 1);
     setChecked(newChecked);
   };
 
@@ -91,97 +79,84 @@ export default function DriversStep() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const customList = (title: React.ReactNode, items: readonly IDriver[]) => (
-    <Card>
-      <CardHeader
-        sx={{ px: 2, py: 1 }}
-        avatar={
-          <Checkbox
-            onClick={handleToggleAll(items)}
-            checked={
-              driverOfChecked(items) === items.length && items.length !== 0
-            }
-            indeterminate={
-              driverOfChecked(items) !== items.length &&
-              driverOfChecked(items) !== 0
-            }
-            disabled={items.length === 0}
-            inputProps={{
-              "aria-label": "all items selected",
-            }}
-          />
-        }
-        title={title}
-        subheader={`${driverOfChecked(items)}/${items.length} seleccionados`}
-      />
-      <Divider />
-      <List
-        sx={{
-          width: 250,
-          height: 450,
-          bgcolor: "background.paper",
-          overflow: "auto",
-        }}
-        dense
-        component="div"
-        role="list"
-      >
-        {items.map((value: IDriver) => {
-          const labelId = `transfer-list-all-item-${value.key}-label`;
+  const customList = (title: ReactNode, items: readonly IDriver[]) => {
+    const allChecked =
+      driverOfChecked(items) === items.length && items.length !== 0;
+    const someChecked =
+      driverOfChecked(items) !== items.length && driverOfChecked(items) !== 0;
 
-          return (
-            <ListItemButton
-              key={value.key}
-              role="listitem"
-              onClick={handleToggle(value)}
-              disabled={value.required}
-            >
-              <ListItemIcon>
-                <Checkbox
-                  checked={checked.includes(value)}
-                  tabIndex={-1}
-                  disableRipple
-                  inputProps={{
-                    "aria-labelledby": labelId,
-                  }}
-                />
-              </ListItemIcon>
-              <ListItemText id={labelId} primary={value.label} />
-            </ListItemButton>
-          );
-        })}
-      </List>
-    </Card>
-  );
+    return (
+      <Card className="w-[250px]">
+        <CardHeader className="flex flex-row items-center gap-3 space-y-0 px-3 py-2">
+          <Checkbox
+            checked={allChecked || (someChecked ? "indeterminate" : false)}
+            onCheckedChange={handleToggleAll(items)}
+            disabled={items.length === 0}
+            aria-label="Seleccionar todos"
+          />
+          <div className="flex flex-col">
+            <span className="text-sm font-medium">{title}</span>
+            <span className="text-xs text-muted-foreground">
+              {driverOfChecked(items)}/{items.length} seleccionados
+            </span>
+          </div>
+        </CardHeader>
+        <Separator />
+        <CardContent className="h-[450px] overflow-auto p-0">
+          <ul role="list">
+            {items.map((value) => {
+              const labelId = `transfer-list-${value.key}-label`;
+              const isDisabled = value.required;
+              const isChecked = checked.includes(value);
+              return (
+                <li key={value.key}>
+                  <button
+                    type="button"
+                    onClick={!isDisabled ? handleToggle(value) : undefined}
+                    disabled={isDisabled}
+                    className="flex w-full items-center gap-3 px-3 py-2 text-left text-sm hover:bg-accent disabled:opacity-50"
+                  >
+                    <Checkbox
+                      checked={isChecked}
+                      tabIndex={-1}
+                      aria-labelledby={labelId}
+                      onCheckedChange={() => undefined}
+                    />
+                    <span id={labelId}>{value.label}</span>
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        </CardContent>
+      </Card>
+    );
+  };
 
   return (
-    <Grid container spacing={2}>
-      <Grid item>{customList("Opciones", left)}</Grid>
-      <Grid item>
-        <Grid container direction="column" sx={{ alignItems: "center" }}>
-          <Button
-            sx={{ my: 0.5 }}
-            variant="outlined"
-            size="small"
-            onClick={handleCheckedRight}
-            disabled={leftChecked.length === 0}
-            aria-label="move selected right"
-          >
-            &gt;
-          </Button>
-          <Button
-            sx={{ my: 0.5 }}
-            variant="outlined"
-            size="small"
-            onClick={handleCheckedLeft}
-            disabled={rightChecked.length === 0}
-            aria-label="move selected left"
-          >
-            &lt;
-          </Button>
-        </Grid>
-      </Grid>
-      <Grid item>{customList("Drivers Incluidos", right)}</Grid>
-    </Grid>
+    <div className="flex flex-wrap items-center gap-4">
+      {customList("Opciones", left)}
+      <div className="flex flex-col gap-2">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handleCheckedRight}
+          disabled={leftChecked.length === 0}
+          aria-label="Mover seleccionados a la derecha"
+        >
+          <ChevronRight />
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handleCheckedLeft}
+          disabled={rightChecked.length === 0}
+          aria-label="Mover seleccionados a la izquierda"
+        >
+          <ChevronLeft />
+        </Button>
+      </div>
+      {customList("Drivers Incluidos", right)}
+    </div>
   );
 }

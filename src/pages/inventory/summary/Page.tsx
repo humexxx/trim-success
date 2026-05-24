@@ -1,33 +1,48 @@
-import { Grid } from "@mui/material";
-import { PageContent, PageHeader } from "src/components/layout";
+import { PageHeader, PageWrapper } from "src/components/layout";
 import { useCube } from "src/context/hooks";
 
 import { MainGrid, Reports } from "./components";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+
 
 const Page = () => {
   const cube = useCube();
 
   if (cube.isCubeLoading || !cube.data) return null;
 
-  console.log(cube.data.inventoryPerformanceData.rows);
-
   return (
-    <>
+    <PageWrapper
+      title="Resumen"
+      description="Indicadores clave del cubo activo: SKUs, categorías, ventas, margen y costo total."
+    >
       <PageHeader
-        title="Panel"
-        description="Vista general del comportamiento del negocio"
+        title="Resumen general"
+        description="Vista SKU por SKU con filtros y reportes ejecutivos exportables."
       />
-      <PageContent>
-        <Grid container spacing={4}>
-          <Grid item xs={12} lg={9}>
+      <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-12">
+        <Card className="lg:col-span-9">
+          <CardHeader className="space-y-1">
+            <CardTitle className="text-base">Detalle por SKU</CardTitle>
+            <CardDescription className="text-xs">
+              Filtra por categoría o por expected value para ver el detalle
+              de cada producto.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="px-2 pb-4 pt-0">
             <MainGrid />
-          </Grid>
-          <Grid item xs={12} lg={3}>
-            <Reports />
-          </Grid>
-        </Grid>
-      </PageContent>
-    </>
+          </CardContent>
+        </Card>
+        <div className="lg:col-span-3">
+          <Reports />
+        </div>
+      </div>
+    </PageWrapper>
   );
 };
 

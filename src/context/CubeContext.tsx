@@ -3,6 +3,7 @@ import {
   ReactNode,
   useCallback,
   useEffect,
+  useMemo,
   useState,
 } from "react";
 
@@ -10,8 +11,7 @@ import { ICubeData, IInitCube, IDriver, IFileData } from "@shared/models";
 import { ICallableRequest, ICallableResponse } from "@shared/models/functions";
 import { httpsCallable } from "firebase/functions";
 import { GlobalLoader } from "src/components";
-import { LOCAL_STORAGE_KEYS } from "src/lib/consts";
-import { functions, storage } from "src/lib/firebase";
+import { functions } from "src/lib/firebase";
 
 import { useAuth } from "./hooks";
 
@@ -21,9 +21,11 @@ export interface CubeContextType {
   isCubeLoading: boolean;
 
   getFiles: () => Promise<IFileData[]>;
-  fileData?: { columns: string[]; rows: any[] };
+  fileData?: { columns: string[]; rows: Record<string, unknown>[] };
   setFileData: React.Dispatch<
-    React.SetStateAction<{ columns: string[]; rows: any[] } | undefined>
+    React.SetStateAction<
+      { columns: string[]; rows: Record<string, unknown>[] } | undefined
+    >
   >;
 
   data: ICubeData | undefined;
@@ -48,13 +50,13 @@ interface Props {
 }
 
 export function CubeProvider({ children, onCubeLoadError }: Props) {
-  const { isAdmin, customUser, currentUser, setCustomUser } = useAuth();
+  const { isAdmin, customUser, currentUser } = useAuth();
   const [hasInitialData, setHasInitialData] = useState(false);
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<ICubeData | undefined>(undefined);
   const [fileData, setFileData] = useState<{
     columns: string[];
-    rows: any[];
+    rows: Record<string, unknown>[];
   }>();
   const [files, setFiles] = useState<IFileData[] | undefined>();
 
@@ -96,7 +98,9 @@ export function CubeProvider({ children, onCubeLoadError }: Props) {
 
       setData(response.data.data);
       setHasInitialData(true);
-    } catch (e) {
+    } catch {
+      // Cube load failure → bubble to the route-level handler. The
+      // error itself isn't actionable here, so we don't keep it.
       onCubeLoadError();
       setHasInitialData(false);
     } finally {
@@ -105,25 +109,13 @@ export function CubeProvider({ children, onCubeLoadError }: Props) {
   }, [currentUser, customUser, isAdmin, onCubeLoadError]);
 
   useEffect(() => {
+    // AuthContext now hydrates `customUser` from localStorage on
+    // mount, so we just need to react to its presence: load the cube
+    // when we have a target uid, or bubble up if an admin still has
+    // nobody selected.
     if (isAdmin ? customUser?.uid : true) loadCubeData();
-    else {
-      const localStorageCustomUser = localStorage.getItem(
-        LOCAL_STORAGE_KEYS.CUSTOM_USER
-      );
-      if (localStorageCustomUser) {
-        setCustomUser(JSON.parse(localStorageCustomUser));
-      } else {
-        onCubeLoadError();
-      }
-    }
-  }, [
-    currentUser,
-    customUser?.uid,
-    isAdmin,
-    loadCubeData,
-    onCubeLoadError,
-    setCustomUser,
-  ]);
+    else onCubeLoadError();
+  }, [currentUser, customUser?.uid, isAdmin, loadCubeData, onCubeLoadError]);
 
   const initCube = useCallback(
     async (fileUid: string, drivers: IDriver[]) => {
@@ -165,23 +157,39 @@ export function CubeProvider({ children, onCubeLoadError }: Props) {
     return response.data;
   }, [currentUser, customUser, isAdmin]);
 
-  const value: CubeContextType = {
-    hasInitialData,
-    setHasInitialData,
-    isCubeLoading: loading,
+  // Memoize the context value so consumers only re-render when one of
+  // the actual underlying pieces changes. Without this, every render of
+  // CubeProvider creates a fresh `value` object and forces a re-render
+  // of every component reading from this context.
+  const value: CubeContextType = useMemo(
+    () => ({
+      hasInitialData,
+      setHasInitialData,
+      isCubeLoading: loading,
 
-    getFiles,
-    fileData,
-    setFileData,
+      getFiles,
+      fileData,
+      setFileData,
 
-    data,
-    setData,
+      data,
+      setData,
 
-    reloadCubeData: loadCubeData,
+      reloadCubeData: loadCubeData,
 
-    initCube,
-    removeCube,
-  };
+      initCube,
+      removeCube,
+    }),
+    [
+      hasInitialData,
+      loading,
+      getFiles,
+      fileData,
+      data,
+      loadCubeData,
+      initCube,
+      removeCube,
+    ]
+  );
 
   return (
     <CubeContext.Provider value={value}>

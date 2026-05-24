@@ -1,0 +1,29 @@
+# direnv config for per-repo Firebase auth.
+#
+# Why: your global `gcloud` ADC is logged in as a tech9 account that
+# has no access to the trim-success Firebase project. When you cd into
+# this repo, direnv auto-loads these vars so `firebase deploy` and
+# `npm run seed:demo` use your personal/owner account WITHOUT polluting
+# your global gcloud.
+#
+# Setup (one time):
+#   1. brew install direnv && add `eval "$(direnv hook zsh)"` to ~/.zshrc
+#   2. Firebase Console → Project Settings → Service Accounts
+#      → "Generate new private key" → save it somewhere outside the repo
+#      e.g. ~/secrets/trim-success-adminsdk.json (chmod 600)
+#   3. cp .envrc.example .envrc
+#   4. Edit .envrc and set GOOGLE_APPLICATION_CREDENTIALS to your path
+#   5. direnv allow
+#
+# After that, every `firebase deploy`, `npm run seed:demo`, or
+# `npx tsx scripts/repro-init-cube.ts` run from this repo
+# automatically uses the trim-success service account. Outside the
+# repo, nothing changes — your tech9 gcloud setup is untouched.
+
+export GOOGLE_APPLICATION_CREDENTIALS="$HOME/secrets/trim-success-adminsdk.json"
+export FIREBASE_PROJECT="trim-success"
+export GOOGLE_CLOUD_PROJECT="trim-success"
+
+# Optional: silence the "no quota project" warning for user-based ADC.
+# Not needed if you're using a service account JSON (above).
+# export GOOGLE_CLOUD_QUOTA_PROJECT="trim-success"

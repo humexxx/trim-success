@@ -1,20 +1,26 @@
-import { Box } from "@mui/material";
 import { COLUMNS } from "@shared/consts";
 import { useCube } from "src/context/hooks";
 import { useDocumentMetadata } from "src/hooks";
 
 import { Columns, Drivers } from "./components";
 
+/**
+ * Rendered inside the parent Settings Tabs Card (which already owns
+ * the outer padding + Card chrome), so this only needs to lay out
+ * the two sub-sections vertically.
+ */
 const Page = () => {
-  useDocumentMetadata("Configuracion Cube - Trim Success");
-
+  useDocumentMetadata(
+    "Configuración del cubo",
+    "Re-procesa el cubo, ajusta drivers y reasigna categorías."
+  );
   const cube = useCube();
 
   return (
-    <Box sx={{ padding: 4 }}>
+    <div className="space-y-8">
       <Drivers drivers={cube.data?.cubeParameters.drivers} />
       <Columns columns={COLUMNS} />
-    </Box>
+    </div>
   );
 };
 

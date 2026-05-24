@@ -1,182 +1,427 @@
-import AddLocationAltIcon from "@mui/icons-material/AddLocationAlt";
-import HandymanIcon from "@mui/icons-material/Handyman";
 import {
-  Timeline,
-  TimelineConnector,
-  TimelineContent,
-  TimelineDot,
-  TimelineItem,
-  TimelineSeparator,
-} from "@mui/lab";
-import {
-  AppBar,
-  Toolbar,
-  Box,
-  Button,
-  Container,
-  Grid,
-  Typography,
-  Stack,
-  TextField,
-} from "@mui/material";
+  ArrowRight,
+  BarChart3,
+  Boxes,
+  Database,
+  LineChart,
+  Lock,
+  ShieldCheck,
+  Sparkles,
+  Zap,
+} from "lucide-react";
 import { Link } from "react-router-dom";
-import HeroImage from "src/assets/images/hero.webp";
-import { Logo } from "src/components";
-import { FEATURES } from "src/consts";
 import { useDocumentMetadata } from "src/hooks";
-import { APP_NAME, ROUTES } from "src/lib/consts";
+import { APP_NAME, APP_TAGLINE, CONTACT_EMAIL, ROUTES } from "src/lib/consts";
 
-import FeatureCard from "./public/_components/FeatureCard";
 import Footer from "./public/_components/Footer";
-import Section from "./public/_components/Section";
+import { Button } from "@/components/ui/button";
+
+
+// Nav anchors — only sections that actually exist on the page.
+const NAV_LINKS = [
+  { label: "Producto", href: "#producto" },
+  { label: "Cómo funciona", href: "#soluciones" },
+];
+
+// USE_CASES — every entry here maps to a real screen in the app.
+// Audit done against the route table in src/lib/routes.tsx:
+//   Inventario   → /inventory/dashboard
+//   Ventas       → /sales
+//   Performance  → /inventory/inventory-performance (radial + bar)
+//   Data mining  → /inventory/data-mining
+//   AI assistant → /inventory/ai
+//   Scorecard    → /inventory/scorecard (editable drivers)
+const USE_CASES = [
+  {
+    icon: Boxes,
+    title: "Inventario",
+    description:
+      "Dashboard con KPIs, scorecard editable, drivers y métricas de rendimiento por categoría.",
+  },
+  {
+    icon: LineChart,
+    title: "Ventas",
+    description:
+      "Tendencia mensual, portafolio por categoría y ranking — sobre la misma fuente que inventario.",
+  },
+  {
+    icon: BarChart3,
+    title: "Rendimiento",
+    description:
+      "Radial charts e indicadores (ICR, ICC, IVA) para detectar oportunidades en segundos.",
+  },
+  {
+    icon: Database,
+    title: "Data mining",
+    description:
+      "Explora categorías y la distribución de tu catálogo con tablas pivote y donut charts.",
+  },
+  {
+    icon: Sparkles,
+    title: "Asistente IA",
+    description:
+      "Chat para hacerle preguntas a tu inventario en lenguaje natural (en beta).",
+  },
+  {
+    icon: ShieldCheck,
+    title: "Acceso seguro",
+    description:
+      "Firebase Auth con email + password. Acceso por invitación, sin registro público abierto.",
+  },
+];
 
 const LandingPage = () => {
-  useDocumentMetadata(APP_NAME);
+  // Landing page owns the bare brand title — no page-name suffix.
+  useDocumentMetadata({
+    title: `${APP_NAME} · ${APP_TAGLINE}`,
+    description:
+      "Sube tu inventario y obtén scorecard, drivers, rendimiento por categoría y ventas en un solo cubo.",
+    bare: true,
+  });
 
   return (
-    <Box
-      sx={{
-        bgcolor: "#fff",
-        color: "#000",
-        minHeight: "100vh",
-        position: "relative",
-        overflow: "hidden",
-      }}
-    >
-      <AppBar position="relative">
-        <Container maxWidth="xl">
-          <Toolbar disableGutters>
-            <Stack
-              direction="row"
-              spacing={8}
-              alignItems="center"
-              justifyContent={"space-between"}
-              sx={{ flexGrow: 1 }}
+    <div className="relative min-h-screen overflow-hidden bg-white text-neutral-900 antialiased">
+      {/* Sticky translucent nav */}
+      <header className="sticky top-0 z-50 border-b border-neutral-200/80 bg-white/70 backdrop-blur-xl">
+        <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-6">
+          <div className="flex items-center gap-8">
+            <Link
+              to="/"
+              className="flex items-center gap-2 text-[15px] font-semibold tracking-tight"
             >
-              <Logo />
-              <Stack direction="row" spacing={2}>
-                <Link to={ROUTES.SIGN_IN} style={{ textDecoration: "none" }}>
-                  <Button
-                    sx={{ color: "white", textDecoration: "none" }}
-                    size="small"
-                  >
-                    Inicia sesión
-                  </Button>
-                </Link>
-              </Stack>
-            </Stack>
-          </Toolbar>
-        </Container>
-      </AppBar>
-
-      <Container component={"main"}>
-        {/* Hero Section */}
-        <Section>
-          <Typography variant="h1" fontWeight={700} mb={4}>
-            Maneja tu inventario con <br />
-            ScorChain
-          </Typography>
-          <Grid container spacing={8}>
-            <Grid size={6}>
-              <Timeline sx={{ "& li::before": { display: "none" } }}>
-                <TimelineItem>
-                  <TimelineSeparator>
-                    <TimelineDot>
-                      <HandymanIcon />
-                    </TimelineDot>
-                    <TimelineConnector />
-                  </TimelineSeparator>
-                  <TimelineContent>
-                    <Typography variant="body2" mt={1.75}>
-                      Llena el formulario
-                    </Typography>
-                    <Box pt={4} pb={2}>
-                      <TextField label="Email" fullWidth />
-                    </Box>
-                  </TimelineContent>
-                </TimelineItem>
-                <TimelineItem>
-                  <TimelineSeparator>
-                    <TimelineDot>
-                      <AddLocationAltIcon />
-                    </TimelineDot>
-                  </TimelineSeparator>
-                  <TimelineContent>
-                    <Typography variant="body2" mt={1.75}>
-                      Selecciona los datos adicionales de tu negocio
-                    </Typography>
-                    <Box pt={4}>
-                      <Grid container spacing={2}>
-                        <Grid size={12}>
-                          <TextField label="Negocio" fullWidth />
-                        </Grid>
-                        <Grid size={12}>
-                          <TextField label="Lugar" fullWidth />
-                        </Grid>
-                        <Grid size={12}>
-                          <Stack
-                            direction={{ xs: "column", sm: "row" }}
-                            spacing={2}
-                            alignItems={"center"}
-                          >
-                            <Link
-                              to={ROUTES.SIGN_IN}
-                              style={{ textDecoration: "none" }}
-                            >
-                              <Button
-                                sx={{ color: "white", textDecoration: "none" }}
-                                variant="contained"
-                              >
-                                Enviar Consulta
-                              </Button>
-                            </Link>
-                          </Stack>
-                        </Grid>
-                      </Grid>
-                    </Box>
-                  </TimelineContent>
-                </TimelineItem>
-              </Timeline>
-            </Grid>
-            <Grid size={6}>
-              <Box
-                sx={{
-                  position: "relative",
-                  height: 400,
-                  aspectRatio: "16 / 9",
-                  mt: 2,
-                }}
+              <span className="inline-flex h-6 w-6 items-center justify-center rounded-sm bg-neutral-900 text-white">
+                <Zap className="h-3.5 w-3.5" />
+              </span>
+              {APP_NAME}
+            </Link>
+            <nav className="hidden items-center gap-6 md:flex">
+              {NAV_LINKS.map((link) => (
+                <a
+                  key={link.label}
+                  href={link.href}
+                  className="text-sm text-neutral-500 transition-colors hover:text-neutral-900"
+                >
+                  {link.label}
+                </a>
+              ))}
+            </nav>
+          </div>
+          <div className="flex items-center gap-2">
+            <Link to={ROUTES.SIGN_IN}>
+              <Button
+                size="sm"
+                className="h-8 rounded-full bg-neutral-900 px-4 text-[13px] font-medium text-white hover:bg-neutral-800"
               >
-                <img
-                  src={HeroImage}
-                  alt="Nubi-Go hero"
-                  style={{
-                    objectFit: "cover",
-                    borderRadius: 8,
-                    height: "100%",
-                  }}
-                />
-              </Box>
-            </Grid>
-          </Grid>
-        </Section>
+                Iniciar sesión
+                <ArrowRight className="ml-1 !h-3 !w-3" />
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </header>
 
-        <Section>
-          <Typography variant="h3" component={"h2"} fontWeight={700} mb={4}>
-            Servicios
-          </Typography>
-          <Grid container spacing={4}>
-            {FEATURES.map(({ id, ...props }) => (
-              <Grid size={{ xs: 12, sm: 6, md: 4 }} key={id}>
-                <FeatureCard {...props} />
-              </Grid>
-            ))}
-          </Grid>
-        </Section>
-      </Container>
+      <main>
+        {/* HERO */}
+        <section className="relative overflow-hidden border-b border-neutral-200/80">
+          {/* Soft radial spotlight */}
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-0 -z-0"
+            style={{
+              background:
+                "radial-gradient(60% 50% at 50% 0%, rgba(99,102,241,0.10) 0%, rgba(255,255,255,0) 70%)",
+            }}
+          />
+          {/* Grid lines */}
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-0 -z-0 opacity-60"
+            style={{
+              backgroundImage:
+                "linear-gradient(to right, rgba(0,0,0,0.05) 1px, transparent 1px), linear-gradient(to bottom, rgba(0,0,0,0.05) 1px, transparent 1px)",
+              backgroundSize: "56px 56px",
+              maskImage:
+                "radial-gradient(ellipse at center, black 40%, transparent 75%)",
+            }}
+          />
+
+          <div className="relative mx-auto max-w-6xl px-6 pb-28 pt-24 text-center sm:pt-32">
+            <Link
+              to="#producto"
+              className="mx-auto mb-8 inline-flex items-center gap-2 rounded-full border border-neutral-200 bg-white/70 px-3 py-1 text-xs text-neutral-600 backdrop-blur transition-colors hover:border-neutral-300 hover:text-neutral-900"
+            >
+              <span className="inline-block h-1.5 w-1.5 rounded-full bg-amber-500" />
+              Beta · asistente IA dentro del cubo
+              <ArrowRight className="h-3 w-3" />
+            </Link>
+
+            <h1 className="mx-auto max-w-4xl text-balance text-5xl font-semibold leading-[1.05] tracking-tight sm:text-6xl md:text-7xl">
+              Tu inventario,
+              <br />
+              en un solo cubo.
+            </h1>
+
+            <p className="mx-auto mt-6 max-w-2xl text-balance text-base text-neutral-500 sm:text-lg">
+              {APP_NAME} unifica scorecard, drivers, rendimiento por categoría y
+              ventas — listo para que tomes decisiones basadas en datos en
+              minutos, no semanas.
+            </p>
+
+            <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
+              <Link to={ROUTES.SIGN_IN}>
+                <Button
+                  size="lg"
+                  className="h-11 rounded-full bg-neutral-900 px-6 text-[14px] font-medium text-white hover:bg-neutral-800"
+                >
+                  Iniciar sesión
+                  <ArrowRight className="ml-1 h-4 w-4" />
+                </Button>
+              </Link>
+              <a href="#producto">
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="h-11 rounded-full border-neutral-200 bg-white px-6 text-[14px] font-medium text-neutral-900 hover:bg-neutral-50 hover:text-neutral-900"
+                >
+                  Conoce el producto
+                </Button>
+              </a>
+            </div>
+
+            <p className="mt-6 text-xs text-neutral-400">
+              Acceso por invitación. ¿Te interesa probarlo?{" "}
+              <a
+                href={`mailto:${CONTACT_EMAIL}`}
+                className="text-neutral-700 underline-offset-4 hover:underline"
+              >
+                Escríbenos
+              </a>
+              .
+            </p>
+          </div>
+
+          {/* Faux product card */}
+          <div className="relative mx-auto max-w-5xl px-6 pb-24">
+            <div className="relative overflow-hidden rounded-xl border border-neutral-200 bg-white p-1 shadow-[0_30px_120px_-20px_rgba(80,80,160,0.18)]">
+              <div className="rounded-lg border border-neutral-200 bg-neutral-50 p-6 sm:p-8">
+                <div className="mb-6 flex items-center justify-between border-b border-neutral-200 pb-4">
+                  <div className="flex items-center gap-2 text-xs text-neutral-400">
+                    <span className="h-2 w-2 rounded-full bg-red-400" />
+                    <span className="h-2 w-2 rounded-full bg-yellow-400" />
+                    <span className="h-2 w-2 rounded-full bg-emerald-400" />
+                    <span className="ml-3 font-mono text-neutral-500">
+                      trimsuccess.app/cubo
+                    </span>
+                  </div>
+                  <span className="hidden text-xs text-neutral-400 sm:inline">
+                    Q4 · 2026
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+                  {[
+                    { label: "Ventas totales", value: "$595M", delta: "+12.4%" },
+                    { label: "SKUs activos", value: "45,151", delta: "+3.1%" },
+                    { label: "Margen bruto", value: "40.5%", delta: "+0.8%" },
+                  ].map((kpi) => (
+                    <div
+                      key={kpi.label}
+                      className="rounded-lg border border-neutral-200 bg-white p-4"
+                    >
+                      <div className="text-xs text-neutral-500">
+                        {kpi.label}
+                      </div>
+                      <div className="mt-1 text-2xl font-semibold tracking-tight text-neutral-900">
+                        {kpi.value}
+                      </div>
+                      <div className="mt-1 text-xs text-emerald-600">
+                        {kpi.delta}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Fake sparkline-ish bars */}
+                <div className="mt-6 flex h-28 items-end gap-1.5">
+                  {[
+                    32, 48, 40, 64, 56, 72, 60, 84, 76, 92, 70, 88, 96, 80, 100,
+                    74, 90,
+                  ].map((h, i) => (
+                    <div
+                      key={i}
+                      className="flex-1 rounded-sm bg-gradient-to-t from-neutral-200 to-neutral-900/70"
+                      style={{ height: `${h}%` }}
+                    />
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Logo / proof strip */}
+        <section className="border-b border-neutral-200/80 bg-white">
+          <div className="mx-auto flex max-w-6xl flex-col items-center gap-6 px-6 py-12 sm:flex-row sm:justify-between">
+            <p className="text-sm text-neutral-500">
+              Diseñado para equipos que necesitan ver y decidir rápido
+            </p>
+            <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-sm font-medium text-neutral-400">
+              <span>Retail</span>
+              <span>·</span>
+              <span>Distribución</span>
+              <span>·</span>
+              <span>Manufactura</span>
+              <span>·</span>
+              <span>Ecommerce</span>
+            </div>
+          </div>
+        </section>
+
+        {/* USE CASES grid */}
+        <section
+          id="producto"
+          className="border-b border-neutral-200/80 bg-white py-24"
+        >
+          <div className="mx-auto max-w-6xl px-6">
+            <div className="mx-auto max-w-2xl text-center">
+              <span className="text-xs font-medium uppercase tracking-widest text-neutral-400">
+                Producto
+              </span>
+              <h2 className="mt-3 text-balance text-4xl font-semibold tracking-tight sm:text-5xl">
+                Una plataforma. Todas las vistas.
+              </h2>
+              <p className="mt-4 text-neutral-500">
+                Cada módulo de {APP_NAME} habla el mismo idioma — el cubo. Sin
+                exportar a Excel, sin reconciliar reportes.
+              </p>
+            </div>
+
+            <div className="mt-14 grid gap-px overflow-hidden rounded-xl border border-neutral-200 bg-neutral-200 sm:grid-cols-2 lg:grid-cols-3">
+              {USE_CASES.map(({ icon: Icon, title, description }) => (
+                <div
+                  key={title}
+                  className="group relative bg-white p-6 transition-colors hover:bg-neutral-50 sm:p-8"
+                >
+                  <div className="mb-5 inline-flex h-9 w-9 items-center justify-center rounded-md border border-neutral-200 bg-neutral-50 text-neutral-700 transition-colors group-hover:border-neutral-300 group-hover:text-neutral-900">
+                    <Icon className="h-4 w-4" />
+                  </div>
+                  <h3 className="text-lg font-medium tracking-tight">
+                    {title}
+                  </h3>
+                  <p className="mt-2 text-sm leading-relaxed text-neutral-500">
+                    {description}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Big feature bento */}
+        <section
+          id="soluciones"
+          className="border-b border-neutral-200/80 bg-neutral-50 py-24"
+        >
+          <div className="mx-auto max-w-6xl px-6">
+            <div className="mx-auto max-w-2xl text-center">
+              <span className="text-xs font-medium uppercase tracking-widest text-neutral-400">
+                Velocidad
+              </span>
+              <h2 className="mt-3 text-balance text-4xl font-semibold tracking-tight sm:text-5xl">
+                De Excel al cubo en 5 minutos.
+              </h2>
+              <p className="mt-4 text-neutral-500">
+                Importa tu inventario y obtén scorecard, drivers y rendimiento
+                listos. No hay configuración, no hay fricción.
+              </p>
+            </div>
+
+            <div className="mt-14 grid gap-4 lg:grid-cols-3">
+              <div className="rounded-xl border border-neutral-200 bg-white p-8 lg:col-span-2">
+                <div className="mb-4 inline-flex items-center gap-2 text-xs font-medium uppercase tracking-widest text-neutral-500">
+                  <Zap className="h-3 w-3 text-emerald-500" />
+                  Import
+                </div>
+                <h3 className="text-2xl font-semibold tracking-tight">
+                  Sube tu archivo. El cubo se arma solo.
+                </h3>
+                <p className="mt-3 max-w-lg text-sm text-neutral-500">
+                  Conectamos columnas automáticamente y validamos tu data antes
+                  de moverla al cubo activo — sin sorpresas.
+                </p>
+                <div className="mt-6 rounded-lg border border-dashed border-neutral-300 bg-neutral-50 p-6 text-center text-sm text-neutral-500">
+                  inventario_q4.xlsx
+                  <div className="mx-auto mt-2 h-1 w-32 overflow-hidden rounded-full bg-neutral-200">
+                    <div className="h-full w-2/3 rounded-full bg-neutral-900" />
+                  </div>
+                </div>
+              </div>
+
+              <div className="rounded-xl border border-neutral-200 bg-white p-8">
+                <div className="mb-4 inline-flex items-center gap-2 text-xs font-medium uppercase tracking-widest text-neutral-500">
+                  <Lock className="h-3 w-3" />
+                  Seguro
+                </div>
+                <h3 className="text-2xl font-semibold tracking-tight">
+                  Tu data, tu control.
+                </h3>
+                <p className="mt-3 text-sm text-neutral-500">
+                  Encriptado en reposo y en tránsito sobre Firebase + Google
+                  Cloud. Acceso por invitación, sin registro abierto.
+                </p>
+                <div className="mt-6 flex items-center gap-2 text-xs text-neutral-500">
+                  <ShieldCheck className="h-4 w-4 text-emerald-500" />
+                  Encriptado en reposo y en tránsito
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Closing CTA */}
+        <section className="relative overflow-hidden border-b border-neutral-200/80 bg-white">
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-0"
+            style={{
+              background:
+                "radial-gradient(50% 60% at 50% 100%, rgba(99,102,241,0.10) 0%, rgba(255,255,255,0) 70%)",
+            }}
+          />
+          <div className="relative mx-auto max-w-3xl px-6 py-28 text-center">
+            <h2 className="text-balance text-4xl font-semibold tracking-tight sm:text-5xl">
+              Empieza a ver tu inventario claro.
+            </h2>
+            <p className="mt-4 text-neutral-500">
+              Si ya tienes cuenta, entra y abre tu cubo. Si no, escríbenos y te
+              damos acceso.
+            </p>
+            <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
+              <Link to={ROUTES.SIGN_IN}>
+                <Button
+                  size="lg"
+                  className="h-11 rounded-full bg-neutral-900 px-6 text-[14px] font-medium text-white hover:bg-neutral-800"
+                >
+                  Iniciar sesión
+                  <ArrowRight className="ml-1 h-4 w-4" />
+                </Button>
+              </Link>
+              <a href={`mailto:${CONTACT_EMAIL}`}>
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="h-11 rounded-full border-neutral-200 bg-white px-6 text-[14px] font-medium text-neutral-900 hover:bg-neutral-50 hover:text-neutral-900"
+                >
+                  Pedir acceso
+                </Button>
+              </a>
+            </div>
+          </div>
+        </section>
+      </main>
 
       <Footer />
-    </Box>
+    </div>
   );
 };
 

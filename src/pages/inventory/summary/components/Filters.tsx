@@ -1,9 +1,19 @@
-import { Grid, TextField, MenuItem, Button, ButtonGroup } from "@mui/material";
 import { useCube } from "src/context/hooks";
+
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { cn } from "@/lib/utils";
 
 export interface IFilterCriteria {
   category: string;
-  expetedValue?: "positive" | "negative";
+  expectedValue?: "positive" | "negative";
 }
 
 interface Props {
@@ -11,66 +21,85 @@ interface Props {
   setFilters: React.Dispatch<React.SetStateAction<IFilterCriteria>>;
 }
 
+const ALL_CATEGORIES = "__all__";
+
 const Filters = ({ filters, setFilters }: Props) => {
   const cube = useCube();
 
   if (!cube.data) return null;
 
   return (
-    <Grid container gap={2}>
-      <Grid item xs={4}>
-        <TextField
-          fullWidth
-          select
-          label="Categoria"
-          value={filters.category}
-          onChange={(e) =>
-            setFilters((prev) => ({ ...prev, category: e.target.value }))
+    <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+      <div className="space-y-1.5">
+        <Label htmlFor="filter-category">Categoria</Label>
+        <Select
+          value={filters.category || ALL_CATEGORIES}
+          onValueChange={(value) =>
+            setFilters((prev) => ({
+              ...prev,
+              category: value === ALL_CATEGORIES ? "" : value,
+            }))
           }
         >
-          <MenuItem value="">Todas</MenuItem>
-          {cube.data?.cubeParameters.categories.map((option) => (
-            <MenuItem key={option} value={option}>
-              {option}
-            </MenuItem>
-          ))}
-        </TextField>
-      </Grid>
-      <Grid item xs={4}>
-        <ButtonGroup aria-label="expected value filter">
+          <SelectTrigger id="filter-category">
+            <SelectValue placeholder="Todas" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value={ALL_CATEGORIES}>Todas</SelectItem>
+            {cube.data?.cubeParameters.categories.map((option) => (
+              <SelectItem key={option} value={option}>
+                {option}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
+      <div className="space-y-1.5 md:col-span-2">
+        <Label>Profit</Label>
+        <div
+          role="group"
+          aria-label="Expected value filter"
+          className="inline-flex overflow-hidden rounded-md border"
+        >
           <Button
-            variant={
-              filters?.expetedValue === "positive" ? "contained" : "outlined"
-            }
-            color="success"
+            type="button"
+            variant={filters?.expectedValue === "positive" ? "default" : "ghost"}
+            className={cn(
+              "rounded-none border-r",
+              filters?.expectedValue === "positive" &&
+                "bg-emerald-600 hover:bg-emerald-600/90"
+            )}
             onClick={() =>
               setFilters((prev) => ({
                 ...prev,
-                expetedValue:
-                  prev.expetedValue === "positive" ? undefined : "positive",
+                expectedValue:
+                  prev.expectedValue === "positive" ? undefined : "positive",
               }))
             }
           >
             Con Profit
           </Button>
           <Button
-            variant={
-              filters?.expetedValue === "negative" ? "contained" : "outlined"
-            }
-            color="error"
+            type="button"
+            variant={filters?.expectedValue === "negative" ? "default" : "ghost"}
+            className={cn(
+              "rounded-none",
+              filters?.expectedValue === "negative" && "bg-destructive hover:bg-destructive/90"
+            )}
             onClick={() =>
               setFilters((prev) => ({
                 ...prev,
-                expetedValue:
-                  prev.expetedValue === "negative" ? undefined : "negative",
+                expectedValue:
+                  prev.expectedValue === "negative" ? undefined : "negative",
               }))
             }
           >
             Sin Profit
           </Button>
-        </ButtonGroup>
-      </Grid>
-    </Grid>
+        </div>
+      </div>
+    </div>
   );
 };
 

@@ -1,15 +1,10 @@
 import { ReactNode } from "react";
 
-import {
-  Card,
-  CardContent,
-  Box,
-  Paper,
-  Typography,
-  Button,
-  CircularProgress,
-} from "@mui/material";
+import { Loader2 } from "lucide-react";
 import { Link } from "react-router-dom";
+
+import { Card, CardContent } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 
 type BaseProps = {
   label: string;
@@ -18,20 +13,11 @@ type BaseProps = {
   onClick?: () => void;
   loading?: boolean;
   error?: string | null;
-  elevation?: number;
   disabled?: boolean;
 };
 
-type LinkProps = BaseProps & {
-  isLink: true;
-  to: string;
-};
-
-type ButtonProps = BaseProps & {
-  isLink?: false;
-  to?: never;
-};
-
+type LinkProps = BaseProps & { isLink: true; to: string };
+type ButtonProps = BaseProps & { isLink?: false; to?: never };
 type Props = LinkProps | ButtonProps;
 
 const CardButton = ({
@@ -41,105 +27,64 @@ const CardButton = ({
   onClick,
   loading,
   error,
-  elevation = 1,
   disabled,
   isLink,
   to,
 }: Props) => {
-  const Content = (
+  const isInactive = loading || disabled;
+
+  const Body = (
     <Card
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "space-between",
-        height: "100%",
-        position: "relative",
-        width: "100%",
-        alignItems: "flex-start",
-      }}
-      component={Button}
-      onClick={onClick}
-      disabled={loading || disabled}
-      elevation={elevation}
+      className={cn(
+        "relative h-full w-full transition-shadow",
+        !isInactive && "cursor-pointer hover:shadow-md",
+        isInactive && "opacity-60"
+      )}
     >
       {loading && (
-        <CircularProgress
-          sx={{ position: "absolute", top: 16, right: 16 }}
-          size={25}
+        <Loader2
+          className="absolute right-4 top-4 h-5 w-5 animate-spin"
+          aria-label="Cargando"
         />
       )}
       {error && (
-        <Box
-          sx={{
-            position: "absolute",
-            top: 16,
-            right: 16,
-          }}
+        <span
+          role="alert"
+          className="absolute right-4 top-4 text-xs text-destructive"
         >
-          <Typography
-            variant="caption"
-            color="error"
-            sx={{ textTransform: "none" }}
-          >
-            {error}
-          </Typography>
-        </Box>
+          {error}
+        </span>
       )}
-      <CardContent
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          textAlign: "left",
-          textTransform: "none",
-        }}
-      >
-        <Box>
-          <Paper
-            sx={{
-              display: "inline-block",
-              p: 1,
-              mb: 1,
-              border: "1px solid rgba(205, 209, 228, 0.2)",
-              "& svg": {
-                ...(loading || disabled
-                  ? {
-                      color: "text.disabled",
-                    }
-                  : {}),
-              },
-            }}
-          >
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              {icon}
-            </Box>
-          </Paper>
-          <Typography variant="body1" component="h3" my={2}>
-            <strong>{label}</strong>
-          </Typography>
-        </Box>
-        <Typography
-          variant="body2"
-          color={loading || disabled ? "text.disabled" : "text.secondary"}
+      <CardContent className="flex flex-col items-start gap-2 p-6 text-left">
+        <div
+          aria-hidden="true"
+          className="rounded-md border bg-muted/30 p-2 text-foreground"
         >
-          {description}
-        </Typography>
+          {icon}
+        </div>
+        <h3 className="text-base font-semibold">{label}</h3>
+        <p className="text-sm text-muted-foreground">{description}</p>
       </CardContent>
     </Card>
   );
 
-  return isLink && !disabled ? (
-    <Link to={to} style={{ textDecoration: "none" }}>
-      {Content}
-    </Link>
-  ) : (
-    Content
-  );
+  if (isLink && !disabled) {
+    return <Link to={to}>{Body}</Link>;
+  }
+
+  if (!isLink && onClick && !isInactive) {
+    return (
+      <button
+        type="button"
+        onClick={onClick}
+        className="block w-full text-left"
+      >
+        {Body}
+      </button>
+    );
+  }
+
+  return Body;
 };
 
 export default CardButton;

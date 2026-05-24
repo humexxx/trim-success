@@ -58,7 +58,9 @@ export function calculateInitialData(
 }
 
 export function calculateCategoriesDataRows(
-  rows: any[],
+  // Cube rows have a typed `id` plus arbitrary string/number cells
+  // keyed by column name — exactly what IDataModelCubeRow describes.
+  rows: IDataModelCubeRow[],
   drivers: IDriver[]
 ): IBaseData["categoriesData"]["rows"] {
   if (!rows || rows.length === 0) {
@@ -66,7 +68,12 @@ export function calculateCategoriesDataRows(
   }
 
   const category = { index: getColumnIndex(EColumnType.CATEGORY)! };
-  const response: any = {};
+  // Keyed by category name. Each row carries a `category` string + a
+  // numeric value per dynamic driver key (driver.key is user-supplied
+  // config), so the value shape needs both. The IBaseData row type
+  // already models this so we re-use it.
+  type Row = IBaseData["categoriesData"]["rows"][number];
+  const response: Record<string, Row> = {};
 
   for (let i = 0; i < rows.length; i++) {
     const categoryValue = getRowValue(rows[i], category.index) as string;
@@ -85,13 +92,17 @@ export function calculateCategoriesDataRows(
     }
 
     for (let j = 0; j < drivers.length; j++) {
-      if (drivers[j].key === "SKUS") {
-        response[categoryValue][drivers[j].key]++;
+      // Row fields are typed `string | number` in IBaseData (because
+      // category is a string and driver sums are numbers). We
+      // initialized every driver bucket to `0` above, so coerce
+      // through Number() to satisfy the arithmetic check.
+      const key = drivers[j].key;
+      const current = Number(response[categoryValue][key]);
+      if (key === "SKUS") {
+        response[categoryValue][key] = current + 1;
       } else {
-        response[categoryValue][drivers[j].key] += getRowValue(
-          rows[i],
-          drivers[j].columnIndexReference
-        );
+        response[categoryValue][key] =
+          current + Number(getRowValue(rows[i], drivers[j].columnIndexReference));
       }
     }
   }

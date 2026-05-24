@@ -1,28 +1,44 @@
 import { useEffect, useMemo, useState } from "react";
 
-import { GridCellParams, GridColDef, GridRowModel } from "@mui/x-data-grid";
 import { IDriver, IParameter, IScorecardData } from "@shared/models";
 import { formatAmount, formatPercentage } from "@shared/utils";
-import { StripedDataGrid } from "src/components";
+import { Loader2 } from "lucide-react";
+
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableFooter,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { cn } from "@/lib/utils";
+
+type Row = IScorecardData["inventoryCosts"]["rows"][number];
 
 interface Props {
   data?: IScorecardData["inventoryCosts"];
   categories: string[];
   investmentTypes: IParameter[];
-  updateRow: (
-    row: IScorecardData["inventoryCosts"]["rows"][number]
-  ) => Promise<void>;
+  updateRow: (row: Row) => Promise<void>;
   drivers: IDriver[];
   loading: boolean;
 }
 
-function isCellEditable(params: GridCellParams) {
-  if (params.field === "invest") {
-    return "invest" in params.row;
-  }
-  return true;
-}
-
+/**
+ * Inline-editable replacement for the previous MUI x-data-grid scorecard
+ * table. driver + invest cells render a shadcn Select that fires updateRow
+ * on change (mirrors the original processRowUpdate behavior). Numeric
+ * category/total/percentage columns are read-only.
+ */
 const ScorecardTableInventory = ({
   data,
   categories,
@@ -31,147 +47,147 @@ const ScorecardTableInventory = ({
   drivers,
   loading,
 }: Props) => {
-  const [rows, setRows] = useState<
-    GridRowModel<IScorecardData["inventoryCosts"]["rows"][number]>[]
-  >(data?.rows ?? []);
-
-  const columns: GridColDef[] = useMemo(
-    () => [
-      {
-        field: "cost",
-        headerName: "Costos del Inventario",
-        flex: 1,
-        minWidth: 150,
-      },
-      {
-        field: "driver",
-        headerName: "Driver",
-        width: 150,
-        editable: true,
-        type: "singleSelect",
-        valueOptions: drivers,
-        getOptionValue: (value: IDriver) => value.key,
-        getOptionLabel: (value: IDriver) => value.label,
-        valueFormatter: (params) => {
-          return drivers.find((driver) => driver.key === params)?.label;
-        },
-      },
-      ...categories.sort().map(
-        (category) =>
-          ({
-            field: category,
-            headerName: category,
-            minWidth: 150,
-            valueFormatter: formatAmount,
-          }) as GridColDef
-      ),
-      {
-        field: "total",
-        headerName: "Costos Totales",
-        width: 150,
-        valueFormatter: formatAmount,
-      },
-      {
-        field: "totalPercentage",
-        headerName: "% Cost",
-        width: 100,
-        valueFormatter: formatPercentage,
-      },
-      {
-        field: "invest",
-        headerName: "% Investment Type",
-        width: 150,
-        editable: true,
-        type: "singleSelect",
-        valueOptions: investmentTypes,
-        getOptionValue: (value: IParameter) => value.name,
-        getOptionLabel: (value: IParameter) =>
-          `${value.name} (${formatPercentage(value.value / 100)})`,
-        valueFormatter: (params) => {
-          return (
-            formatPercentage(
-              Number(
-                investmentTypes.find((type) => type.name === params)?.value
-              ) / 100
-            ) || "n/a"
-          );
-        },
-      },
-    ],
-    [categories, drivers, investmentTypes]
-  );
-
-  const totalColumns: GridColDef[] = useMemo(
-    () => [
-      {
-        field: "1",
-        headerName: "Costo total del Inventario",
-        flex: 1,
-        minWidth: 150,
-        headerClassName: "bold",
-      },
-      {
-        field: "2",
-        headerName: "",
-        width: 150,
-      },
-      ...categories.sort().map(
-        (category) =>
-          ({
-            field: category,
-            headerName: formatAmount(Number(data?.totals[category])),
-            width: 150,
-          }) as GridColDef
-      ),
-      {
-        field: "total",
-        headerName: formatAmount(Number(data?.totals.total)),
-        width: 150,
-      },
-      {
-        field: "totalPercentage",
-        headerName: formatPercentage(Number(data?.totals.totalPercentage)),
-        width: 100,
-      },
-      {
-        field: "4",
-        headerName: "",
-        width: 150,
-        editable: true,
-        type: "singleSelect",
-      },
-    ],
-    [categories, data?.totals]
-  );
-
-  const processRowUpdate = (
-    row: GridRowModel<IScorecardData["inventoryCosts"]["rows"][number]>
-  ) => {
-    updateRow(row);
-    return row;
-  };
+  const [rows, setRows] = useState<Row[]>(data?.rows ?? []);
+  const sortedCategories = useMemo(() => [...categories].sort(), [categories]);
 
   useEffect(() => {
     setRows(data?.rows ?? []);
   }, [data]);
 
+  const handleDriverChange = async (row: Row, driverKey: string) => {
+    const next = { ...row, driver: driverKey } as Row;
+    setRows((prev) =>
+      prev.map((r) => (r.cost === row.cost ? next : r))
+    );
+    await updateRow(next);
+  };
+
+  const handleInvestChange = async (row: Row, investName: string) => {
+    const next = { ...row, invest: investName } as Row;
+    setRows((prev) =>
+      prev.map((r) => (r.cost === row.cost ? next : r))
+    );
+    await updateRow(next);
+  };
+
   return (
-    <>
-      <StripedDataGrid
-        getRowId={(row) => row.cost}
-        aria-label="Costos del Inventario"
-        columns={columns}
-        rows={rows}
-        disableColumnMenu
-        hideFooter
-        editMode="row"
-        processRowUpdate={processRowUpdate}
-        onProcessRowUpdateError={(error) => console.error(error)}
-        totalColumns={totalColumns}
-        isCellEditable={isCellEditable}
-        loading={loading}
-      />
-    </>
+    <div className="relative">
+      {loading && (
+        <div className="absolute inset-0 z-10 flex items-center justify-center bg-background/60">
+          <Loader2 className="h-5 w-5 animate-spin" />
+        </div>
+      )}
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Costos del Inventario</TableHead>
+            <TableHead>Driver</TableHead>
+            {sortedCategories.map((c) => (
+              <TableHead key={c} className="text-right">
+                {c}
+              </TableHead>
+            ))}
+            <TableHead className="text-right">Costos Totales</TableHead>
+            <TableHead className="text-right">% Cost</TableHead>
+            <TableHead>% Investment Type</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {rows.map((row, idx) => {
+            const hasInvest = "invest" in row;
+            return (
+              <TableRow
+                key={row.cost}
+                className={cn(idx % 2 === 1 && "bg-muted/40")}
+              >
+                <TableCell>{row.cost}</TableCell>
+                <TableCell>
+                  <Select
+                    value={row.driver}
+                    onValueChange={(v) => handleDriverChange(row, v)}
+                  >
+                    <SelectTrigger className="h-8 w-[140px]">
+                      <SelectValue placeholder="Seleccionar">
+                        {drivers.find((d) => d.key === row.driver)?.label}
+                      </SelectValue>
+                    </SelectTrigger>
+                    <SelectContent>
+                      {drivers.map((d) => (
+                        <SelectItem key={d.key} value={d.key}>
+                          {d.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </TableCell>
+                {sortedCategories.map((c) => (
+                  <TableCell key={c} className="text-right tabular-nums">
+                    {formatAmount(Number(row[c] ?? 0))}
+                  </TableCell>
+                ))}
+                <TableCell className="text-right tabular-nums">
+                  {formatAmount(Number(row.total))}
+                </TableCell>
+                <TableCell className="text-right tabular-nums">
+                  {formatPercentage(Number(row.totalPercentage))}
+                </TableCell>
+                <TableCell>
+                  {hasInvest ? (
+                    <Select
+                      value={(row as Row & { invest?: string }).invest ?? ""}
+                      onValueChange={(v) => handleInvestChange(row, v)}
+                    >
+                      <SelectTrigger className="h-8 w-[160px]">
+                        <SelectValue placeholder="n/a">
+                          {(() => {
+                            const v = (row as Row & { invest?: string }).invest;
+                            const it = investmentTypes.find(
+                              (t) => t.name === v
+                            );
+                            return it
+                              ? formatPercentage(it.value / 100)
+                              : "n/a";
+                          })()}
+                        </SelectValue>
+                      </SelectTrigger>
+                      <SelectContent>
+                        {investmentTypes.map((t) => (
+                          <SelectItem key={t.name} value={t.name}>
+                            {t.name} ({formatPercentage(t.value / 100)})
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  ) : (
+                    <span className="text-muted-foreground">—</span>
+                  )}
+                </TableCell>
+              </TableRow>
+            );
+          })}
+        </TableBody>
+        <TableFooter>
+          <TableRow>
+            <TableCell className="font-semibold">
+              Costo total del Inventario
+            </TableCell>
+            <TableCell />
+            {sortedCategories.map((c) => (
+              <TableCell key={c} className="text-right font-semibold tabular-nums">
+                {formatAmount(Number(data?.totals[c] ?? 0))}
+              </TableCell>
+            ))}
+            <TableCell className="text-right font-semibold tabular-nums">
+              {formatAmount(Number(data?.totals.total ?? 0))}
+            </TableCell>
+            <TableCell className="text-right font-semibold tabular-nums">
+              {formatPercentage(Number(data?.totals.totalPercentage ?? 0))}
+            </TableCell>
+            <TableCell />
+          </TableRow>
+        </TableFooter>
+      </Table>
+    </div>
   );
 };
 

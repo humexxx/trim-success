@@ -1,29 +1,47 @@
 import { PropsWithChildren } from "react";
 
-import { Breakpoint, Container } from "@mui/material";
 import { useDocumentMetadata } from "src/hooks";
-import { APP_NAME } from "src/lib/consts";
+
+import { cn } from "@/lib/utils";
+
+type MaxWidth = "sm" | "md" | "lg" | "xl" | "2xl" | "full";
 
 type Props = {
+  /** Sets `<title>` as "{title} · {APP_NAME}". */
   title?: string;
+  /** Sets `<meta name="description">` for the page. */
   description?: string;
   useContainer?: boolean;
-  maxWidth?: false | Breakpoint | undefined;
+  maxWidth?: MaxWidth;
+};
+
+const maxWidthClass: Record<MaxWidth, string> = {
+  sm: "max-w-screen-sm",
+  md: "max-w-screen-md",
+  lg: "max-w-screen-lg",
+  xl: "max-w-screen-xl",
+  "2xl": "max-w-screen-2xl",
+  full: "max-w-full",
 };
 
 const Page = ({
   title,
+  description,
   useContainer = true,
   maxWidth = "xl",
   children,
 }: PropsWithChildren<Props>) => {
-  useDocumentMetadata(`${title} | ${APP_NAME}`);
+  useDocumentMetadata({ title: title ?? "", description });
 
   if (useContainer) {
-    return <Container maxWidth={maxWidth}>{children}</Container>;
+    return (
+      <div className={cn("mx-auto w-full px-4", maxWidthClass[maxWidth])}>
+        {children}
+      </div>
+    );
   }
 
-  return children;
+  return <>{children}</>;
 };
 
 export default Page;
