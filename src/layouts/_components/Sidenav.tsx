@@ -1,5 +1,7 @@
 import { PropsWithChildren } from "react";
 
+import { APP_NAME } from "src/lib/consts";
+
 import { Separator } from "@/components/ui/separator";
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 
@@ -79,7 +81,7 @@ function Sidenav({
         className="fixed inset-y-0 left-0 z-30 hidden w-[240px] border-r bg-background lg:block"
         aria-label="Navegación lateral"
       >
-        <SidenavBody title="Trim Success" version={version}>
+        <SidenavBody title={APP_NAME} version={version}>
           {children}
         </SidenavBody>
       </aside>
