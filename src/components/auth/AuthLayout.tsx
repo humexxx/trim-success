@@ -1,6 +1,7 @@
 import { ReactNode } from "react";
 
 import { Link } from "react-router-dom";
+import { APP_NAME } from "src/lib/consts";
 
 import { AuthChartSlideshow } from "@/components/auth/AuthChartSlideshow";
 import { cn } from "@/lib/utils";
@@ -25,7 +26,7 @@ export function AuthLayout({ children, className }: AuthLayoutProps) {
             to="/"
             className="flex items-center gap-2 text-lg font-semibold tracking-tight"
           >
-            ScorChain
+            {APP_NAME}
           </Link>
         </div>
         <div className="flex flex-1 items-center justify-center">

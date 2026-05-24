@@ -210,7 +210,7 @@ const LandingPage = () => {
                     <span className="h-2 w-2 rounded-full bg-yellow-400" />
                     <span className="h-2 w-2 rounded-full bg-emerald-400" />
                     <span className="ml-3 font-mono text-neutral-500">
-                      scorchain.app/cubo
+                      trimsuccess.app/cubo
                     </span>
                   </div>
                   <span className="hidden text-xs text-neutral-400 sm:inline">
