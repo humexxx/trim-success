@@ -38,7 +38,7 @@
     "firebase": "^11.0.2",
     "framer-motion": "^12.40.0",
     "lucide-react": "^1.16.0",
-    "pdfmake": "^0.2.15",
+    "pdfmake": "^0.3.9",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-dropzone": "^15.0.0",
