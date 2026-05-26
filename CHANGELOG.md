@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.2](https://github.com/humexxx/trim-success/compare/v1.0.1...v1.0.2) (2026-05-26)
+
+
+### Bug Fixes
+
+* **build:** production blank page from over-aggressive chunking ([cfb472d](https://github.com/humexxx/trim-success/commit/cfb472d4c61f76093c542386bfda871ee9ef11d9)), closes [#267](https://github.com/humexxx/trim-success/issues/267)
+
+### [1.0.1](https://github.com/humexxx/trim-success/compare/v1.0.0...v1.0.1) (2026-05-26)
+
+
+### Performance Improvements
+
+* **build:** split vendor bundles + deps + dependabot off ([5ffde5b](https://github.com/humexxx/trim-success/commit/5ffde5b80b68a14f0d7b9d45278d4aec3085a3c8))
+
 ## [1.0.0](https://github.com/humexxx/trim-success/compare/v0.50.2...v1.0.0) (2026-05-24)
 
 
