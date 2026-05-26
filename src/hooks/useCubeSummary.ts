@@ -33,6 +33,11 @@ interface State {
  */
 export function useCubeSummary(): State {
   const { isAdmin, customUser, currentUser } = useAuth();
+  // Resolve the effective uid OUTSIDE the effect so the dep array can
+  // narrow to a single primitive — depending on the full user objects
+  // would re-fire the probe whenever any unrelated user field changes
+  // (e.g. token refresh swaps the object identity).
+  const uid = isAdmin ? customUser?.uid : currentUser?.uid;
   const [state, setState] = useState<State>({
     loading: true,
     hasData: false,
@@ -41,15 +46,13 @@ export function useCubeSummary(): State {
   });
 
   useEffect(() => {
+    if (!uid) return;
     let cancelled = false;
-    async function probe() {
-      const uid = isAdmin ? customUser?.uid : currentUser?.uid;
-      if (!uid) return;
-
+    async function probe(_uid: string) {
       try {
         const [paramsSnap, baseSnap] = await Promise.all([
-          getDoc(doc(firestore, FIRESTORE_PATHS.SETTINGS.PARAMS(uid))),
-          getDoc(doc(firestore, FIRESTORE_PATHS.SETTINGS.BASE(uid))),
+          getDoc(doc(firestore, FIRESTORE_PATHS.SETTINGS.PARAMS(_uid))),
+          getDoc(doc(firestore, FIRESTORE_PATHS.SETTINGS.BASE(_uid))),
         ]);
         if (cancelled) return;
 
@@ -93,11 +96,11 @@ export function useCubeSummary(): State {
         });
       }
     }
-    probe();
+    probe(uid);
     return () => {
       cancelled = true;
     };
-  }, [isAdmin, customUser, currentUser]);
+  }, [uid]);
 
   return state;
 }

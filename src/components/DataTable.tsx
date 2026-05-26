@@ -1,4 +1,4 @@
-import { ReactNode, useMemo, useState } from "react";
+import { ReactNode, useState } from "react";
 
 import {
   ColumnDef,
@@ -78,11 +78,10 @@ export function DataTable<TData, TValue>({
   emptyState,
   pagination,
 }: DataTableProps<TData, TValue>) {
-  const memoData = useMemo(() => data, [data]);
   const [sorting, setSorting] = useState<SortingState>(initialSorting ?? []);
 
   const table = useReactTable({
-    data: memoData,
+    data,
     columns,
     state: { sorting },
     onSortingChange: setSorting,
