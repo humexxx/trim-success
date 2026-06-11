@@ -16,7 +16,9 @@ export const aiGetMessage = functions.https.onCall<
       "Sign in required."
     );
   }
-  const { question } = req.data.data;
+  // Optional-chain the whole path — a malformed payload should surface
+  // as invalid-argument, not as a TypeError masked as "internal".
+  const question = req.data?.data?.question;
   if (!question) {
     throw new functions.https.HttpsError(
       "invalid-argument",

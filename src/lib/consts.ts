@@ -16,7 +16,8 @@ export const LOCAL_STORAGE_KEYS = {
 };
 
 export const ROUTES = {
-  SIGN_IN: "/sign-in",
+  SIGN_IN: "/login",
+  FORGOT_PASSWORD: "/forgot-password",
   MODULE_SELECTOR: "/module-selector",
   INVENTORY: {
     DASHBOARD: "/inventory/dashboard",

@@ -1,4 +1,11 @@
-import { createContext, ReactNode, useCallback, useEffect, useState } from "react";
+import {
+  createContext,
+  ReactNode,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 
 import { IUser } from "@shared/models";
 import { User, onAuthStateChanged } from "firebase/auth";
@@ -67,6 +74,9 @@ export function AuthProvider({ children }: Props) {
         });
       } else {
         setCurrentUser(user);
+        // Without this, a non-admin logging in right after an admin
+        // logged out would briefly inherit the stale `isAdmin: true`.
+        setIsAdmin(false);
         setLoading(false);
       }
     });
@@ -74,13 +84,19 @@ export function AuthProvider({ children }: Props) {
     return unsubscribe;
   }, []);
 
-  const value: AuthContextType = {
-    currentUser,
-    isAdmin,
+  // Same rationale as CubeContext: a fresh object every render would
+  // force every useAuth() consumer to re-render even when nothing
+  // auth-related changed.
+  const value: AuthContextType = useMemo(
+    () => ({
+      currentUser,
+      isAdmin,
 
-    customUser,
-    setCustomUser,
-  };
+      customUser,
+      setCustomUser,
+    }),
+    [currentUser, isAdmin, customUser, setCustomUser]
+  );
 
   return (
     <AuthContext.Provider value={value}>

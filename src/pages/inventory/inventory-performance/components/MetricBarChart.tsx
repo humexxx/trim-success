@@ -140,9 +140,9 @@ export function MetricBarChart({
           {/* Per-category coloring: each Cell gets its category's
               canonical color (Total stays muted). Slight transparency
               keeps the chart feeling soft and modern. */}
-          {data.map((d, i) => (
+          {data.map((d) => (
             <Cell
-              key={i}
+              key={d.rawCategory}
               fill={d.fill}
               fillOpacity={d.isTotal ? 0.55 : 0.85}
             />

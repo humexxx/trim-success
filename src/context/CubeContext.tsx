@@ -60,16 +60,22 @@ export function CubeProvider({ children, onCubeLoadError }: Props) {
   }>();
   const [files, setFiles] = useState<IFileData[] | undefined>();
 
+  // Effective cube owner: the impersonated user when an admin is
+  // browsing, the signed-in user otherwise. Can be undefined during
+  // auth transitions (logout, admin without a selection) — every
+  // callback below must guard on it instead of asserting non-null.
+  const uid = isAdmin ? customUser?.uid : currentUser?.uid;
+
   const getFiles = useCallback(async (): Promise<IFileData[]> => {
     if (files) return files;
+    if (!uid) throw new Error("No user selected");
 
     const getFiles = httpsCallable<
       ICallableRequest,
       ICallableResponse<IFileData[]>
     >(functions, "getFiles");
-    const _uid = isAdmin ? customUser!.uid : currentUser!.uid;
     try {
-      const response = await getFiles({ uid: _uid });
+      const response = await getFiles({ uid });
       if (!response.data.success) {
         throw new Error(response.data.error);
       }
@@ -80,10 +86,10 @@ export function CubeProvider({ children, onCubeLoadError }: Props) {
       console.error("Error fetching files:", error);
       throw new Error("Error fetching files");
     }
-  }, [currentUser, customUser, files, isAdmin]);
+  }, [files, uid]);
 
   const loadCubeData = useCallback(async () => {
-    const _uid = isAdmin ? customUser!.uid : currentUser!.uid;
+    if (!uid) return;
     setLoading(true);
     const getCubeData = httpsCallable<
       ICallableRequest,
@@ -91,7 +97,7 @@ export function CubeProvider({ children, onCubeLoadError }: Props) {
     >(functions, "getCubeData");
 
     try {
-      const response = await getCubeData({ uid: _uid });
+      const response = await getCubeData({ uid });
       if (!response.data.success) {
         throw new Error(response.data.error);
       }
@@ -106,25 +112,26 @@ export function CubeProvider({ children, onCubeLoadError }: Props) {
     } finally {
       setLoading(false);
     }
-  }, [currentUser, customUser, isAdmin, onCubeLoadError]);
+  }, [uid, onCubeLoadError]);
 
   useEffect(() => {
     // AuthContext now hydrates `customUser` from localStorage on
     // mount, so we just need to react to its presence: load the cube
     // when we have a target uid, or bubble up if an admin still has
     // nobody selected.
-    if (isAdmin ? customUser?.uid : true) loadCubeData();
+    if (uid) loadCubeData();
     else onCubeLoadError();
-  }, [currentUser, customUser?.uid, isAdmin, loadCubeData, onCubeLoadError]);
+  }, [uid, loadCubeData, onCubeLoadError]);
 
   const initCube = useCallback(
     async (fileUid: string, drivers: IDriver[]) => {
+      if (!uid) throw new Error("No user selected");
       const initCube = httpsCallable<
         ICallableRequest<IInitCube>,
         ICallableResponse<ICubeData>
       >(functions, "initCube");
       const response = await initCube({
-        uid: isAdmin ? customUser!.uid! : currentUser!.uid,
+        uid,
         data: {
           fileUid,
           drivers,
@@ -135,27 +142,25 @@ export function CubeProvider({ children, onCubeLoadError }: Props) {
         throw new Error(response.data.error);
       }
 
-      setLoading(false);
       return response.data;
     },
-    [currentUser, customUser, isAdmin]
+    [uid]
   );
 
   const removeCube = useCallback(async () => {
+    if (!uid) throw new Error("No user selected");
     const removeCubeData = httpsCallable<ICallableRequest, ICallableResponse>(
       functions,
       "removeCubeData"
     );
-    const response = await removeCubeData({
-      uid: isAdmin ? customUser!.uid! : currentUser!.uid,
-    });
+    const response = await removeCubeData({ uid });
 
     if (!response.data.success) {
       throw new Error(response.data.error);
     }
 
     return response.data;
-  }, [currentUser, customUser, isAdmin]);
+  }, [uid]);
 
   // Memoize the context value so consumers only re-render when one of
   // the actual underlying pieces changes. Without this, every render of

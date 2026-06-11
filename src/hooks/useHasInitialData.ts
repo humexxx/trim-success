@@ -31,6 +31,7 @@ interface State {
  */
 export function useHasInitialData(): State {
   const { isAdmin, customUser, currentUser } = useAuth();
+  const uid = isAdmin ? customUser?.uid : currentUser?.uid;
   const [state, setState] = useState<State>({
     loading: true,
     hasData: false,
@@ -41,8 +42,12 @@ export function useHasInitialData(): State {
   useEffect(() => {
     let cancelled = false;
     async function probe() {
-      const uid = isAdmin ? customUser?.uid : currentUser?.uid;
-      if (!uid) return;
+      if (!uid) {
+        // No effective user (admin without a selection) — resolve as
+        // "no data" instead of leaving consumers spinning forever.
+        setState({ loading: false, hasData: false, docCount: 0, error: null });
+        return;
+      }
 
       try {
         // params is the canonical "did initCube finish for this user"
@@ -71,7 +76,10 @@ export function useHasInitialData(): State {
     return () => {
       cancelled = true;
     };
-  }, [isAdmin, customUser, currentUser]);
+    // Depend on the derived uid, not the user objects — Firebase
+    // recreates those on token refresh, which would re-probe Firestore
+    // for no reason.
+  }, [uid]);
 
   return state;
 }

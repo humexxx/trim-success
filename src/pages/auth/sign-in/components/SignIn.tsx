@@ -4,7 +4,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { ShieldCheck, User2 } from "lucide-react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
-import { DEV_ACCOUNTS } from "src/lib/consts";
+import { DEV_ACCOUNTS, ROUTES } from "src/lib/consts";
 import * as yup from "yup";
 
 import { AuthLayout } from "@/components/auth/AuthLayout";
@@ -122,7 +122,7 @@ export default function SignIn({ handleOnSubmit }: SignInProps) {
                   <div className="flex items-center">
                     <FormLabel>Contraseña</FormLabel>
                     <Link
-                      to="/forgot-password"
+                      to={ROUTES.FORGOT_PASSWORD}
                       className="ml-auto text-sm underline-offset-4 hover:underline"
                     >
                       ¿Olvidaste tu contraseña?

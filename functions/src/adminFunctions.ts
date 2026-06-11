@@ -1,40 +1,40 @@
 import { FIRESTORE_PATHS, STORAGE_PATH } from "@shared/consts";
-import { ICallableRequest } from "@shared/models/functions";
+import { ICallableRequest, ICallableResponse } from "@shared/models/functions";
 import * as admin from "firebase-admin";
 import * as functions from "firebase-functions";
 
 export const addAdminClaim = functions.https.onCall<ICallableRequest>(
-  async (req) => {
+  async (req): Promise<ICallableResponse> => {
     if (!req.auth || !req.auth.token.admin) {
-      return { error: "Only admins can add other admins." };
+      return { success: false, error: "Only admins can add other admins." };
     }
 
     const uid = req.data.uid;
 
     if (!uid) {
-      return { error: "User ID is required." };
+      return { success: false, error: "User ID is required." };
     }
 
     try {
       await admin.auth().setCustomUserClaims(uid, { admin: true });
-      return { message: `Successfully added admin claim to user ${uid}` };
+      return { success: true };
     } catch (error) {
-      console.log(error);
-      return { error: "Something went wrong" };
+      functions.logger.error("addAdminClaim failed", error);
+      return { success: false, error: "Something went wrong" };
     }
   }
 );
 
 export const removeCubeData = functions.https.onCall<ICallableRequest>(
-  async (req) => {
+  async (req): Promise<ICallableResponse> => {
     if (!req.auth || !req.auth.token.admin) {
-      return { error: "Only admins can remove cube data." };
+      return { success: false, error: "Only admins can remove cube data." };
     }
 
     const uid = req.data.uid;
 
     if (!uid) {
-      return { error: "User ID is required." };
+      return { success: false, error: "User ID is required." };
     }
 
     try {
@@ -55,7 +55,7 @@ export const removeCubeData = functions.https.onCall<ICallableRequest>(
     } catch (error) {
       // Don't leak raw Firebase/Node error objects to the client.
       functions.logger.error("removeCubeData failed", error);
-      return { error: "Failed to remove cube data" };
+      return { success: false, error: "Failed to remove cube data" };
     }
   }
 );
