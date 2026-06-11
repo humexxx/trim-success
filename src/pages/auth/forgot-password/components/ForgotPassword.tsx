@@ -4,6 +4,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { CheckCircle2 } from "lucide-react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
+import { ROUTES } from "src/lib/consts";
 import * as yup from "yup";
 
 import { AuthLayout } from "@/components/auth/AuthLayout";
@@ -119,7 +120,7 @@ export default function ForgotPassword({
         )}
 
         <div className="flex flex-col items-center gap-2 text-center text-sm">
-          <Link to="/login" className="underline underline-offset-4">
+          <Link to={ROUTES.SIGN_IN} className="underline underline-offset-4">
             Volver al inicio de sesión
           </Link>
         </div>

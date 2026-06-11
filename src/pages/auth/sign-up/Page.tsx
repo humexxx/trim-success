@@ -27,13 +27,8 @@ const Page = () => {
         auth,
         form.persist ? browserLocalPersistence : browserSessionPersistence
       );
-      await createUserWithEmailAndPassword(
-        auth,
-        form.email,
-        form.password
-      ).then(() => {
-        navigate(ROUTES.MODULE_SELECTOR);
-      });
+      await createUserWithEmailAndPassword(auth, form.email, form.password);
+      navigate(ROUTES.MODULE_SELECTOR);
     } catch (error) {
       throw new Error(getError(error));
     }

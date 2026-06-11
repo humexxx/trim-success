@@ -69,6 +69,10 @@ const MainGrid = () => {
   const originalDataModel = useRef<IDataModel<IDataModelCubeRow> | null>(null);
 
   useEffect(() => {
+    // Guards against the impersonation race: if an admin switches user
+    // mid-fetch, the stale request must not overwrite the new user's
+    // data when it finally resolves.
+    let cancelled = false;
     const fetchJsonFile = async () => {
       setLoading(true);
       try {
@@ -84,33 +88,33 @@ const MainGrid = () => {
             const downloadURL = await getDownloadURL(itemRef);
             const response = await fetch(downloadURL);
             const dm = (await response.json()) as IDataModel<IDataModelCubeRow>;
+            if (cancelled) return;
             setDataModel(dm);
             originalDataModel.current = dm;
             break;
           }
         }
       } catch (e) {
-        setError(getError(e));
+        if (!cancelled) setError(getError(e));
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     };
     fetchJsonFile();
+    return () => {
+      cancelled = true;
+    };
   }, [currentUser?.uid, customUser?.uid, isAdmin]);
 
   useEffect(() => {
-    if (!originalDataModel.current) return;
+    const original = originalDataModel.current;
+    if (!original) return;
 
-    let _rows = [...originalDataModel.current.rows];
+    let _rows = [...original.rows];
     if (filters.category) {
-      _rows = _rows.filter(
-        (row) =>
-          row[
-            originalDataModel.current!.columns[
-              getColumn(EColumnType.CATEGORY)!.index!
-            ]
-          ] === filters.category
-      );
+      const categoryKey =
+        original.columns[getColumn(EColumnType.CATEGORY)!.index!];
+      _rows = _rows.filter((row) => row[categoryKey] === filters.category);
     }
     if (filters.expectedValue) {
       _rows = _rows.filter((row) => {
@@ -119,7 +123,7 @@ const MainGrid = () => {
       });
     }
 
-    setDataModel((prev) => ({ ...prev!, rows: _rows }));
+    setDataModel({ ...original, rows: _rows });
   }, [filters]);
 
   const columns = useMemo(

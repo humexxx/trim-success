@@ -78,10 +78,12 @@ export const router = createBrowserRouter([
     element: <LandingPage />,
     errorElement: <ErrorPage />,
   },
-  { path: "/sign-up", element: <Navigate replace to="/login" /> },
-  { path: ROUTES.SIGN_IN, element: <Navigate replace to="/login" /> },
-  { path: "/login", element: <SignInPage /> },
-  { path: "/forgot-password", element: <ForgotPasswordPage /> },
+  // Legacy aliases — keep old bookmarks working, canonical path is
+  // ROUTES.SIGN_IN.
+  { path: "/sign-up", element: <Navigate replace to={ROUTES.SIGN_IN} /> },
+  { path: "/sign-in", element: <Navigate replace to={ROUTES.SIGN_IN} /> },
+  { path: ROUTES.SIGN_IN, element: <SignInPage /> },
+  { path: ROUTES.FORGOT_PASSWORD, element: <ForgotPasswordPage /> },
 
   // Public footer pages.
   { path: ROUTES.PUBLIC.ABOUT, element: lazyRoute(AboutPage) },

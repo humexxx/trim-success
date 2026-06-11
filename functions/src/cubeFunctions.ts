@@ -23,7 +23,8 @@ import {
 export const getCubeData = functions.https.onCall<ICallableRequest>(
   async (req): Promise<ICallableResponse<ICubeData>> => {
     if (!req.auth) return { success: false, error: "Not authenticated." };
-    const uid = req.auth.token.admin ? req.data.uid : req.auth?.uid;
+    const uid = req.auth.token.admin ? req.data.uid : req.auth.uid;
+    if (!uid) return { success: false, error: "User ID is required." };
 
     try {
       // Four independent reads — `Promise.all` cuts the worst-case
@@ -59,7 +60,8 @@ export const initCube = functions.https.onCall<ICallableRequest<IInitCube>>(
   },
   async (req): Promise<ICallableResponse<ICubeData>> => {
     if (!req.auth) return { success: false, error: "Not authenticated." };
-    const uid = req.auth.token.admin ? req.data.uid : req.auth?.uid;
+    const uid = req.auth.token.admin ? req.data.uid : req.auth.uid;
+    if (!uid) return { success: false, error: "User ID is required." };
 
     const { fileUid, drivers } = req.data.data;
 
@@ -129,7 +131,8 @@ export const calculateDataMining = functions.https.onCall<ICallableRequest>(
   },
   async (req): Promise<ICallableResponse> => {
     if (!req.auth) return { success: false, error: "Not authenticated." };
-    const uid = req.auth.token.admin ? req.data.uid : req.auth?.uid;
+    const uid = req.auth.token.admin ? req.data.uid : req.auth.uid;
+    if (!uid) return { success: false, error: "User ID is required." };
 
     try {
       // Parallelize independent reads — they don't depend on each other.
@@ -153,7 +156,8 @@ export const calculateDataMining = functions.https.onCall<ICallableRequest>(
 export const calculateScorecardData = functions.https.onCall<ICallableRequest>(
   async (req): Promise<ICallableResponse> => {
     if (!req.auth) return { success: false, error: "Not authenticated." };
-    const uid = req.auth.token.admin ? req.data.uid : req.auth?.uid;
+    const uid = req.auth.token.admin ? req.data.uid : req.auth.uid;
+    if (!uid) return { success: false, error: "User ID is required." };
 
     try {
       const [cubeParameters, dataMining] = await Promise.all([
@@ -174,7 +178,8 @@ export const calculateInventoryPerformance =
   functions.https.onCall<ICallableRequest>(
     async (req): Promise<ICallableResponse> => {
       if (!req.auth) return { success: false, error: "Not authenticated." };
-      const uid = req.auth.token.admin ? req.data.uid : req.auth?.uid;
+      const uid = req.auth.token.admin ? req.data.uid : req.auth.uid;
+      if (!uid) return { success: false, error: "User ID is required." };
 
       try {
         // Three independent reads → fire them in parallel.
@@ -205,7 +210,8 @@ export const calculateDataModelInventoryPerformance =
     },
     async (req): Promise<ICallableResponse> => {
       if (!req.auth) return { success: false, error: "Not authenticated." };
-      const uid = req.auth.token.admin ? req.data.uid : req.auth?.uid;
+      const uid = req.auth.token.admin ? req.data.uid : req.auth.uid;
+      if (!uid) return { success: false, error: "User ID is required." };
 
       try {
         const [{ dataModel, fileUid }, inventoryPerformance] =
@@ -231,7 +237,8 @@ export const calculateDataModelInventoryPerformance =
 export const getFiles = functions.https.onCall<ICallableRequest>(
   async (req): Promise<ICallableResponse<IFileData[]>> => {
     if (!req.auth) return { success: false, error: "Not authenticated." };
-    const uid = req.auth.token.admin ? req.data.uid : req.auth?.uid;
+    const uid = req.auth.token.admin ? req.data.uid : req.auth.uid;
+    if (!uid) return { success: false, error: "User ID is required." };
 
     try {
       const files = await getBucketFiles(uid);

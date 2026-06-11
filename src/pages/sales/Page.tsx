@@ -12,7 +12,6 @@ import {
 import { Link } from "react-router-dom";
 import { PageHeader, PageWrapper } from "src/components/layout";
 import { useCube } from "src/context/hooks";
-import { useDocumentMetadata } from "src/hooks";
 import { ROUTES } from "src/lib/consts";
 import {
   compactCurrencyFmt,
@@ -91,11 +90,10 @@ function KpiCard({ label, value, hint, icon, trend }: KpiCardProps) {
   );
 }
 
+const PAGE_DESCRIPTION =
+  "Resumen de ventas, margen y comportamiento por categoría sobre el cubo activo.";
+
 const SalesMainPage = () => {
-  useDocumentMetadata(
-    "Ventas",
-    "Resumen de ventas, margen y comportamiento por categoría sobre el cubo activo."
-  );
   const cube = useCube();
 
   const summary = useMemo(() => {
@@ -133,7 +131,7 @@ const SalesMainPage = () => {
     // Skeleton mirrors the real layout: KPI strip + two equal chart
     // cards, so the page doesn't jump when data arrives.
     return (
-      <PageWrapper title="Ventas">
+      <PageWrapper title="Ventas" description={PAGE_DESCRIPTION}>
         <PageHeader
           title="Resumen de ventas"
           description="Comportamiento comercial por categoría — KPIs, tendencia mensual y portafolio."
@@ -168,7 +166,7 @@ const SalesMainPage = () => {
 
   if (!summary || summary.totalSales === 0) {
     return (
-      <PageWrapper title="Ventas">
+      <PageWrapper title="Ventas" description={PAGE_DESCRIPTION}>
         <PageHeader
           title="Ventas"
           description="Resumen del comportamiento comercial por categoría"

@@ -1,6 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
 
-import { IDriver, IParameter, IScorecardData } from "@shared/models";
+import {
+  IDriver,
+  IParameter,
+  IScorecardCostBlock,
+  IScorecardCostRow,
+} from "@shared/models";
 import { formatAmount, formatPercentage } from "@shared/utils";
 import { Loader2 } from "lucide-react";
 
@@ -22,13 +27,15 @@ import {
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
 
-type Row = IScorecardData["inventoryCosts"]["rows"][number];
-
 interface Props {
-  data?: IScorecardData["inventoryCosts"];
+  /** First column header — names the cost block (e.g. "Warehousing Costs"). */
+  title: string;
+  /** Label of the totals row in the footer. */
+  footerLabel: string;
+  data?: IScorecardCostBlock;
   categories: string[];
   investmentTypes: IParameter[];
-  updateRow: (row: Row) => Promise<void>;
+  updateRow: (row: IScorecardCostRow) => Promise<void>;
   drivers: IDriver[];
   loading: boolean;
 }
@@ -37,9 +44,12 @@ interface Props {
  * Inline-editable replacement for the previous MUI x-data-grid scorecard
  * table. driver + invest cells render a shadcn Select that fires updateRow
  * on change (mirrors the original processRowUpdate behavior). Numeric
- * category/total/percentage columns are read-only.
+ * category/total/percentage columns are read-only. Shared by both cost
+ * blocks (warehousing + inventory) — they only differ in labels.
  */
-const ScorecardTableInventory = ({
+const ScorecardTable = ({
+  title,
+  footerLabel,
   data,
   categories,
   investmentTypes,
@@ -47,26 +57,28 @@ const ScorecardTableInventory = ({
   drivers,
   loading,
 }: Props) => {
-  const [rows, setRows] = useState<Row[]>(data?.rows ?? []);
+  const [rows, setRows] = useState<IScorecardCostRow[]>(data?.rows ?? []);
   const sortedCategories = useMemo(() => [...categories].sort(), [categories]);
 
   useEffect(() => {
     setRows(data?.rows ?? []);
   }, [data]);
 
-  const handleDriverChange = async (row: Row, driverKey: string) => {
-    const next = { ...row, driver: driverKey } as Row;
-    setRows((prev) =>
-      prev.map((r) => (r.cost === row.cost ? next : r))
-    );
+  const handleDriverChange = async (
+    row: IScorecardCostRow,
+    driverKey: string
+  ) => {
+    const next = { ...row, driver: driverKey };
+    setRows((prev) => prev.map((r) => (r.cost === row.cost ? next : r)));
     await updateRow(next);
   };
 
-  const handleInvestChange = async (row: Row, investName: string) => {
-    const next = { ...row, invest: investName } as Row;
-    setRows((prev) =>
-      prev.map((r) => (r.cost === row.cost ? next : r))
-    );
+  const handleInvestChange = async (
+    row: IScorecardCostRow,
+    investName: string
+  ) => {
+    const next = { ...row, invest: investName };
+    setRows((prev) => prev.map((r) => (r.cost === row.cost ? next : r)));
     await updateRow(next);
   };
 
@@ -80,7 +92,7 @@ const ScorecardTableInventory = ({
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Costos del Inventario</TableHead>
+            <TableHead>{title}</TableHead>
             <TableHead>Driver</TableHead>
             {sortedCategories.map((c) => (
               <TableHead key={c} className="text-right">
@@ -134,15 +146,14 @@ const ScorecardTableInventory = ({
                 <TableCell>
                   {hasInvest ? (
                     <Select
-                      value={(row as Row & { invest?: string }).invest ?? ""}
+                      value={row.invest ?? ""}
                       onValueChange={(v) => handleInvestChange(row, v)}
                     >
                       <SelectTrigger className="h-8 w-[160px]">
                         <SelectValue placeholder="n/a">
                           {(() => {
-                            const v = (row as Row & { invest?: string }).invest;
                             const it = investmentTypes.find(
-                              (t) => t.name === v
+                              (t) => t.name === row.invest
                             );
                             return it
                               ? formatPercentage(it.value / 100)
@@ -168,12 +179,13 @@ const ScorecardTableInventory = ({
         </TableBody>
         <TableFooter>
           <TableRow>
-            <TableCell className="font-semibold">
-              Costo total del Inventario
-            </TableCell>
+            <TableCell className="font-semibold">{footerLabel}</TableCell>
             <TableCell />
             {sortedCategories.map((c) => (
-              <TableCell key={c} className="text-right font-semibold tabular-nums">
+              <TableCell
+                key={c}
+                className="text-right font-semibold tabular-nums"
+              >
                 {formatAmount(Number(data?.totals[c] ?? 0))}
               </TableCell>
             ))}
@@ -191,4 +203,4 @@ const ScorecardTableInventory = ({
   );
 };
 
-export default ScorecardTableInventory;
+export default ScorecardTable;

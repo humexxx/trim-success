@@ -1,44 +1,37 @@
 import { expect, test } from "@playwright/test";
 
 /**
- * Public landing page + error page smoke tests. No backend dependencies.
+ * Public landing page smoke tests. No backend dependencies.
  */
 
 test.describe("Landing page", () => {
-  test("renders hero, lead form and feature cards", async ({ page }) => {
+  test("renders top bar, hero and footer", async ({ page }) => {
     await page.goto("/");
 
-    // Top bar
+    // Top bar — the brand mark appears in the header and the footer,
+    // and "Iniciar sesión" appears as top-bar, hero and footer CTAs.
     await expect(
-      page.getByRole("link", { name: "ScorChain" }).first()
+      page.getByRole("link", { name: "TrimSuccess" }).first()
     ).toBeVisible();
     await expect(
-      page.getByRole("button", { name: "Inicia sesión" })
+      page.getByRole("button", { name: "Iniciar sesión" }).first()
     ).toBeVisible();
 
     // Hero
     await expect(
-      page.getByRole("heading", { name: /Maneja tu inventario con/i })
+      page.getByRole("heading", { level: 1, name: /Tu inventario/i })
     ).toBeVisible();
 
-    // Lead form inputs in the timeline
-    await expect(page.getByPlaceholder("Email")).toBeVisible();
-    await expect(page.getByPlaceholder("Negocio")).toBeVisible();
-    await expect(page.getByPlaceholder("Lugar")).toBeVisible();
-
-    // Servicios section header (Footer also has one — scope to <main>)
-    await expect(
-      page.getByRole("main").getByRole("heading", { name: "Servicios" })
-    ).toBeVisible();
-    await expect(
-      page.getByRole("link", { name: /Ir a Inventario/i })
-    ).toBeVisible();
+    // Footer
+    await expect(page.getByRole("contentinfo")).toBeVisible();
   });
 
-  test("top-bar Inicia sesión button navigates to /login", async ({ page }) => {
+  test("top-bar Iniciar sesión button navigates to /login", async ({
+    page,
+  }) => {
     await page.goto("/");
 
-    await page.getByRole("button", { name: "Inicia sesión" }).click();
+    await page.getByRole("button", { name: "Iniciar sesión" }).first().click();
 
     await expect(page).toHaveURL(/\/login$/);
   });
