@@ -4,36 +4,15 @@ All notable changes to this project will be documented in this file. See [standa
 
 ## [2.0.0](https://github.com/humexxx/trim-success/compare/v1.0.2...v2.0.0) (2026-06-11)
 
-
-### ⚠ BREAKING CHANGES
-
-* not working
-* test
-* major version
-
-### Features
-
-* initial landing page ([#219](https://github.com/humexxx/trim-success/issues/219)) ([1e0378c](https://github.com/humexxx/trim-success/commit/1e0378c0f76c2309ec0d6c020deb2557b173b22f))
-* initial landing page ([#219](https://github.com/humexxx/trim-success/issues/219)) ([#243](https://github.com/humexxx/trim-success/issues/243)) ([e06a239](https://github.com/humexxx/trim-success/commit/e06a2392c9a8d16ca17d037b5a3e571ff7bb234d))
-* new change ([afdc1cc](https://github.com/humexxx/trim-success/commit/afdc1cc61da6021221f21a0dfcdcc1d7e5da231f))
-* **ui:** complete MUI → shadcn migration + Playwright e2e ([#245](https://github.com/humexxx/trim-success/issues/245)) ([ba0f6ca](https://github.com/humexxx/trim-success/commit/ba0f6ca2f2b39c6b5d85182214ba29455a222a1f))
-
+> The major version bump comes from consolidating the full develop history into main — there are no user-facing breaking changes in this release.
 
 ### Bug Fixes
 
-* add check wait for automerge prs from dependabot ([9f03cbd](https://github.com/humexxx/trim-success/commit/9f03cbd7b4a46172c3a6f0ab8e26f11e9be520b6))
-* **build:** production blank page from over-aggressive chunking ([a93c033](https://github.com/humexxx/trim-success/commit/a93c0330e8bda429a2fa28f6f661a45a2784e0e5))
-* changelog ([390094f](https://github.com/humexxx/trim-success/commit/390094febd8a3fd8ada423018e7e8d8583ef1462))
-* create version on release on main only ([f1d07df](https://github.com/humexxx/trim-success/commit/f1d07dfc4ddd9dc5bf2de57474bd4f3c90c116ea))
 * harden auth/cube flows, surface swallowed errors, repair AI page contract ([f3d88de](https://github.com/humexxx/trim-success/commit/f3d88de6d14bc41f1f72687add4814150b5b8fdb))
-* packages ([c42ce06](https://github.com/humexxx/trim-success/commit/c42ce0691a9190687c988d0cdcb6bb8aee57fdba))
-* standarize app ([#150](https://github.com/humexxx/trim-success/issues/150)) ([ea6ea82](https://github.com/humexxx/trim-success/commit/ea6ea8287e1a9194d8f2a2851a61638f8bb57b9b))
-* whats going on ([ded0910](https://github.com/humexxx/trim-success/commit/ded0910eaa4a7261763231cbc525b84b83755a3e))
 
+### Refactors
 
-### Performance Improvements
-
-* **build:** code-split vendor bundles via vite manualChunks ([5f44c63](https://github.com/humexxx/trim-success/commit/5f44c63f6989b1494fd36413bc0745d207596d55))
+* **scorecard:** consolidate duplicated cost tables into ScorecardTable ([7ce9b93](https://github.com/humexxx/trim-success/commit/7ce9b93983c6e9c88b1c5d8ac9c8f281155f15ae))
 
 ### [1.0.2](https://github.com/humexxx/trim-success/compare/v1.0.1...v1.0.2) (2026-05-26)
 
