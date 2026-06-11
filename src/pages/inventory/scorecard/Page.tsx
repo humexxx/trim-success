@@ -4,21 +4,16 @@ import {
   EDataModelParameterSubType,
   EDataModelParameterType,
 } from "@shared/enums";
-import { ICubeData, IScorecardData } from "@shared/models";
+import { ICubeData, IScorecardCostRow, IScorecardData } from "@shared/models";
 import { PageHeader, PageWrapper } from "src/components/layout";
 import { useCube } from "src/context/hooks";
-import { useDocumentMetadata } from "src/hooks";
 import {
   getError,
   updateInventoryScorecardDataRow,
   updateStoringScorecardDataRow,
 } from "src/utils";
 
-import {
-  GrandTotalGrid,
-  ScorecardTableInventory,
-  ScorecardTableWarehouse,
-} from "./components";
+import { GrandTotalGrid, ScorecardTable } from "./components";
 import { useScorecard } from "./hooks";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
@@ -30,12 +25,10 @@ import {
 } from "@/components/ui/card";
 
 
-const Page = () => {
-  useDocumentMetadata(
-    "Scorecard",
-    "Scorecard editable con drivers de costo de mantener inventario por categoría."
-  );
+const PAGE_DESCRIPTION =
+  "Scorecard editable con drivers de costo de mantener inventario por categoría.";
 
+const Page = () => {
   const { data, setData } = useCube();
   const { update } = useScorecard();
   const [error, setError] = useState<string | null>(null);
@@ -59,7 +52,7 @@ const Page = () => {
   );
 
   const updateStoringCostsRow = useCallback(
-    async (newRow: IScorecardData["storingCosts"]["rows"][number]) => {
+    async (newRow: IScorecardCostRow) => {
       try {
         setIsStoringCostsLoading(true);
         const data = updateStoringScorecardDataRow(
@@ -87,7 +80,7 @@ const Page = () => {
   );
 
   const updateInventoryCostsRow = useCallback(
-    async (newRow: IScorecardData["inventoryCosts"]["rows"][number]) => {
+    async (newRow: IScorecardCostRow) => {
       try {
         setIsInventoryCostsLoading(true);
         const data = updateInventoryScorecardDataRow(
@@ -106,7 +99,7 @@ const Page = () => {
             ({ ...prev, scorecardData: newScorcardData }) as ICubeData
         );
       } catch (error) {
-        console.error(error);
+        setError(getError(error));
       } finally {
         setIsInventoryCostsLoading(false);
       }
@@ -116,7 +109,7 @@ const Page = () => {
 
   if (error) {
     return (
-      <PageWrapper title="Scorecard">
+      <PageWrapper title="Scorecard" description={PAGE_DESCRIPTION}>
         <PageHeader title="Scorecard" />
         <Alert variant="destructive" className="mt-4">
           <AlertDescription>{error}</AlertDescription>
@@ -126,7 +119,7 @@ const Page = () => {
   }
 
   return (
-    <PageWrapper title="Scorecard">
+    <PageWrapper title="Scorecard" description={PAGE_DESCRIPTION}>
       <PageHeader
         title="Scorecard financiero"
         description="Costos de almacenaje e inventario por categoría — edita drivers e investment types inline para recalcular en tiempo real."
@@ -141,7 +134,9 @@ const Page = () => {
             </CardDescription>
           </CardHeader>
           <CardContent className="px-2 pb-4 pt-0">
-            <ScorecardTableWarehouse
+            <ScorecardTable
+              title="Warehousing Costs"
+              footerLabel="Costo total de Almacenaje"
               data={scorecardData?.storingCosts}
               categories={paramsData?.categories ?? []}
               investmentTypes={investmentTypes ?? []}
@@ -161,7 +156,9 @@ const Page = () => {
             </CardDescription>
           </CardHeader>
           <CardContent className="px-2 pb-4 pt-0">
-            <ScorecardTableInventory
+            <ScorecardTable
+              title="Costos del Inventario"
+              footerLabel="Costo total del Inventario"
               loading={isInventoryCostsLoading}
               data={scorecardData?.inventoryCosts}
               categories={paramsData?.categories ?? []}
